@@ -1,0 +1,63 @@
+name: Go SDK CI
+
+on:
+  push:
+    paths:
+      - "sdks/go/**"
+  pull_request:
+    paths:
+      - "sdks/go/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdks/go
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Go fmt check
+        run: |
+          CHANGED=$(gofmt -l .)
+          if [ -n "$CHANGED" ]; then
+            echo "Go files not formatted:"
+            echo "$CHANGED"
+            exit 1
+          fi
+
+      - name: Go vet
+        run: go vet ./...
+
+      - name: Go vulncheck
+        uses: golang/govulncheck-action@v1
+        with:
+          go-version-input: "1.25.x"
+          go-package: ./...
+
+      - name: Go test
+        run: go test ./... -coverprofile=coverage.out
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: sdks/go/coverage.out
+          flags: go
+          name: go-sdk
