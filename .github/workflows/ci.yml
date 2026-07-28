@@ -2,18 +2,13 @@ name: Go SDK CI
 
 on:
   push:
-    paths:
-      - "sdks/go/**"
+    branches: [master]
   pull_request:
-    paths:
-      - "sdks/go/**"
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: sdks/go
 
     steps:
       - name: Checkout
@@ -58,6 +53,6 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          file: sdks/go/coverage.out
+          file: coverage.out
           flags: go
           name: go-sdk
