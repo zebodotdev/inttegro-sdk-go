@@ -120,7 +120,7 @@ func (s *MessageTemplatesService) Create(ctx context.Context, params MessageTemp
 	var resp struct {
 		MessageTemplate MessageTemplate `json:"message_template"`
 	}
-	opts := requestOptions{IdempotencyKey: idempotencyKeyOrGenerated(params.IdempotencyKey)}
+	opts := requestOptions{IdempotencyKey: params.IdempotencyKey}
 	if err := s.client.doJSON(ctx, "/message_templates/create", params, opts, &resp); err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (s *MessageTemplatesService) Update(ctx context.Context, params MessageTemp
 	var resp struct {
 		MessageTemplate MessageTemplate `json:"message_template"`
 	}
-	opts := requestOptions{IdempotencyKey: idempotencyKeyOrGenerated(params.IdempotencyKey)}
+	opts := requestOptions{IdempotencyKey: params.IdempotencyKey}
 	if err := s.client.doJSON(ctx, "/message_templates/update", params, opts, &resp); err != nil {
 		return nil, err
 	}
@@ -143,7 +143,6 @@ func (s *MessageTemplatesService) Publish(ctx context.Context, id string, opts .
 		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	requestOpts := requestOptionsFromOptions(opts)
-	requestOpts.IdempotencyKey = idempotencyKeyOrGenerated(requestOpts.IdempotencyKey)
 	if err := s.client.doJSON(ctx, "/message_templates/publish", map[string]string{"id": id}, requestOpts, &resp); err != nil {
 		return nil, err
 	}
@@ -155,7 +154,6 @@ func (s *MessageTemplatesService) Archive(ctx context.Context, id string, opts .
 		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	requestOpts := requestOptionsFromOptions(opts)
-	requestOpts.IdempotencyKey = idempotencyKeyOrGenerated(requestOpts.IdempotencyKey)
 	if err := s.client.doJSON(ctx, "/message_templates/archive", map[string]string{"id": id}, requestOpts, &resp); err != nil {
 		return nil, err
 	}
@@ -188,13 +186,6 @@ func (s *MessageTemplatesService) RenderPreview(ctx context.Context, params Mess
 		return nil, err
 	}
 	return &resp, nil
-}
-
-func idempotencyKeyOrGenerated(key string) string {
-	if key != "" {
-		return key
-	}
-	return generateIdempotencyKey()
 }
 
 func requestOptionsFromOptions(opts []RequestOption) requestOptions {

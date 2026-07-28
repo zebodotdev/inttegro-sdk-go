@@ -81,6 +81,15 @@ func main() {
 
 ## Resource snippets
 
+### Apps
+
+```go
+created, _ := client.Apps.Create(ctx, map[string]any{"name": "My App"})
+current, _ := client.Apps.Lookup(ctx)
+updated, _ := client.Apps.Update(ctx, map[string]any{"alias": "my-app"})
+_, _, _ = created, current, updated
+```
+
 ### Orders
 
 ```go

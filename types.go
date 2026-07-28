@@ -2473,6 +2473,29 @@ type BalanceTransactionPageParams struct {
 	PageSize int `json:"page_size,omitempty"`
 }
 
+// CountryBankBranch describes a bank branch available in a country bank directory.
+type CountryBankBranch struct {
+	ID       string `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	SortCode string `json:"sort_code,omitempty"`
+}
+
+// CountryBank describes a banking institution available in a country bank directory.
+type CountryBank struct {
+	ID             string              `json:"id,omitempty"`
+	Name           string              `json:"name,omitempty"`
+	SwiftCode      string              `json:"swift_code,omitempty"`
+	SortCodePrefix string              `json:"sort_code_prefix,omitempty"`
+	Branches       []CountryBankBranch `json:"branches,omitempty"`
+}
+
+// CountryBankDirectory describes bank reference data for country-specific bank accounts.
+type CountryBankDirectory struct {
+	BankAccountType string        `json:"bank_account_type,omitempty"`
+	CodeScheme      string        `json:"code_scheme,omitempty"`
+	Items           []CountryBank `json:"items,omitempty"`
+}
+
 // CountrySpecification describes supported Commerce features for a country.
 //
 // Use this to discover supported currencies, payment methods, payout schedules,
@@ -2515,4 +2538,8 @@ type CountrySpecification struct {
 	// IDDocumentTypes lists accepted identification documents (read-only).
 	// Used for KYC/verification requirements.
 	IDDocumentTypes []map[string]any `json:"id_document_types,omitempty"`
+
+	// Banks lists country-specific bank reference data, when available.
+	// Ghana uses bank_account_type "ghana_bank_account" and sort code branches.
+	Banks *CountryBankDirectory `json:"banks,omitempty"`
 }

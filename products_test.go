@@ -77,7 +77,7 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 	}
 }
 
-func TestPlatformEndpointsMatchSpec(t *testing.T) {
+func TestAppsEndpointsMatchSpec(t *testing.T) {
 	var paths []string
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		paths = append(paths, r.URL.Path)
@@ -90,17 +90,17 @@ func TestPlatformEndpointsMatchSpec(t *testing.T) {
 	defer close()
 
 	ctx := context.Background()
-	if _, err := client.Platform.CreateApp(ctx, map[string]any{"name": "App"}); err != nil {
+	if _, err := client.Apps.Create(ctx, map[string]any{"name": "App"}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Platform.GenerateKey(ctx, map[string]any{"app_id": "app_123"}); err != nil {
+	if _, err := client.Apps.Lookup(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Platform.NewSession(ctx, map[string]any{"app_id": "app_123"}); err != nil {
+	if _, err := client.Apps.Update(ctx, map[string]any{"alias": "app"}); err != nil {
 		t.Fatal(err)
 	}
 
-	want := []string{"/apps/create", "/keys/generate", "/sessions/new"}
+	want := []string{"/apps/create", "/apps/lookup", "/apps/update"}
 	if len(paths) != len(want) {
 		t.Fatalf("got paths %v, want %v", paths, want)
 	}

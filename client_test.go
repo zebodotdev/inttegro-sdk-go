@@ -143,3 +143,42 @@ func TestDoSkipsIdempotencyForReadStylePosts(t *testing.T) {
 		t.Fatalf("request_meta should not be sent for lookup: %#v", body)
 	}
 }
+
+func TestMessageTemplatesCreateUsesRequestMetaIdempotencyByDefault(t *testing.T) {
+	var body map[string]any
+	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.URL.Path; got != "/message_templates/create" {
+			t.Fatalf("path = %q, want /message_templates/create", got)
+		}
+		if got := r.Header.Get("Idempotency-Key"); got != "" {
+			t.Fatalf("Idempotency-Key header should not be generated for JSON mutations, got %q", got)
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Fatalf("decode body: %v", err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"message_template":{"id":"mt_123"}}`)
+	}))
+	if client == nil {
+		return
+	}
+	defer close()
+
+	_, err := client.MessageTemplates.Create(context.Background(), MessageTemplateCreateParams{
+		Name:    "welcome_sms",
+		Channel: "sms",
+		Purpose: "marketing",
+		SMS:     &MessageTemplateSMSContent{MessageTemplate: "Welcome {{name}}"},
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	requestMeta, ok := body["request_meta"].(map[string]any)
+	if !ok {
+		t.Fatalf("request_meta missing: %#v", body)
+	}
+	key, _ := requestMeta["idempotency_key"].(string)
+	if !uuidV7Pattern.MatchString(key) {
+		t.Fatalf("idempotency key %q is not UUIDv7", key)
+	}
+}

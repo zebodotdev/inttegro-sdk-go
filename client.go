@@ -173,8 +173,8 @@ type Client struct {
 	// Query supported currencies, payment methods, and payout schedules by country.
 	Spec *SpecService
 
-	// Platform provides access to application, key, and session management.
-	Platform *PlatformService
+	// Apps provides access to application creation, lookup, and updates.
+	Apps *AppsService
 }
 
 // ClientOption allows customizing the client during construction.
@@ -262,7 +262,7 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c.Products = &ProductsService{client: c}
 	c.Prices = &PricesService{client: c}
 	c.Spec = &SpecService{client: c}
-	c.Platform = &PlatformService{client: c}
+	c.Apps = &AppsService{client: c}
 
 	return c
 }

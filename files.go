@@ -189,9 +189,9 @@ type FileLinkAccess struct {
 }
 
 type FileLinkCreateParams struct {
-	Access     FileLinkAccess    `json:"access,omitempty"`
-	CreatedBy  FileActor         `json:"created_by,omitempty"`
-	Delivery   FileLinkDelivery  `json:"delivery,omitempty"`
+	Access     FileLinkAccess    `json:"access"`
+	CreatedBy  FileActor         `json:"created_by"`
+	Delivery   FileLinkDelivery  `json:"delivery"`
 	ExpiresAt  string            `json:"expires_at,omitempty"`
 	FileID     string            `json:"file_id"`
 	CustomData map[string]string `json:"custom_data,omitempty"`
@@ -206,7 +206,7 @@ type FileLinkPageParams struct {
 
 type FileLinkRevokeParams struct {
 	ID        string    `json:"id"`
-	RevokedBy FileActor `json:"revoked_by,omitempty"`
+	RevokedBy FileActor `json:"revoked_by"`
 }
 
 type FileLink struct {
@@ -305,27 +305,27 @@ type FileResource struct {
 }
 
 type UploadRequestCreateParams struct {
-	Constraints UploadRequestConstraints `json:"constraints,omitempty"`
-	Display     UploadRequestDisplay     `json:"display,omitempty"`
+	Constraints UploadRequestConstraints `json:"constraints"`
+	Display     UploadRequestDisplay     `json:"display"`
 	ExpiresAt   string                   `json:"expires_at,omitempty"`
 	CustomData  map[string]string        `json:"custom_data,omitempty"`
 	Purpose     string                   `json:"purpose"`
-	Recipient   FileParty                `json:"recipient,omitempty"`
-	Requester   FileActor                `json:"requester,omitempty"`
-	Resource    FileResource             `json:"resource,omitempty"`
-	Subject     FileParty                `json:"subject,omitempty"`
+	Recipient   FileParty                `json:"recipient"`
+	Requester   FileActor                `json:"requester"`
+	Resource    FileResource             `json:"resource"`
+	Subject     FileParty                `json:"subject"`
 }
 
 type UploadRequestPageParams struct {
 	PageNumber int          `json:"page_number,omitempty"`
 	PageSize   int          `json:"page_size,omitempty"`
 	Purpose    string       `json:"purpose,omitempty"`
-	Resource   FileResource `json:"resource,omitempty"`
+	Resource   FileResource `json:"resource"`
 	Status     string       `json:"status,omitempty"`
 }
 
 type UploadRequestCancelParams struct {
-	CanceledBy FileActor `json:"canceled_by,omitempty"`
+	CanceledBy FileActor `json:"canceled_by"`
 	ID         string    `json:"id"`
 }
 
