@@ -28,7 +28,7 @@ import "context"
 //	    VerifyImmediately: commerce.Bool(true),
 //	})
 //
-// Learn more: https://commerce.zebo.dev/save-payment-methods
+// Learn more: https://studio.zebo.dev/save-payment-methods
 type PaymentMethodsService struct {
 	client *Client
 }
@@ -38,7 +38,7 @@ type PaymentMethodsService struct {
 // Tokenized payment methods can be charged repeatedly without re-entering details.
 // The customer owns the payment method—only they can delete it.
 //
-// Learn more: https://commerce.zebo.dev/tokenize-payment-methods
+// Learn more: https://studio.zebo.dev/tokenize-payment-methods
 func (s *PaymentMethodsService) Tokenize(ctx context.Context, params TokenizePaymentMethodParams) (*PaymentMethodObject, error) {
 	var resp struct {
 		PaymentMethod PaymentMethodObject `json:"payment_method"`

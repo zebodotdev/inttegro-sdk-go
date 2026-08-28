@@ -55,7 +55,7 @@ func TestDoSuccess(t *testing.T) {
 func TestDoAPIError(t *testing.T) {
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
-		io.WriteString(w, `{"type":"invalid_request_parameter","code":"invalid_payment_method","url":"https://commerce.zebo.dev/e/invalid_payment_method","message":"invalid payment method","detail":"payment method not usable for this currency","fix_code":"change_request_parameters","cause":"validation_failure"}`)
+		io.WriteString(w, `{"type":"invalid_request_parameter","code":"invalid_payment_method","url":"https://studio.zebo.dev/e/invalid_payment_method","message":"invalid payment method","detail":"payment method not usable for this currency","fix_code":"change_request_parameters","cause":"validation_failure"}`)
 	}))
 	if client == nil {
 		return

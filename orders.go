@@ -98,7 +98,7 @@ type OrdersService struct {
 //	    }
 //	}
 //
-// Learn more: https://commerce.zebo.dev/create-order
+// Learn more: https://studio.zebo.dev/create-order
 func (s *OrdersService) Create(ctx context.Context, params OrderCreateParams) (*Order, error) {
 	var resp struct {
 		Order       Order   `json:"order"`
@@ -142,7 +142,7 @@ func (s *OrdersService) Create(ctx context.Context, params OrderCreateParams) (*
 //   - Displaying order details to customer
 //   - Syncing order state with your system
 //
-// Learn more: https://commerce.zebo.dev/retrieve-order
+// Learn more: https://studio.zebo.dev/retrieve-order
 func (s *OrdersService) Lookup(ctx context.Context, orderID string) (*Order, error) {
 	var resp struct {
 		Order Order `json:"order"`
@@ -197,7 +197,7 @@ func (s *OrdersService) Lookup(ctx context.Context, orderID string) (*Order, err
 //	    },
 //	})
 //
-// Learn more: https://commerce.zebo.dev/charge-order
+// Learn more: https://studio.zebo.dev/charge-order
 func (s *OrdersService) Pay(ctx context.Context, params OrderPayParams) (*PaymentResponse, error) {
 	var resp PaymentResponse
 	if err := s.client.do(ctx, "POST", "/orders/pay", params, &resp); err != nil {
@@ -230,7 +230,7 @@ func (s *OrdersService) Pay(ctx context.Context, params OrderPayParams) (*Paymen
 //	}
 //	// Payment confirmed, check order.Payment.Status
 //
-// Learn more: https://commerce.zebo.dev/confirm-payment
+// Learn more: https://studio.zebo.dev/confirm-payment
 func (s *OrdersService) ConfirmPayment(ctx context.Context, params OrderConfirmParams) (*Order, error) {
 	var resp struct {
 		Order Order `json:"order"`

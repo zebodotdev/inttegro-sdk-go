@@ -44,7 +44,7 @@
 //	    // ... other fields
 //	}
 //
-// Learn more: https://commerce.zebo.dev/idempotency
+// Learn more: https://studio.zebo.dev/idempotency
 //
 // # Context Support
 //

@@ -34,7 +34,7 @@ import (
 //	    return err
 //	}
 //
-// Learn more: https://commerce.zebo.dev/errors
+// Learn more: https://studio.zebo.dev/errors
 type APIError struct {
 	// StatusCode is the HTTP status code (400-599).
 	StatusCode int `json:"-"`
@@ -48,7 +48,7 @@ type APIError struct {
 	Code string `json:"code"`
 
 	// URL links to error reference documentation.
-	// Example: "https://commerce.zebo.dev/e/invalid_payment_method"
+	// Example: "https://studio.zebo.dev/e/invalid_payment_method"
 	URL string `json:"url"`
 
 	// Message is a concise, human-readable summary of the error.
