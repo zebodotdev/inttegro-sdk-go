@@ -83,7 +83,7 @@ import (
 
 const (
 	// DefaultBaseURL is the production Commerce API base URL.
-	DefaultBaseURL = "https://api.zebo.dev"
+	DefaultBaseURL = "https://api.inttegro.com"
 	defaultTimeout = 30 * time.Second
 )
 
