@@ -16,7 +16,7 @@ func TestOrderDocumentDeliveryEndpointsMatchSpec(t *testing.T) {
 			"order": map[string]any{"id": "or_123"},
 			"delivery": map[string]any{
 				"document_kind": "invoice",
-				"document_url":  "https://pages.zebo.dev/invoices/or_123",
+				"document_url":  "https://pages.inttegro.com/invoices/or_123",
 				"sent_channels": []string{"sms"},
 			},
 		})
