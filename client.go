@@ -44,7 +44,7 @@
 //	    // ... other fields
 //	}
 //
-// Learn more: https://studio.zebo.dev/idempotency
+// Learn more: https://studio.inttegro.com/idempotency
 //
 // # Context Support
 //
@@ -229,7 +229,7 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 //	// Client with custom timeout and base URL
 //	client := commerce.NewClient(
 //	    "sk_test_...",
-//	    commerce.WithBaseURL("https://api.staging.zebo.dev"),
+//	    commerce.WithBaseURL("https://api.staging.inttegro.com"),
 //	    commerce.WithHTTPClient(&http.Client{Timeout: 60*time.Second}),
 //	)
 //

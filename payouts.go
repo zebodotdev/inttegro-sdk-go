@@ -21,7 +21,7 @@ import "context"
 //	    "usd": "fa_def456",  // USD payouts go to this bank account
 //	})
 //
-// Learn more: https://studio.zebo.dev/set-up-payouts
+// Learn more: https://studio.inttegro.com/set-up-payouts
 type PayoutsService struct {
 	client *Client
 }
@@ -48,7 +48,7 @@ type PayoutsService struct {
 //	}
 //	fmt.Printf("GHS destination: %s\n", settings.Destinations["ghs"])
 //
-// Learn more: https://studio.zebo.dev/set-payout-destinations
+// Learn more: https://studio.inttegro.com/set-payout-destinations
 func (s *PayoutsService) SetDestinations(ctx context.Context, destinations map[string]string) (*PayoutSettings, error) {
 	var resp struct {
 		Settings PayoutSettings `json:"settings"`
@@ -100,7 +100,7 @@ func (s *PayoutsService) Settings(ctx context.Context) (*PayoutSettings, error) 
 //	}
 //	fmt.Printf("Schedule type: %s\n", settings.Schedule.Type) // "manual"
 //
-// Learn more: https://studio.zebo.dev/disable-automatic-payouts
+// Learn more: https://studio.inttegro.com/disable-automatic-payouts
 func (s *PayoutsService) DisableAutomatic(ctx context.Context) (*PayoutSettings, error) {
 	var resp struct {
 		Settings PayoutSettings `json:"settings"`

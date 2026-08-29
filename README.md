@@ -329,7 +329,7 @@ go doc github.com/zebodotdev/commerce-sdk-go.OrdersService.Create
 go doc github.com/zebodotdev/commerce-sdk-go.OrderCreateParams
 ```
 
-For complete API documentation, see [https://studio.zebo.dev/api-reference](https://studio.zebo.dev/api-reference)
+For complete API documentation, see [https://studio.inttegro.com/api-reference](https://studio.inttegro.com/api-reference)
 
 ## Error handling
 

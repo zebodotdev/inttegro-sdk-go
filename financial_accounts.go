@@ -23,7 +23,7 @@ import "context"
 //	    Wallet: &commerce.WalletConfig{...},
 //	})
 //
-// Learn more: https://studio.zebo.dev/set-up-financial-account
+// Learn more: https://studio.inttegro.com/set-up-financial-account
 type FinancialAccountsService struct {
 	client *Client
 }

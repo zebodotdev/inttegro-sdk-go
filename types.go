@@ -533,7 +533,7 @@ type ProductLineItem struct {
 	// CustomData holds arbitrary key-value custom data (optional).
 	// Both keys and values must be strings.
 	// Maximum 25KB when serialized.
-	// Learn more: https://studio.zebo.dev/custom-data
+	// Learn more: https://studio.inttegro.com/custom-data
 	CustomData map[string]string `json:"custom_data,omitempty"`
 }
 
@@ -832,7 +832,7 @@ type OrderCreateParams struct {
 	// instead of creating a duplicate. Keys can be reused if the original request failed.
 	// Maximum 255 characters. Use a unique value per order attempt.
 	// Example: "order_20231215_customer_123_attempt_1"
-	// Learn more: https://studio.zebo.dev/idempotency
+	// Learn more: https://studio.inttegro.com/idempotency
 	IdempotencyKey string `json:"idempotency_key,omitempty"`
 
 	// CheckoutSettings configures hosted checkout page redirects (optional).
