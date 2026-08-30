@@ -130,6 +130,17 @@ func (s *FinancialAccountsService) Disconnect(ctx context.Context, params Financ
 	return &resp.Account, nil
 }
 
+// Reconnect clears local disconnected state for a previously disconnected financial account.
+func (s *FinancialAccountsService) Reconnect(ctx context.Context, accountID string) (*FinancialAccount, error) {
+	var resp struct {
+		Account FinancialAccount `json:"account"`
+	}
+	if err := s.client.do(ctx, "POST", "/financial_accounts/reconnect", map[string]string{"account_id": accountID}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Account, nil
+}
+
 // Archive is currently not implemented by the API (returns 501) but exposed for completeness.
 func (s *FinancialAccountsService) Archive(ctx context.Context, payload map[string]any) (map[string]any, error) {
 	var resp map[string]any

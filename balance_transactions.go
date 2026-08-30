@@ -27,6 +27,17 @@ type BalanceTransactionsService struct {
 	client *Client
 }
 
+// Lookup retrieves a balance transaction by ID.
+func (s *BalanceTransactionsService) Lookup(ctx context.Context, transactionID string) (*BalanceTransaction, error) {
+	var resp struct {
+		Transaction BalanceTransaction `json:"transaction"`
+	}
+	if err := s.client.do(ctx, "POST", "/balance_transactions/lookup", map[string]string{"transaction_id": transactionID}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Transaction, nil
+}
+
 // Page returns a paginated list of balance transactions.
 //
 // Results are sorted by creation date (newest first). Use this to view

@@ -33,6 +33,22 @@ type PaymentMethodsService struct {
 	client *Client
 }
 
+type PaymentMethodPageParams struct {
+	CustomerID string `json:"customer_id,omitempty"`
+	PageNumber int    `json:"page_number,omitempty"`
+	PageSize   int    `json:"page_size,omitempty"`
+}
+
+type PaymentMethodsPage struct {
+	Number         int                   `json:"number,omitempty"`
+	Size           int                   `json:"size,omitempty"`
+	PaymentMethods []PaymentMethodObject `json:"payment_methods,omitempty"`
+}
+
+type PaymentMethodActionParams struct {
+	PaymentMethodID string `json:"payment_method_id"`
+}
+
 // Tokenize saves a payment method for future use. Optionally verifies immediately.
 //
 // Tokenized payment methods can be charged repeatedly without re-entering details.
@@ -90,6 +106,63 @@ func (s *PaymentMethodsService) Lookup(ctx context.Context, paymentMethodID stri
 		PaymentMethod PaymentMethodObject `json:"payment_method"`
 	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/lookup", LookupPaymentMethodParams{PaymentMethodID: paymentMethodID}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.PaymentMethod, nil
+}
+
+// Page retrieves a paginated list of payment methods.
+func (s *PaymentMethodsService) Page(ctx context.Context, params PaymentMethodPageParams) (*PaymentMethodsPage, error) {
+	var resp struct {
+		Page PaymentMethodsPage `json:"page"`
+	}
+	if err := s.client.do(ctx, "POST", "/payment_methods/page", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Page, nil
+}
+
+// Update modifies mutable payment method fields.
+func (s *PaymentMethodsService) Update(ctx context.Context, payload any) (*PaymentMethodObject, error) {
+	var resp struct {
+		PaymentMethod PaymentMethodObject `json:"payment_method"`
+	}
+	if err := s.client.do(ctx, "POST", "/payment_methods/update", payload, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.PaymentMethod, nil
+}
+
+// Activate marks a payment method active.
+func (s *PaymentMethodsService) Activate(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+	return s.paymentMethodAction(ctx, "/payment_methods/activate", paymentMethodID)
+}
+
+// Disactivate marks a payment method inactive.
+func (s *PaymentMethodsService) Disactivate(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+	return s.paymentMethodAction(ctx, "/payment_methods/disactivate", paymentMethodID)
+}
+
+// Deactivate is an alias for Disactivate.
+func (s *PaymentMethodsService) Deactivate(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+	return s.Disactivate(ctx, paymentMethodID)
+}
+
+// Archive archives a payment method.
+func (s *PaymentMethodsService) Archive(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+	return s.paymentMethodAction(ctx, "/payment_methods/archive", paymentMethodID)
+}
+
+// Unarchive unarchives a payment method.
+func (s *PaymentMethodsService) Unarchive(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+	return s.paymentMethodAction(ctx, "/payment_methods/unarchive", paymentMethodID)
+}
+
+func (s *PaymentMethodsService) paymentMethodAction(ctx context.Context, path, paymentMethodID string) (*PaymentMethodObject, error) {
+	var resp struct {
+		PaymentMethod PaymentMethodObject `json:"payment_method"`
+	}
+	if err := s.client.do(ctx, "POST", path, PaymentMethodActionParams{PaymentMethodID: paymentMethodID}, &resp); err != nil {
 		return nil, err
 	}
 	return &resp.PaymentMethod, nil

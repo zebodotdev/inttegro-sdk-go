@@ -25,6 +25,17 @@ type ChimesService struct {
 	client *Client
 }
 
+type ChimePageParams struct {
+	PageNumber int `json:"page_number,omitempty"`
+	PageSize   int `json:"page_size,omitempty"`
+}
+
+type ChimesPage struct {
+	Number int     `json:"number,omitempty"`
+	Size   int     `json:"size,omitempty"`
+	Chimes []Chime `json:"chimes,omitempty"`
+}
+
 // Send dispatches a notification immediately.
 //
 // Sends SMS or email to a customer. Returns immediately with chime ID—
@@ -48,6 +59,17 @@ func (s *ChimesService) Lookup(ctx context.Context, chimeID string) (*Chime, err
 		return nil, err
 	}
 	return &resp.Chime, nil
+}
+
+// Page retrieves a paginated list of chimes.
+func (s *ChimesService) Page(ctx context.Context, params ChimePageParams) (*ChimesPage, error) {
+	var resp struct {
+		Page ChimesPage `json:"page"`
+	}
+	if err := s.client.do(ctx, "POST", "/chimes/page", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Page, nil
 }
 
 // Schedule enqueues a notification for delivery at a specific time.

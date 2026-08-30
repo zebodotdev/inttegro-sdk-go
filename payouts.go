@@ -26,6 +26,13 @@ type PayoutsService struct {
 	client *Client
 }
 
+type SchedulePayoutParams struct {
+	DestinationID string `json:"destination_id"`
+	ExecuteAfter  string `json:"execute_after,omitempty"`
+	MaxAmount     int64  `json:"max_amount"`
+	Reference     string `json:"reference"`
+}
+
 // SetDestinations configures which financial accounts receive payouts by currency.
 //
 // Map each currency you accept to a financial account ID. When balance
@@ -84,6 +91,28 @@ func (s *PayoutsService) Settings(ctx context.Context) (*PayoutSettings, error) 
 	return &resp.Settings, nil
 }
 
+// Schedule creates a payout to a connected financial account.
+func (s *PayoutsService) Schedule(ctx context.Context, params SchedulePayoutParams) (*Payout, error) {
+	var resp struct {
+		Payout Payout `json:"payout"`
+	}
+	if err := s.client.do(ctx, "POST", "/payouts/schedule", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Payout, nil
+}
+
+// Lookup retrieves a payout by ID.
+func (s *PayoutsService) Lookup(ctx context.Context, payoutID string) (*Payout, error) {
+	var resp struct {
+		Payout Payout `json:"payout"`
+	}
+	if err := s.client.do(ctx, "POST", "/payouts/lookup", map[string]string{"payout_id": payoutID}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Payout, nil
+}
+
 // DisableAutomatic switches to manual payout mode.
 //
 // In manual mode, payouts only happen when you explicitly request them.
@@ -106,6 +135,17 @@ func (s *PayoutsService) DisableAutomatic(ctx context.Context) (*PayoutSettings,
 		Settings PayoutSettings `json:"settings"`
 	}
 	if err := s.client.do(ctx, "POST", "/payouts/disable", map[string]any{}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Settings, nil
+}
+
+// EnableAutomatic switches payout scheduling back to automatic mode.
+func (s *PayoutsService) EnableAutomatic(ctx context.Context) (*PayoutSettings, error) {
+	var resp struct {
+		Settings PayoutSettings `json:"settings"`
+	}
+	if err := s.client.do(ctx, "POST", "/payouts/enable", map[string]any{}, &resp); err != nil {
 		return nil, err
 	}
 	return &resp.Settings, nil

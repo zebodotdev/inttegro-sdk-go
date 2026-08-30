@@ -175,6 +175,15 @@ type Client struct {
 
 	// Apps provides access to application creation, lookup, and updates.
 	Apps *AppsService
+
+	// Keys provides access to secret key management.
+	Keys *KeysService
+
+	// PurchaseIntents provides access to Buy link purchase intent management.
+	PurchaseIntents *PurchaseIntentsService
+
+	// FileReferences provides access to file reference reconciliation.
+	FileReferences *FileReferencesService
 }
 
 // ClientOption allows customizing the client during construction.
@@ -263,6 +272,9 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c.Prices = &PricesService{client: c}
 	c.Spec = &SpecService{client: c}
 	c.Apps = &AppsService{client: c}
+	c.Keys = &KeysService{client: c}
+	c.PurchaseIntents = &PurchaseIntentsService{client: c}
+	c.FileReferences = &FileReferencesService{client: c}
 
 	return c
 }
@@ -397,7 +409,7 @@ func isIdempotentMutationPath(pathOrURL string) bool {
 		return false
 	}
 	switch parts[len(parts)-1] {
-	case "lookup", "page", "settings", "countries", "contents", "balances", "render_preview":
+	case "lookup", "page", "settings", "countries", "contents", "balances", "render_preview", "usage":
 		return false
 	default:
 		return true

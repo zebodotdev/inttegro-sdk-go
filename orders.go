@@ -100,11 +100,20 @@ type OrdersService struct {
 //
 // Learn more: https://studio.inttegro.com/create-order
 func (s *OrdersService) Create(ctx context.Context, params OrderCreateParams) (*Order, error) {
+	return s.createWithPath(ctx, "/orders/create", params)
+}
+
+// New creates an order through the legacy /orders/new compatibility endpoint.
+func (s *OrdersService) New(ctx context.Context, params OrderCreateParams) (*Order, error) {
+	return s.createWithPath(ctx, "/orders/new", params)
+}
+
+func (s *OrdersService) createWithPath(ctx context.Context, path string, params OrderCreateParams) (*Order, error) {
 	var resp struct {
 		Order       Order   `json:"order"`
 		RedirectURL *string `json:"redirect_url,omitempty"`
 	}
-	if err := s.client.do(ctx, "POST", "/orders/new", params, &resp); err != nil {
+	if err := s.client.do(ctx, "POST", path, params, &resp); err != nil {
 		return nil, err
 	}
 	return &resp.Order, nil
@@ -148,6 +157,17 @@ func (s *OrdersService) Lookup(ctx context.Context, orderID string) (*Order, err
 		Order Order `json:"order"`
 	}
 	if err := s.client.do(ctx, "POST", "/orders/lookup", OrderLookupParams{OrderID: orderID}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Order, nil
+}
+
+// Update modifies mutable fields on an existing order.
+func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error) {
+	var resp struct {
+		Order Order `json:"order"`
+	}
+	if err := s.client.do(ctx, "POST", "/orders/update", payload, &resp); err != nil {
 		return nil, err
 	}
 	return &resp.Order, nil
