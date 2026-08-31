@@ -4,14 +4,14 @@ import "context"
 
 // BalanceTransactionsService provides access to balance transaction history.
 //
-// Balance transactions represent funds from completed payments. Each successful
-// payment creates a balance transaction that ages for 7 days (or your configured
-// aging period) before becoming eligible for payout.
+// Balance transactions are merchant balance entries caused by payments or refunds.
+// Type identifies the semantic source, and the matching PaymentID or RefundID
+// provides the strong source reference.
 //
 // Use this service to:
 //   - View available and pending balance
 //   - Track balance transaction aging
-//   - Reconcile payouts with source payments
+//   - Reconcile payouts with source payments and refunds
 //
 // Example:
 //
@@ -19,9 +19,9 @@ import "context"
 //	    PageSize: 100,
 //	})
 //	for _, tx := range transactions {
-//	    fmt.Printf("%s: %s %d (available: %s)\n",
-//	        tx.ID, tx.AmountAvailable.Currency,
-//	        tx.AmountAvailable.Value, tx.AvailableAt)
+//	    sourceID, _ := tx.SourceID()
+//	    fmt.Printf("%s (%s %s): %s %d\n",
+//	        tx.ID, tx.Type, sourceID, tx.Amount.Currency, tx.Amount.Value)
 //	}
 type BalanceTransactionsService struct {
 	client *Client

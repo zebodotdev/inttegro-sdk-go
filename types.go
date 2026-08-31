@@ -2284,39 +2284,76 @@ type Payout struct {
 	BalanceTransactionIDs []string `json:"balance_transaction_ids,omitempty"`
 }
 
-// BalanceTransaction represents funds from a completed payment.
-//
-// When an order payment succeeds, a balance transaction is created representing
-// the available funds. Balance transactions age for 7 days (or your configured
-// aging period) before becoming eligible for payout. This protects against
-// late-arriving disputes.
+// BalanceTransactionType identifies the semantic source of a balance transaction,
+// not its accounting direction.
+type BalanceTransactionType string
+
+const (
+	BalanceTransactionTypePayment BalanceTransactionType = "payment"
+	BalanceTransactionTypeRefund  BalanceTransactionType = "refund"
+)
+
+// BalanceTransaction represents a merchant balance entry caused by a payment or
+// refund. Exactly one of PaymentID and RefundID is present, matching Type.
 type BalanceTransaction struct {
 	// ID is the unique balance transaction identifier (read-only).
 	// Starts with "bt_". Example: "bt_abc123def456"
-	ID string `json:"id,omitempty"`
+	ID string `json:"id"`
 
-	// PaymentID is the source payment's ID (read-only).
+	// Type identifies the semantic source, not the accounting direction.
+	Type BalanceTransactionType `json:"type"`
+
+	// PaymentID is present only when Type is payment.
 	PaymentID string `json:"payment_id,omitempty"`
 
-	// OrderID is the source order's ID (read-only).
-	OrderID string `json:"order_id,omitempty"`
+	// RefundID is present only when Type is refund.
+	RefundID string `json:"refund_id,omitempty"`
 
-	// AmountExpected is the gross amount before fees (read-only).
+	// PayoutID identifies the payout that claimed this transaction, when present.
+	PayoutID string `json:"payout_id,omitempty"`
+
+	// OrderID is the strongly referenced source order ID.
+	OrderID string `json:"order_id"`
+
+	// Amount is the transaction amount in the public money shape.
+	Amount Money `json:"amount"`
+
+	// Deprecated: the reviewed API does not return amount_expected. Use Amount.
 	AmountExpected *Money `json:"amount_expected,omitempty"`
 
-	// AmountAvailable is the net amount after fees (read-only).
-	// This is the amount that will be paid out to you.
+	// Deprecated: the reviewed API does not return amount_available. Use Amount.
 	AmountAvailable *Money `json:"amount_available,omitempty"`
 
 	// AvailableAt is when funds become eligible for payout (ISO 8601, read-only).
-	// Typically 7 days after CreatedAt. Nil if already paid out.
 	AvailableAt *string `json:"available_at,omitempty"`
 
-	// CreatedAt is when the balance transaction was created (ISO 8601, read-only).
-	CreatedAt *string `json:"created_at,omitempty"`
+	// ClaimedAt is when the transaction was claimed for payout.
+	ClaimedAt *string `json:"claimed_at,omitempty"`
 
-	// PayoutConfiguration describes how this balance transaction will be paid out.
+	// PaidAt is when the transaction was paid out or otherwise settled.
+	PaidAt *string `json:"paid_at,omitempty"`
+
+	// CreatedAt is when the balance transaction was created (ISO 8601).
+	CreatedAt string `json:"created_at"`
+
+	// Deprecated: the reviewed API does not return payout_configuration on balance transactions.
 	PayoutConfiguration *PayoutConfiguration `json:"payout_configuration,omitempty"`
+}
+
+// SourceID returns the matching strong source reference. It returns false for
+// incomplete or contradictory transaction values.
+func (t BalanceTransaction) SourceID() (string, bool) {
+	switch t.Type {
+	case BalanceTransactionTypePayment:
+		if t.PaymentID != "" && t.RefundID == "" {
+			return t.PaymentID, true
+		}
+	case BalanceTransactionTypeRefund:
+		if t.RefundID != "" && t.PaymentID == "" {
+			return t.RefundID, true
+		}
+	}
+	return "", false
 }
 
 // PayoutConfiguration describes payout routing and FX settings for a payment or balance transaction.
