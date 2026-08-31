@@ -90,7 +90,7 @@ type PurchaseIntentActivityVisitor struct {
 type PurchaseIntentActivity struct {
 	ID               string                             `json:"id,omitempty"`
 	PurchaseIntentID string                             `json:"purchase_intent_id,omitempty"`
-	Type             string                             `json:"type,omitempty"`
+	Type             PurchaseIntentActivityType         `json:"type,omitempty"`
 	Source           string                             `json:"source,omitempty"`
 	Attribution      *PurchaseIntentActivityAttribution `json:"attribution,omitempty"`
 	Visitor          *PurchaseIntentActivityVisitor     `json:"visitor,omitempty"`
@@ -117,7 +117,7 @@ type PurchaseIntent struct {
 	MaximumQuantity    int                        `json:"maximum_quantity"`
 	AdjustableQuantity bool                       `json:"adjustable_quantity"`
 	AllowVariants      bool                       `json:"allow_variants"`
-	Status             string                     `json:"status"`
+	Status             PurchaseIntentStatus       `json:"status"`
 	CreatedAt          string                     `json:"created_at"`
 	UpdatedAt          string                     `json:"updated_at,omitempty"`
 	Activity           *PurchaseIntentActivityLog `json:"activity,omitempty"`

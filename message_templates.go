@@ -3,12 +3,20 @@ package commerce
 import "context"
 
 type MessageTemplateVariable struct {
-	About    string                    `json:"about,omitempty"`
-	Default  any                       `json:"default,omitempty"`
-	Items    []MessageTemplateVariable `json:"items,omitempty"`
-	Name     string                    `json:"name"`
-	Required bool                      `json:"required,omitempty"`
-	Type     string                    `json:"type"`
+	About    string                        `json:"about,omitempty"`
+	Default  any                           `json:"default,omitempty"`
+	Items    []MessageTemplateVariableItem `json:"items,omitempty"`
+	Name     string                        `json:"name"`
+	Required bool                          `json:"required,omitempty"`
+	Type     MessageTemplateVariableType   `json:"type"`
+}
+
+type MessageTemplateVariableItem struct {
+	About    string                          `json:"about,omitempty"`
+	Default  any                             `json:"default,omitempty"`
+	Name     string                          `json:"name"`
+	Required bool                            `json:"required,omitempty"`
+	Type     MessageTemplateVariableItemType `json:"type"`
 }
 
 type MessageTemplateSMSContent struct {
@@ -33,7 +41,7 @@ type MessageTemplate struct {
 	About                 string                       `json:"about,omitempty"`
 	ArchivedAt            string                       `json:"archived_at,omitempty"`
 	Attachments           []string                     `json:"attachments,omitempty"`
-	Channel               string                       `json:"channel"`
+	Channel               MessageTemplateChannel       `json:"channel"`
 	CreatedAt             string                       `json:"created_at"`
 	DraftVersion          int                          `json:"draft_version"`
 	Email                 *MessageTemplateEmailContent `json:"email,omitempty"`
@@ -44,7 +52,7 @@ type MessageTemplate struct {
 	PublishedVersion      *int                         `json:"published_version,omitempty"`
 	Purpose               string                       `json:"purpose"`
 	SMS                   *MessageTemplateSMSContent   `json:"sms,omitempty"`
-	Status                string                       `json:"status"`
+	Status                MessageTemplateStatus        `json:"status"`
 	UpdatedAt             string                       `json:"updated_at"`
 	Variables             []MessageTemplateVariable    `json:"variables,omitempty"`
 	Version               int                          `json:"version"`
@@ -54,7 +62,7 @@ type MessageTemplateCreateParams struct {
 	IdempotencyKey string                       `json:"-"`
 	About          string                       `json:"about,omitempty"`
 	Attachments    []string                     `json:"attachments,omitempty"`
-	Channel        string                       `json:"channel"`
+	Channel        MessageTemplateChannel       `json:"channel"`
 	Email          *MessageTemplateEmailContent `json:"email,omitempty"`
 	Locale         string                       `json:"locale,omitempty"`
 	Name           string                       `json:"name"`
@@ -68,7 +76,7 @@ type MessageTemplateUpdateParams struct {
 	ID             string                       `json:"id"`
 	About          string                       `json:"about,omitempty"`
 	Attachments    []string                     `json:"attachments,omitempty"`
-	Channel        string                       `json:"channel,omitempty"`
+	Channel        MessageTemplateChannel       `json:"channel,omitempty"`
 	Email          *MessageTemplateEmailContent `json:"email,omitempty"`
 	Locale         string                       `json:"locale,omitempty"`
 	Name           string                       `json:"name,omitempty"`
@@ -78,12 +86,12 @@ type MessageTemplateUpdateParams struct {
 }
 
 type MessageTemplatePageParams struct {
-	Channel string `json:"channel,omitempty"`
-	Locale  string `json:"locale,omitempty"`
-	Page    int    `json:"page,omitempty"`
-	Purpose string `json:"purpose,omitempty"`
-	Size    int    `json:"size,omitempty"`
-	Status  string `json:"status,omitempty"`
+	Channel MessageTemplateChannel `json:"channel,omitempty"`
+	Locale  string                 `json:"locale,omitempty"`
+	Page    int                    `json:"page,omitempty"`
+	Purpose string                 `json:"purpose,omitempty"`
+	Size    int                    `json:"size,omitempty"`
+	Status  MessageTemplateStatus  `json:"status,omitempty"`
 }
 
 type MessageTemplatePage struct {
@@ -102,9 +110,9 @@ type MessageTemplateRenderPreviewParams struct {
 }
 
 type MessageTemplateRenderedContent struct {
-	Channel string         `json:"channel"`
-	Email   map[string]any `json:"email,omitempty"`
-	SMS     map[string]any `json:"sms,omitempty"`
+	Channel MessageTemplateChannel `json:"channel"`
+	Email   map[string]any         `json:"email,omitempty"`
+	SMS     map[string]any         `json:"sms,omitempty"`
 }
 
 type MessageTemplateRenderPreviewOutput struct {

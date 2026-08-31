@@ -356,3 +356,12 @@ No external deps. To run the package tests (none yet), disable the repo go.work 
 cd sdks/go
 GOWORK=off GOCACHE=$(mktemp -d) go test ./...
 ```
+
+## API enum values
+
+Use the exported typed constants instead of wire strings:
+
+```go
+product.Type = commerce.ProductTypeDigital
+payment.Type = commerce.PaymentMethodTypeMobileMoney
+```

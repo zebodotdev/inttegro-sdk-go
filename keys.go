@@ -38,25 +38,25 @@ type SecretKeyUsageParams struct {
 }
 
 type GeneratedSecretKey struct {
-	ID        string `json:"id"`
-	Label     string `json:"label,omitempty"`
-	TokenType string `json:"token_type"`
-	IssuedAt  string `json:"issued_at"`
-	Token     string `json:"token"`
+	ID        string             `json:"id"`
+	Label     string             `json:"label,omitempty"`
+	TokenType SecretKeyTokenType `json:"token_type"`
+	IssuedAt  string             `json:"issued_at"`
+	Token     string             `json:"token"`
 }
 
 type SecretKey struct {
-	ID         string `json:"id"`
-	Label      string `json:"label,omitempty"`
-	TokenType  string `json:"token_type"`
-	IssuedAt   string `json:"issued_at"`
-	UpdatedAt  string `json:"updated_at,omitempty"`
-	ExpiresAt  string `json:"expires_at,omitempty"`
-	Status     string `json:"status"`
-	Active     bool   `json:"active"`
-	RevokedAt  string `json:"revoked_at,omitempty"`
-	LastUsedAt string `json:"last_used_at,omitempty"`
-	UsageCount int    `json:"usage_count,omitempty"`
+	ID         string             `json:"id"`
+	Label      string             `json:"label,omitempty"`
+	TokenType  SecretKeyTokenType `json:"token_type"`
+	IssuedAt   string             `json:"issued_at"`
+	UpdatedAt  string             `json:"updated_at,omitempty"`
+	ExpiresAt  string             `json:"expires_at,omitempty"`
+	Status     SecretKeyStatus    `json:"status"`
+	Active     bool               `json:"active"`
+	RevokedAt  string             `json:"revoked_at,omitempty"`
+	LastUsedAt string             `json:"last_used_at,omitempty"`
+	UsageCount int                `json:"usage_count,omitempty"`
 }
 
 type SecretKeyPage struct {
@@ -69,9 +69,9 @@ type SecretKeyPage struct {
 }
 
 type SecretKeyUsageRow struct {
-	SecretKeyID string `json:"secret_key_id"`
-	OccurredAt  string `json:"occurred_at"`
-	AuthResult  string `json:"auth_result"`
+	SecretKeyID string              `json:"secret_key_id"`
+	OccurredAt  string              `json:"occurred_at"`
+	AuthResult  SecretKeyAuthResult `json:"auth_result"`
 }
 
 type SecretKeyUsagePage struct {

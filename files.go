@@ -34,23 +34,23 @@ type FileCreateParams struct {
 }
 
 type FilePageParams struct {
-	CreatedAfter  string `json:"created_after,omitempty"`
-	CreatedBefore string `json:"created_before,omitempty"`
-	PageNumber    int    `json:"page_number,omitempty"`
-	PageSize      int    `json:"page_size,omitempty"`
-	Purpose       string `json:"purpose,omitempty"`
-	Status        string `json:"status,omitempty"`
+	CreatedAfter  string     `json:"created_after,omitempty"`
+	CreatedBefore string     `json:"created_before,omitempty"`
+	PageNumber    int        `json:"page_number,omitempty"`
+	PageSize      int        `json:"page_size,omitempty"`
+	Purpose       string     `json:"purpose,omitempty"`
+	Status        FileStatus `json:"status,omitempty"`
 }
 
 type FileContentsParams struct {
-	FileID      string `json:"file_id"`
-	Disposition string `json:"disposition,omitempty"`
+	FileID      string          `json:"file_id"`
+	Disposition FileDisposition `json:"disposition,omitempty"`
 }
 
 type File struct {
 	ID         string            `json:"id"`
 	Purpose    string            `json:"purpose"`
-	Status     string            `json:"status"`
+	Status     FileStatus        `json:"status"`
 	CustomData map[string]string `json:"custom_data,omitempty"`
 	Metadata   map[string]string `json:"metadata,omitempty"`
 }
@@ -176,10 +176,10 @@ type FileActor struct {
 }
 
 type FileLinkDelivery struct {
-	Mode        string `json:"mode,omitempty"`
-	Filename    string `json:"filename,omitempty"`
-	ContentType string `json:"content_type,omitempty"`
-	Disposition string `json:"disposition,omitempty"`
+	Mode        FileLinkDeliveryMode `json:"mode,omitempty"`
+	Filename    string               `json:"filename,omitempty"`
+	ContentType string               `json:"content_type,omitempty"`
+	Disposition string               `json:"disposition,omitempty"`
 }
 
 type FileLinkAccess struct {
@@ -198,10 +198,10 @@ type FileLinkCreateParams struct {
 }
 
 type FileLinkPageParams struct {
-	FileID     string `json:"file_id,omitempty"`
-	PageNumber int    `json:"page_number,omitempty"`
-	PageSize   int    `json:"page_size,omitempty"`
-	Status     string `json:"status,omitempty"`
+	FileID     string         `json:"file_id,omitempty"`
+	PageNumber int            `json:"page_number,omitempty"`
+	PageSize   int            `json:"page_size,omitempty"`
+	Status     FileLinkStatus `json:"status,omitempty"`
 }
 
 type FileLinkRevokeParams struct {
@@ -212,7 +212,7 @@ type FileLinkRevokeParams struct {
 type FileLink struct {
 	ID         string            `json:"id"`
 	FileID     string            `json:"file_id"`
-	Status     string            `json:"status"`
+	Status     FileLinkStatus    `json:"status"`
 	CustomData map[string]string `json:"custom_data,omitempty"`
 	Metadata   map[string]string `json:"metadata,omitempty"`
 }
@@ -317,11 +317,11 @@ type UploadRequestCreateParams struct {
 }
 
 type UploadRequestPageParams struct {
-	PageNumber int          `json:"page_number,omitempty"`
-	PageSize   int          `json:"page_size,omitempty"`
-	Purpose    string       `json:"purpose,omitempty"`
-	Resource   FileResource `json:"resource"`
-	Status     string       `json:"status,omitempty"`
+	PageNumber int                 `json:"page_number,omitempty"`
+	PageSize   int                 `json:"page_size,omitempty"`
+	Purpose    string              `json:"purpose,omitempty"`
+	Resource   FileResource        `json:"resource"`
+	Status     UploadRequestStatus `json:"status,omitempty"`
 }
 
 type UploadRequestCancelParams struct {
@@ -335,12 +335,12 @@ type UploadRequestFulfillParams struct {
 }
 
 type UploadRequest struct {
-	ID         string            `json:"id"`
-	Purpose    string            `json:"purpose"`
-	Status     string            `json:"status"`
-	UploadURL  string            `json:"upload_url,omitempty"`
-	CustomData map[string]string `json:"custom_data,omitempty"`
-	Metadata   map[string]string `json:"metadata,omitempty"`
+	ID         string              `json:"id"`
+	Purpose    string              `json:"purpose"`
+	Status     UploadRequestStatus `json:"status"`
+	UploadURL  string              `json:"upload_url,omitempty"`
+	CustomData map[string]string   `json:"custom_data,omitempty"`
+	Metadata   map[string]string   `json:"metadata,omitempty"`
 }
 
 type UploadRequestsPage struct {

@@ -33,32 +33,6 @@ type Money struct {
 	Value int64 `json:"value"`
 }
 
-// PaymentMethodType enumerates supported payment rails.
-//
-// Each type represents a distinct payment method category with different
-// capabilities, verification requirements, and regional availability.
-type PaymentMethodType string
-
-const (
-	// PaymentMethodTypeMobileMoney represents mobile money wallets.
-	// Includes MTN Mobile Money, Vodafone Cash, Airtel Money, Tigo Cash, and others.
-	// Requires network and account number.
-	// Supports OTP verification via confirms_use setting.
-	PaymentMethodTypeMobileMoney PaymentMethodType = "mobile_money"
-
-	// PaymentMethodTypeBankAccount represents bank accounts.
-	// Currently limited availability. Check country specifications.
-	PaymentMethodTypeBankAccount PaymentMethodType = "bank_account"
-
-	// PaymentMethodTypeCard represents credit and debit cards.
-	// Currently limited availability. Check country specifications.
-	PaymentMethodTypeCard PaymentMethodType = "card"
-
-	// PaymentMethodTypeMotito represents Zebo's branded payment method.
-	// Internal use only.
-	PaymentMethodTypeMotito PaymentMethodType = "motito"
-)
-
 // MobileMoneyParams describes a mobile money wallet.
 //
 // Used when creating orders or tokenizing payment methods with inline
@@ -66,7 +40,7 @@ const (
 type MobileMoneyParams struct {
 	// Network is the mobile money network code.
 	// Examples: "mtn", "vodafone", "airteltigo", "airtel", "telecel".
-	Network string `json:"network"`
+	Network MobileMoneyNetwork `json:"network"`
 
 	// AccountNumber is the mobile money account phone number.
 	// Must include country code. Example: "+233244123456"
@@ -189,7 +163,14 @@ type ProductShipmentDimensions struct {
 
 // ProductShipment describes fulfillment details.
 type ProductShipment struct {
-	Type       string                     `json:"type,omitempty"`
+	Type       ProductShipmentType        `json:"type,omitempty"`
+	Carrier    string                     `json:"carrier,omitempty"`
+	Dimensions *ProductShipmentDimensions `json:"dimensions,omitempty"`
+}
+
+// ProductShipmentInput describes fulfillment accepted by create and update requests.
+type ProductShipmentInput struct {
+	Type       ProductShipmentInputType   `json:"type,omitempty"`
 	Carrier    string                     `json:"carrier,omitempty"`
 	Dimensions *ProductShipmentDimensions `json:"dimensions,omitempty"`
 }
@@ -202,18 +183,18 @@ type ProductMediaItem struct {
 
 // CreateProductParams creates a catalog product.
 type CreateProductParams struct {
-	Type        string             `json:"type"`
-	Reference   string             `json:"reference,omitempty"`
-	Name        string             `json:"name"`
-	Description string             `json:"description,omitempty"`
-	About       string             `json:"about,omitempty"`
-	TaxCode     string             `json:"tax_code,omitempty"`
-	Category    *ProductCategory   `json:"category,omitempty"`
-	Price       *ProductPrice      `json:"price,omitempty"`
-	Shipment    *ProductShipment   `json:"shipment,omitempty"`
-	Media       []ProductMediaItem `json:"media,omitempty"`
-	Attributes  map[string]string  `json:"attributes,omitempty"`
-	CustomData  map[string]string  `json:"custom_data,omitempty"`
+	Type        ProductType           `json:"type"`
+	Reference   string                `json:"reference,omitempty"`
+	Name        string                `json:"name"`
+	Description string                `json:"description,omitempty"`
+	About       string                `json:"about,omitempty"`
+	TaxCode     string                `json:"tax_code,omitempty"`
+	Category    *ProductCategory      `json:"category,omitempty"`
+	Price       *ProductPrice         `json:"price,omitempty"`
+	Shipment    *ProductShipmentInput `json:"shipment,omitempty"`
+	Media       []ProductMediaItem    `json:"media,omitempty"`
+	Attributes  map[string]string     `json:"attributes,omitempty"`
+	CustomData  map[string]string     `json:"custom_data,omitempty"`
 }
 
 // LookupProductParams looks up a product by ID.
@@ -223,18 +204,18 @@ type LookupProductParams struct {
 
 // UpdateProductParams updates a product.
 type UpdateProductParams struct {
-	ProductID   string             `json:"product_id"`
-	Reference   string             `json:"reference,omitempty"`
-	Name        string             `json:"name,omitempty"`
-	Description string             `json:"description,omitempty"`
-	About       string             `json:"about,omitempty"`
-	TaxCode     string             `json:"tax_code,omitempty"`
-	Category    *ProductCategory   `json:"category,omitempty"`
-	Price       *ProductPrice      `json:"price,omitempty"`
-	Shipment    *ProductShipment   `json:"shipment,omitempty"`
-	Media       []ProductMediaItem `json:"media,omitempty"`
-	Attributes  map[string]string  `json:"attributes,omitempty"`
-	CustomData  map[string]string  `json:"custom_data,omitempty"`
+	ProductID   string                `json:"product_id"`
+	Reference   string                `json:"reference,omitempty"`
+	Name        string                `json:"name,omitempty"`
+	Description string                `json:"description,omitempty"`
+	About       string                `json:"about,omitempty"`
+	TaxCode     string                `json:"tax_code,omitempty"`
+	Category    *ProductCategory      `json:"category,omitempty"`
+	Price       *ProductPrice         `json:"price,omitempty"`
+	Shipment    *ProductShipmentInput `json:"shipment,omitempty"`
+	Media       []ProductMediaItem    `json:"media,omitempty"`
+	Attributes  map[string]string     `json:"attributes,omitempty"`
+	CustomData  map[string]string     `json:"custom_data,omitempty"`
 }
 
 // ProductActionParams performs an action on a product.
@@ -267,7 +248,7 @@ type PageProductsParams struct {
 type Product struct {
 	ID               string                   `json:"id,omitempty"`
 	ApplicationID    string                   `json:"application_id,omitempty"`
-	Type             string                   `json:"type,omitempty"`
+	Type             ProductType              `json:"type,omitempty"`
 	Reference        string                   `json:"reference,omitempty"`
 	Name             string                   `json:"name,omitempty"`
 	Description      string                   `json:"description,omitempty"`
@@ -500,7 +481,7 @@ type ProductLineItem struct {
 	// Values: "physical" or "digital"
 	// Physical products require shipping address.
 	// Digital products can be delivered electronically.
-	Type string `json:"type"`
+	Type ProductType `json:"type"`
 
 	// Name is the product name (required).
 	// Displayed on invoices and checkout pages.
@@ -606,20 +587,6 @@ type ShippingLineItem struct {
 	// Maximum 25KB when serialized.
 	CustomData map[string]string `json:"custom_data,omitempty"`
 }
-
-// LineItemType enumerates the three types of line items.
-type LineItemType string
-
-const (
-	// LineItemTypeProduct represents a product (good or service).
-	LineItemTypeProduct LineItemType = "product"
-
-	// LineItemTypeFee represents an additional charge.
-	LineItemTypeFee LineItemType = "fee"
-
-	// LineItemTypeShipping represents a delivery charge.
-	LineItemTypeShipping LineItemType = "shipping"
-)
 
 // OrderLineItem is a discriminated union of line item types.
 //
@@ -1067,19 +1034,19 @@ type OrderDocumentDeliveryResponse struct {
 
 // OrderDocumentDelivery describes a delivered invoice or receipt link.
 type OrderDocumentDelivery struct {
-	DocumentKind   string                         `json:"document_kind"`
+	DocumentKind   OrderDocumentKind              `json:"document_kind"`
 	DocumentURL    string                         `json:"document_url"`
-	SentChannels   []string                       `json:"sent_channels,omitempty"`
-	FailedChannels []string                       `json:"failed_channels,omitempty"`
+	SentChannels   []DeliveryChannel              `json:"sent_channels,omitempty"`
+	FailedChannels []DeliveryChannel              `json:"failed_channels,omitempty"`
 	Deliveries     []OrderDocumentDeliveryAttempt `json:"deliveries,omitempty"`
 	Failures       []OrderDocumentDeliveryAttempt `json:"failures,omitempty"`
 }
 
 // OrderDocumentDeliveryAttempt describes one delivery channel result.
 type OrderDocumentDeliveryAttempt struct {
-	Channel string `json:"channel"`
-	ChimeID string `json:"chime_id,omitempty"`
-	Error   string `json:"error,omitempty"`
+	Channel DeliveryChannel `json:"channel"`
+	ChimeID string          `json:"chime_id,omitempty"`
+	Error   string          `json:"error,omitempty"`
 }
 
 // PaymentMethodObject represents a tokenized payment method.
@@ -1104,8 +1071,8 @@ type PaymentMethodObject struct {
 
 	// MobileMoney contains wallet details when Type is "mobile_money".
 	MobileMoney *struct {
-		AccountNumber string `json:"account_number,omitempty"`
-		Network       string `json:"network,omitempty"`
+		AccountNumber string             `json:"account_number,omitempty"`
+		Network       MobileMoneyNetwork `json:"network,omitempty"`
 	} `json:"mobile_money,omitempty"`
 
 	// BankAccount contains bank details when Type is "bank_account".
@@ -1117,7 +1084,7 @@ type PaymentMethodObject struct {
 			SortCode      string `json:"sort_code,omitempty"`
 			SwiftCode     string `json:"swift_code,omitempty"`
 		} `json:"ghana_bank_account,omitempty"`
-		Type string `json:"type,omitempty"`
+		Type BankAccountType `json:"type,omitempty"`
 	} `json:"bank_account,omitempty"`
 
 	// Card contains card details when Type is "card".
@@ -1182,7 +1149,7 @@ type PaymentAttempt struct {
 
 	// Status is the attempt's current state.
 	// Values: "initiated", "succeeded", "failed"
-	Status string `json:"status,omitempty"`
+	Status PaymentAttemptStatus `json:"status,omitempty"`
 
 	// InitiatedAt is when the attempt started (ISO 8601).
 	InitiatedAt string `json:"initiated_at,omitempty"`
@@ -1208,7 +1175,7 @@ type PaymentAttempt struct {
 type PaymentNextAction struct {
 	// Type specifies the action category.
 	// Values: "confirm_payment", "redirect", "execute"
-	Type string `json:"type"`
+	Type PaymentNextActionType `json:"type"`
 
 	// ConfirmPayment contains OTP confirmation details.
 	// Only present when Type is "confirm_payment".
@@ -1232,7 +1199,7 @@ type PaymentNextAction struct {
 
 			// SentVia is the delivery channel.
 			// Values: "sms", "email"
-			SentVia string `json:"sent_via"`
+			SentVia PaymentConfirmationChannel `json:"sent_via"`
 
 			// TokenSize is the number of OTP digits.
 			// Typically 4 or 6.
@@ -1265,7 +1232,7 @@ type Payment struct {
 
 	// Status is the payment's current state.
 	// Values: "initiated", "requires_action", "processing", "paid", "failed"
-	Status string `json:"status,omitempty"`
+	Status OrderPaymentStatus `json:"status,omitempty"`
 
 	// StatementDescriptor is what appears on the customer's statement.
 	// Maximum 22 characters.
@@ -1375,7 +1342,7 @@ type Order struct {
 
 	// Status is the order's current state (read-only).
 	// Values: "draft", "sealed", "paid", "completed", "cancelled", "refunded"
-	Status string `json:"status"`
+	Status OrderStatus `json:"status"`
 
 	// Number is the human-readable order number.
 	// Auto-generated if not provided during creation.
@@ -1468,7 +1435,7 @@ type PaymentResponse struct {
 
 	// Status is the payment's current state.
 	// Values: "initiated", "requires_action", "processing", "paid", "failed"
-	Status string `json:"status,omitempty"`
+	Status PaymentResponseStatus `json:"status,omitempty"`
 
 	// RequiresConfirmation indicates whether customer must provide OTP.
 	RequiresConfirmation bool `json:"requires_confirmation,omitempty"`
@@ -1477,30 +1444,6 @@ type PaymentResponse struct {
 	// True when confirms_use is enabled and OTP was delivered.
 	ConfirmationSent bool `json:"confirmation_sent,omitempty"`
 }
-
-// ChimeRecipientType specifies how to address a chime recipient.
-type ChimeRecipientType string
-
-const (
-	// ChimeRecipientTypePhone indicates the recipient is identified by phone number.
-	// Used for SMS delivery.
-	ChimeRecipientTypePhone ChimeRecipientType = "phone"
-
-	// ChimeRecipientTypeEmail indicates the recipient is identified by email address.
-	// Used for email delivery.
-	ChimeRecipientTypeEmail ChimeRecipientType = "email"
-)
-
-// ChimeTransport specifies the delivery channel for a chime.
-type ChimeTransport string
-
-const (
-	// ChimeTransportSMS sends the chime via SMS text message.
-	ChimeTransportSMS ChimeTransport = "sms"
-
-	// ChimeTransportEmail sends the chime via email.
-	ChimeTransportEmail ChimeTransport = "email"
-)
 
 // ChimeRecipient specifies who should receive a notification chime.
 //
@@ -1789,23 +1732,6 @@ type Chime struct {
 	Transmission any `json:"transmission,omitempty"`
 }
 
-// FinancialAccountType enumerates types of payout destination accounts.
-type FinancialAccountType string
-
-const (
-	// FinancialAccountTypeWallet represents mobile money wallet accounts.
-	// Supports MTN Mobile Money, Vodafone Cash, Airtel Money, and others.
-	FinancialAccountTypeWallet FinancialAccountType = "wallet"
-
-	// FinancialAccountTypeBank represents traditional bank accounts.
-	// Availability varies by country. Check country specifications.
-	FinancialAccountTypeBank FinancialAccountType = "bank_account"
-
-	// FinancialAccountTypeDosh represents Zebo's Dosh wallet accounts.
-	// Internal payout destination for Zebo ecosystem users.
-	FinancialAccountTypeDosh FinancialAccountType = "dosh_account"
-)
-
 // BankAccountOwnerAddress captures the account holder's address.
 type BankAccountOwnerAddress struct {
 	// ID is the unique address identifier (read-only).
@@ -1875,7 +1801,7 @@ type BankAccountConfig struct {
 	ID string `json:"id,omitempty"`
 
 	// Type specifies the bank account type (e.g., "ghana_bank_account").
-	Type string `json:"type"`
+	Type BankAccountType `json:"type"`
 
 	// GhanaBankAccount is required when Type is "ghana_bank_account".
 	GhanaBankAccount *GhanaBankAccount `json:"ghana_bank_account,omitempty"`
@@ -1887,7 +1813,7 @@ type BankAccountConfig struct {
 type WalletConfig struct {
 	// Type specifies the wallet category.
 	// Currently only "mobile_money" is supported.
-	Type string `json:"type"`
+	Type WalletType `json:"type"`
 
 	// MobileMoney contains mobile money wallet details.
 	MobileMoney *struct {
@@ -1900,7 +1826,7 @@ type WalletConfig struct {
 
 		// Network is the mobile money network code.
 		// Examples: "mtn", "vodafone", "airteltigo", "airtel", "telecel"
-		Network string `json:"network"`
+		Network MobileMoneyNetwork `json:"network"`
 	} `json:"mobile_money,omitempty"`
 }
 
@@ -2120,7 +2046,7 @@ type PaymentMethodSettings struct {
 // PaymentMethodTypeSetting controls availability and confirmation for a payment method type.
 type PaymentMethodTypeSetting struct {
 	// Type is the payment method category (read-only).
-	Type string `json:"type,omitempty"`
+	Type PaymentMethodType `json:"type,omitempty"`
 
 	// Name is the display name (read-only).
 	Name string `json:"name,omitempty"`
@@ -2235,7 +2161,7 @@ type Payout struct {
 
 	// Status is the payout's current state (read-only).
 	// Values include "scheduled", "initiated", "processing", "succeeded", "failed", "canceled"
-	Status string `json:"status,omitempty"`
+	Status PayoutStatus `json:"status,omitempty"`
 
 	// InitiatedBy indicates who triggered the payout (read-only).
 	// Values: "schedule" (automatic), "manual" (you initiated)
@@ -2283,15 +2209,6 @@ type Payout struct {
 	// These are the source funds being paid out.
 	BalanceTransactionIDs []string `json:"balance_transaction_ids,omitempty"`
 }
-
-// BalanceTransactionType identifies the semantic source of a balance transaction,
-// not its accounting direction.
-type BalanceTransactionType string
-
-const (
-	BalanceTransactionTypePayment BalanceTransactionType = "payment"
-	BalanceTransactionTypeRefund  BalanceTransactionType = "refund"
-)
 
 // BalanceTransaction represents a merchant balance entry caused by a payment or
 // refund. Exactly one of PaymentID and RefundID is present, matching Type.
