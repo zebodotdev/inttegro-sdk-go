@@ -9,7 +9,7 @@ type PurchaseIntentsService struct {
 
 type PurchaseIntentQuantity struct {
 	Min int `json:"min"`
-	Max int `json:"max"`
+	Max int `json:"max,omitempty"`
 }
 
 type PurchaseIntentProductSelector struct {
@@ -50,11 +50,10 @@ type CreatePurchaseIntentParams struct {
 }
 
 type UpdatePurchaseIntentParams struct {
-	ID              string `json:"id"`
-	MinimumQuantity int    `json:"minimum_quantity,omitempty"`
-	MaximumQuantity int    `json:"maximum_quantity,omitempty"`
-	ExpiresAt       any    `json:"expires_at,omitempty"`
-	Reactivate      *bool  `json:"reactivate,omitempty"`
+	ID         string                  `json:"id"`
+	Quantity   *PurchaseIntentQuantity `json:"quantity,omitempty"`
+	ExpiresAt  any                     `json:"expires_at,omitempty"`
+	Reactivate *bool                   `json:"reactivate,omitempty"`
 }
 
 type PagePurchaseIntentsParams struct {
@@ -113,8 +112,7 @@ type PurchaseIntent struct {
 	ApplicationID      string                     `json:"application_id"`
 	ProductID          string                     `json:"product_id"`
 	PriceID            string                     `json:"price_id"`
-	MinimumQuantity    int                        `json:"minimum_quantity"`
-	MaximumQuantity    int                        `json:"maximum_quantity"`
+	Quantity           PurchaseIntentQuantity     `json:"quantity"`
 	AdjustableQuantity bool                       `json:"adjustable_quantity"`
 	AllowVariants      bool                       `json:"allow_variants"`
 	Status             PurchaseIntentStatus       `json:"status"`

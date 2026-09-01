@@ -355,10 +355,13 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	_, err = client.PurchaseIntents.Create(ctx, CreatePurchaseIntentParams{
 		ProductID: "prod_1",
 		PriceID:   "pr_1",
-		Quantity:  PurchaseIntentQuantity{Min: 1, Max: 5},
+		Quantity:  PurchaseIntentQuantity{Min: 1},
 	})
 	check(err)
-	_, err = client.PurchaseIntents.Update(ctx, UpdatePurchaseIntentParams{ID: "sale_1", MinimumQuantity: 1})
+	_, err = client.PurchaseIntents.Update(ctx, UpdatePurchaseIntentParams{
+		ID:       "sale_1",
+		Quantity: &PurchaseIntentQuantity{Min: 1},
+	})
 	check(err)
 	_, err = client.PurchaseIntents.Cancel(ctx, "sale_1")
 	check(err)
@@ -423,7 +426,7 @@ func openAPICoverageResponse() map[string]any {
 		"app":             map[string]any{"id": "app_1"},
 		"key":             map[string]any{"id": "sk_1", "token_type": "bearer", "issued_at": "2026-01-01T00:00:00Z", "token": "sk_test_1", "status": "active", "active": true},
 		"usage":           map[string]any{"number": 1, "size": 0, "count": 0, "total": 0, "has_more": false, "rows": []any{}},
-		"purchase_intent": map[string]any{"id": "sale_1", "application_id": "app_1", "product_id": "prod_1", "price_id": "pr_1", "minimum_quantity": 1, "maximum_quantity": 5, "adjustable_quantity": true, "allow_variants": false, "status": "active", "created_at": "2026-01-01T00:00:00Z"},
+		"purchase_intent": map[string]any{"id": "sale_1", "application_id": "app_1", "product_id": "prod_1", "price_id": "pr_1", "quantity": map[string]any{"min": 1, "max": 5}, "adjustable_quantity": true, "allow_variants": false, "status": "active", "created_at": "2026-01-01T00:00:00Z"},
 		"file":            map[string]any{"id": "file_1", "purpose": "identity", "status": "available"},
 		"file_link":       map[string]any{"id": "fl_1", "file_id": "file_1", "status": "active"},
 		"url":             "https://files.inttegro.com/open/fl_1",
