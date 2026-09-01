@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import (
 	"bufio"
@@ -41,7 +41,7 @@ func TestSDKPathsCoverOpenAPI(t *testing.T) {
 }
 
 func openAPISpecPath() string {
-	if path := os.Getenv("COMMERCE_OPENAPI_SPEC"); path != "" {
+	if path := os.Getenv("INTTEGRO_OPENAPI_SPEC"); path != "" {
 		return path
 	}
 	return filepath.Clean("../../openapi/commerce.yml")

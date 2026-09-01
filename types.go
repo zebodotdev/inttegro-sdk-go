@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 // RequestMeta carries per-request controls that do not change the operation payload.
 type RequestMeta struct {
@@ -14,10 +14,10 @@ type RequestMeta struct {
 // Example:
 //
 //	// Ten dollars and fifty cents
-//	amount := commerce.Money{Currency: "usd", Value: 1050}
+//	amount := inttegro.Money{Currency: "usd", Value: 1050}
 //
 //	// Five thousand Ghanaian cedis (GHS 50.00)
-//	amount := commerce.Money{Currency: "ghs", Value: 5000}
+//	amount := inttegro.Money{Currency: "ghs", Value: 5000}
 //
 // Currency codes follow ISO 4217 (lowercase). Value must be a positive integer
 // for most operations (charges, payouts, line items).
@@ -56,9 +56,9 @@ type MobileMoneyParams struct {
 //
 // Example (mobile money):
 //
-//	paymentData := &commerce.PaymentMethodData{
-//	    Type: commerce.PaymentMethodTypeMobileMoney,
-//	    MobileMoney: &commerce.MobileMoneyParams{
+//	paymentData := &inttegro.PaymentMethodData{
+//	    Type: inttegro.PaymentMethodTypeMobileMoney,
+//	    MobileMoney: &inttegro.MobileMoneyParams{
 //	        Network: "mtn",
 //	        AccountNumber: "+233244123456",
 //	    },
@@ -84,7 +84,7 @@ type PaymentMethodData struct {
 //
 // Example:
 //
-//	customerData := &commerce.CustomerData{
+//	customerData := &inttegro.CustomerData{
 //	    Name:        "Jane Doe",
 //	    Email:       "jane@example.com",
 //	    PhoneNumber: "+233244123456",
@@ -106,7 +106,7 @@ type CustomerData struct {
 	PhoneNumber string `json:"phone_number"`
 
 	// Reference is your internal customer identifier (optional).
-	// Use this to link Commerce customer records to your system's users.
+	// Use this to link Inttegro customer records to your system's users.
 	// Maximum 255 characters. Must be unique across your customers.
 	Reference string `json:"reference,omitempty"`
 
@@ -464,12 +464,12 @@ type Shipping struct {
 //
 // Example:
 //
-//	item := &commerce.ProductLineItem{
+//	item := &inttegro.ProductLineItem{
 //	    Type:     "physical",
 //	    Name:     "Wireless Headphones",
 //	    About:    "Bluetooth 5.0, 30-hour battery",
 //	    Quantity: 2,
-//	    Price:    commerce.Money{Currency: "usd", Value: 7999}, // $79.99 each
+//	    Price:    inttegro.Money{Currency: "usd", Value: 7999}, // $79.99 each
 //	    Reference: "SKU-12345",
 //	}
 type ProductLineItem struct {
@@ -525,10 +525,10 @@ type ProductLineItem struct {
 //
 // Example:
 //
-//	fee := &commerce.FeeLineItem{
+//	fee := &inttegro.FeeLineItem{
 //	    Label:       "Service Fee",
 //	    Description: "Platform usage fee",
-//	    Amount:      commerce.Money{Currency: "usd", Value: 299}, // $2.99
+//	    Amount:      inttegro.Money{Currency: "usd", Value: 299}, // $2.99
 //	}
 type FeeLineItem struct {
 	// ID is assigned by the API when the order is created (read-only).
@@ -566,8 +566,8 @@ type FeeLineItem struct {
 //
 // Example:
 //
-//	shipping := &commerce.ShippingLineItem{
-//	    Fee: commerce.Money{Currency: "usd", Value: 500}, // $5.00
+//	shipping := &inttegro.ShippingLineItem{
+//	    Fee: inttegro.Money{Currency: "usd", Value: 500}, // $5.00
 //	}
 type ShippingLineItem struct {
 	// ID is assigned by the API when the order is created (read-only).
@@ -596,23 +596,23 @@ type ShippingLineItem struct {
 //
 // Example (product):
 //
-//	lineItem := commerce.OrderLineItem{
-//	    Type: commerce.LineItemTypeProduct,
-//	    Product: &commerce.ProductLineItem{
+//	lineItem := inttegro.OrderLineItem{
+//	    Type: inttegro.LineItemTypeProduct,
+//	    Product: &inttegro.ProductLineItem{
 //	        Type:     "digital",
 //	        Name:     "Premium Subscription",
 //	        Quantity: 1,
-//	        Price:    commerce.Money{Currency: "usd", Value: 999},
+//	        Price:    inttegro.Money{Currency: "usd", Value: 999},
 //	    },
 //	}
 //
 // Example (fee):
 //
-//	lineItem := commerce.OrderLineItem{
-//	    Type: commerce.LineItemTypeFee,
-//	    Fee: &commerce.FeeLineItem{
+//	lineItem := inttegro.OrderLineItem{
+//	    Type: inttegro.LineItemTypeFee,
+//	    Fee: &inttegro.FeeLineItem{
 //	        Label:  "Platform Fee",
-//	        Amount: commerce.Money{Currency: "usd", Value: 299},
+//	        Amount: inttegro.Money{Currency: "usd", Value: 299},
 //	    },
 //	}
 type OrderLineItem struct {
@@ -634,7 +634,7 @@ type OrderLineItem struct {
 
 // CheckoutSettings configures checkout page behavior and redirect URLs.
 //
-// When you finalize an order (finalize: true), Commerce
+// When you finalize an order (finalize: true), Inttegro
 // generates a hosted checkout page. These settings control where customers
 // are redirected after completing or canceling payment.
 type CheckoutSettings struct {
@@ -703,35 +703,35 @@ type OrderPayoutFinancialAccount struct {
 //
 // Example (new customer, immediate payment):
 //
-//	params := commerce.OrderCreateParams{
-//	    CustomerData: &commerce.CustomerData{
+//	params := inttegro.OrderCreateParams{
+//	    CustomerData: &inttegro.CustomerData{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    PaymentMethodData: &commerce.PaymentMethodData{
-//	        Type: commerce.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &commerce.MobileMoneyParams{
+//	    PaymentMethodData: &inttegro.PaymentMethodData{
+//	        Type: inttegro.PaymentMethodTypeMobileMoney,
+//	        MobileMoney: &inttegro.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    LineItems: []commerce.OrderLineItem{
+//	    LineItems: []inttegro.OrderLineItem{
 //	        {
-//	            Type: commerce.LineItemTypeProduct,
-//	            Product: &commerce.ProductLineItem{
+//	            Type: inttegro.LineItemTypeProduct,
+//	            Product: &inttegro.ProductLineItem{
 //	                Type:     "digital",
 //	                Name:     "Premium Plan",
 //	                Quantity: 1,
-//	                Price:    commerce.Money{Currency: "ghs", Value: 10000},
+//	                Price:    inttegro.Money{Currency: "ghs", Value: 10000},
 //	            },
 //	        },
 //	    },
-//	    BillingDetails: commerce.BillingDetails{
+//	    BillingDetails: inttegro.BillingDetails{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
-//	        Address: commerce.Address{
+//	        Address: inttegro.Address{
 //	            Name:        "Jane Doe",
 //	            PhoneNumber: "+233244123456",
 //	            Line1:       "123 Main St",
@@ -739,8 +739,8 @@ type OrderPayoutFinancialAccount struct {
 //	            Country:     "GH",
 //	        },
 //	    },
-//	    ExecutePayment: commerce.Bool(true),
-//	    RequestMeta: &commerce.RequestMeta{IdempotencyKey: "order_20231215_jane_001"},
+//	    ExecutePayment: inttegro.Bool(true),
+//	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_jane_001"},
 //	}
 type OrderCreateParams struct {
 	// RequestMeta carries per-request controls such as idempotency.
@@ -748,13 +748,13 @@ type OrderCreateParams struct {
 	RequestMeta *RequestMeta `json:"request_meta,omitempty"`
 
 	// CustomerData provides inline customer information for new customers (optional).
-	// Use this when the customer doesn't have a Commerce customer ID yet.
+	// Use this when the customer doesn't have a Inttegro customer ID yet.
 	// The API creates a customer record and returns it in the response.
 	// Mutually exclusive with CustomerID (provide exactly one).
 	CustomerData *CustomerData `json:"customer_data,omitempty"`
 
 	// CustomerID references an existing customer by ID (optional).
-	// Use this for repeat customers who already have a Commerce customer record.
+	// Use this for repeat customers who already have a Inttegro customer record.
 	// Mutually exclusive with CustomerData (provide exactly one).
 	CustomerID string `json:"customer_id,omitempty"`
 
@@ -811,7 +811,7 @@ type OrderCreateParams struct {
 	PayoutSettings *OrderPayoutSettings `json:"payout_settings,omitempty"`
 
 	// Number is a custom order number for your records (optional).
-	// If omitted, Commerce generates a unique order number automatically.
+	// If omitted, Inttegro generates a unique order number automatically.
 	// Maximum 255 characters. Must be unique across your orders.
 	// Example: "ORD-2023-00123"
 	Number string `json:"number,omitempty"`
@@ -853,7 +853,7 @@ type OrderLookupParams struct {
 //
 // Example (with saved payment method):
 //
-//	params := commerce.OrderPayParams{
+//	params := inttegro.OrderPayParams{
 //	    OrderID:         order.ID,
 //	    PaymentMethodID: "pm_abc123",
 //	}
@@ -875,7 +875,7 @@ type OrderPayParams struct {
 	// Use this for one-time payments without saving the method.
 	PaymentMethodData *PaymentMethodData `json:"payment_method_data,omitempty"`
 
-	// PaidOutOfBand marks payment as completed outside Commerce (optional).
+	// PaidOutOfBand marks payment as completed outside Inttegro (optional).
 	// Set to true if customer paid via cash, bank transfer, or other method.
 	// The order is marked paid without actually charging the payment method.
 	// Use carefully—this bypasses payment processing entirely.
@@ -890,7 +890,7 @@ type OrderPayParams struct {
 //
 // Example:
 //
-//	params := commerce.OrderConfirmParams{
+//	params := inttegro.OrderConfirmParams{
 //	    OrderID: order.ID,
 //	    Token:   "123456", // OTP from customer
 //	}
@@ -963,7 +963,7 @@ type OrderSendReceiptParams struct {
 // - Creates balance transaction
 //
 // Only valid for paid orders. Use PaidOutOfBand if payment happened
-// outside the Commerce platform.
+// outside the Inttegro platform.
 type OrderCompleteParams struct {
 	// OrderID is the order to complete (required).
 	OrderID string `json:"order_id"`
@@ -1011,7 +1011,7 @@ type OrderRefundParams struct {
 //
 // Example:
 //
-//	params := commerce.OrderPageParams{
+//	params := inttegro.OrderPageParams{
 //	    PageNumber: 1,
 //	    PageSize:   50,
 //	}
@@ -1326,7 +1326,7 @@ type LineItemGroup struct {
 
 // Order represents a complete order object.
 //
-// Orders are the central resource in Commerce, representing a purchase
+// Orders are the central resource in Inttegro, representing a purchase
 // transaction from cart to fulfillment. Orders go through several states:
 //
 // 1. draft: Created but not finalized
@@ -1451,8 +1451,8 @@ type PaymentResponse struct {
 //
 // Example (SMS):
 //
-//	recipient := commerce.ChimeRecipient{
-//	    Type: commerce.ChimeRecipientTypePhone,
+//	recipient := inttegro.ChimeRecipient{
+//	    Type: inttegro.ChimeRecipientTypePhone,
 //	    Name: "Jane Doe",
 //	    Phone: &struct{Number string `json:"number"`}{Number: "+233244123456"},
 //	}
@@ -1485,13 +1485,13 @@ type ChimeRecipient struct {
 //
 // Example (SMS notification):
 //
-//	params := commerce.SendChimeParams{
-//	    Recipient: commerce.ChimeRecipient{
-//	        Type: commerce.ChimeRecipientTypePhone,
+//	params := inttegro.SendChimeParams{
+//	    Recipient: inttegro.ChimeRecipient{
+//	        Type: inttegro.ChimeRecipientTypePhone,
 //	        Phone: &struct{Number string}{Number: "+233244123456"},
 //	    },
 //	    FullMessage: "Your order #12345 has shipped!",
-//	    Transport:   commerce.ChimeTransportSMS,
+//	    Transport:   inttegro.ChimeTransportSMS,
 //	    Purpose:     "order_shipped",
 //	    IdempotencyKey: "chime_order_12345_shipped",
 //	}
@@ -1539,7 +1539,7 @@ type SendChimeParams struct {
 //
 // Example:
 //
-//	params := commerce.ScheduleChimeParams{
+//	params := inttegro.ScheduleChimeParams{
 //	    Recipients:  []string{"+233244123456", "user@example.com"},
 //	    FullMessage: "Your subscription renews tomorrow.",
 //	    SendAfter:   "2024-01-15T09:00:00Z",
@@ -1832,8 +1832,8 @@ type WalletConfig struct {
 
 // PullPushConfig configures whether an account can send or receive funds.
 //
-// Pull configuration controls whether Commerce can debit the account.
-// Push configuration controls whether Commerce can credit the account.
+// Pull configuration controls whether Inttegro can debit the account.
+// Push configuration controls whether Inttegro can credit the account.
 // Most payout destinations only need push enabled.
 type PullPushConfig struct {
 	// Enabled indicates whether the operation is allowed.
@@ -1855,16 +1855,16 @@ type PullPushConfig struct {
 //
 // Example (mobile money):
 //
-//	params := commerce.FinancialAccountCreateParams{
+//	params := inttegro.FinancialAccountCreateParams{
 //	    Label:       "Primary Payout Account",
-//	    Type:        commerce.FinancialAccountTypeWallet,
+//	    Type:        inttegro.FinancialAccountTypeWallet,
 //	    Reference:   "main_wallet",
 //	    Currency:    "ghs",
 //	    Description: "Main MTN wallet for receiving payouts",
-//	    PushConfiguration: &commerce.PullPushConfig{
-//	        Enabled: commerce.Bool(true),
+//	    PushConfiguration: &inttegro.PullPushConfig{
+//	        Enabled: inttegro.Bool(true),
 //	    },
-//	    Wallet: &commerce.WalletConfig{
+//	    Wallet: &inttegro.WalletConfig{
 //	        Type: "mobile_money",
 //	        MobileMoney: &struct{
 //	            AccountNumber string `json:"account_number"`
@@ -1900,11 +1900,11 @@ type FinancialAccountCreateParams struct {
 	// Not displayed to customers, for internal use only.
 	Description string `json:"description,omitempty"`
 
-	// PullConfiguration controls whether Commerce can debit this account (optional).
+	// PullConfiguration controls whether Inttegro can debit this account (optional).
 	// Typically false for payout destinations.
 	PullConfiguration *PullPushConfig `json:"pull_configuration,omitempty"`
 
-	// PushConfiguration controls whether Commerce can credit this account (required).
+	// PushConfiguration controls whether Inttegro can credit this account (required).
 	// Must be enabled for payout destinations.
 	PushConfiguration *PullPushConfig `json:"push_configuration,omitempty"`
 
@@ -1969,10 +1969,10 @@ type FinancialAccount struct {
 	// Description provides additional context.
 	Description string `json:"description,omitempty"`
 
-	// PullConfiguration indicates whether Commerce can debit this account.
+	// PullConfiguration indicates whether Inttegro can debit this account.
 	PullConfiguration *PullPushConfig `json:"pull_configuration,omitempty"`
 
-	// PushConfiguration indicates whether Commerce can credit this account.
+	// PushConfiguration indicates whether Inttegro can credit this account.
 	PushConfiguration *PullPushConfig `json:"push_configuration,omitempty"`
 
 	// Wallet contains mobile money wallet details (when Type is "wallet").
@@ -2039,7 +2039,7 @@ type PaymentMethodSettings struct {
 	// Card configures card payment acceptance.
 	Card *PaymentMethodTypeSetting `json:"card,omitempty"`
 
-	// Motito configures Zebo's branded payment method.
+	// Motito configures Inttegro's branded payment method.
 	Motito *PaymentMethodTypeSetting `json:"motito,omitempty"`
 }
 
@@ -2141,7 +2141,7 @@ type PayoutSettings struct {
 
 // Payout represents a settlement transfer to your bank or mobile money account.
 //
-// Payouts move funds from your Commerce balance to your financial accounts.
+// Payouts move funds from your Inttegro balance to your financial accounts.
 // Each payout contains one or more balance transactions that have aged
 // past the dispute window.
 type Payout struct {
@@ -2295,16 +2295,16 @@ type PayoutDestination struct {
 //
 // Example:
 //
-//	params := commerce.TokenizePaymentMethodParams{
+//	params := inttegro.TokenizePaymentMethodParams{
 //	    CustomerID: "cu_abc123",
-//	    PaymentMethodData: commerce.PaymentMethodData{
-//	        Type: commerce.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &commerce.MobileMoneyParams{
+//	    PaymentMethodData: inttegro.PaymentMethodData{
+//	        Type: inttegro.PaymentMethodTypeMobileMoney,
+//	        MobileMoney: &inttegro.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    VerifyImmediately: commerce.Bool(true),
+//	    VerifyImmediately: inttegro.Bool(true),
 //	}
 type TokenizePaymentMethodParams struct {
 	// RequestMeta carries per-request controls such as idempotency.
@@ -2450,7 +2450,7 @@ type CountryBankDirectory struct {
 	Items           []CountryBank `json:"items,omitempty"`
 }
 
-// CountrySpecification describes supported Commerce features for a country.
+// CountrySpecification describes supported Inttegro features for a country.
 //
 // Use this to discover supported currencies, payment methods, payout schedules,
 // and other country-specific capabilities before integrating.

@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import "context"
 
@@ -15,7 +15,7 @@ import "context"
 //
 // Example:
 //
-//	transactions, err := client.BalanceTransactions.Page(ctx, commerce.BalanceTransactionPageParams{
+//	transactions, err := client.BalanceTransactions.Page(ctx, inttegro.BalanceTransactionPageParams{
 //	    PageSize: 100,
 //	})
 //	for _, tx := range transactions {

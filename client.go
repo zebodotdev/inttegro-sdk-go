@@ -1,6 +1,6 @@
-// Package commerce provides a Go client for the Commerce API.
+// Package inttegro provides a Go client for the Inttegro API.
 //
-// The Commerce API enables businesses to accept payments, manage payouts,
+// The Inttegro API enables businesses to accept payments, manage payouts,
 // tokenize payment methods, and send notifications across multiple payment
 // rails including mobile money, bank accounts, and cards.
 //
@@ -8,16 +8,16 @@
 //
 // Create a client with your API key:
 //
-//	client := commerce.NewClient("sk_live_...")
+//	client := inttegro.NewClient("sk_live_...")
 //
 // For testing, use your test mode API key:
 //
-//	client := commerce.NewClient("sk_test_...")
+//	client := inttegro.NewClient("sk_test_...")
 //
 // # Authentication
 //
 // All requests require an API key passed as a Bearer token in the Authorization header.
-// The client handles this automatically. Get your API keys from the Commerce dashboard.
+// The client handles this automatically. Get your API keys from the Inttegro dashboard.
 //
 // # Error Handling
 //
@@ -25,7 +25,7 @@
 //
 //	order, err := client.Orders.Create(ctx, params)
 //	if err != nil {
-//	    if apiErr, ok := err.(*commerce.APIError); ok {
+//	    if apiErr, ok := err.(*inttegro.APIError); ok {
 //	        fmt.Printf("Error code: %s\n", apiErr.Code)
 //	        fmt.Printf("Message: %s\n", apiErr.Message)
 //	        fmt.Printf("Type: %s\n", apiErr.Type)
@@ -39,8 +39,8 @@
 // pass RequestMeta.IdempotencyKey to safely retry requests without duplicating resources.
 // The same idempotency key can be reused if the original request failed.
 //
-//	params := commerce.OrderCreateParams{
-//	    RequestMeta: &commerce.RequestMeta{IdempotencyKey: "order_20231215_customer_123"},
+//	params := inttegro.OrderCreateParams{
+//	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_customer_123"},
 //	    // ... other fields
 //	}
 //
@@ -64,8 +64,8 @@
 //	        Proxy: http.ProxyFromEnvironment,
 //	    },
 //	}
-//	client := commerce.NewClient("sk_live_...", commerce.WithHTTPClient(httpClient))
-package commerce
+//	client := inttegro.NewClient("sk_live_...", inttegro.WithHTTPClient(httpClient))
+package inttegro
 
 import (
 	"bytes"
@@ -82,24 +82,24 @@ import (
 )
 
 const (
-	// DefaultBaseURL is the production Commerce API base URL.
+	// DefaultBaseURL is the production Inttegro API base URL.
 	DefaultBaseURL = "https://api.inttegro.com"
 	defaultTimeout = 30 * time.Second
 )
 
-// Client is the main entry point for interacting with the Commerce API.
+// Client is the main entry point for interacting with the Inttegro API.
 //
-// It provides access to all Commerce API resources through service properties.
+// It provides access to all Inttegro API resources through service properties.
 // Create a client using NewClient with your API key:
 //
-//	client := commerce.NewClient("sk_live_...")
+//	client := inttegro.NewClient("sk_live_...")
 //
 // The client automatically handles authentication, request serialization,
 // and response deserialization. All service methods accept a context.Context
 // for cancellation and timeouts.
 type Client struct {
-	// APIKey is your Commerce API key (required).
-	// Get your keys from the Commerce dashboard.
+	// APIKey is your Inttegro API key (required).
+	// Get your keys from the Inttegro dashboard.
 	APIKey string
 
 	// BaseURL is the API base URL. Defaults to DefaultBaseURL.
@@ -194,7 +194,7 @@ type ClientOption func(*Client)
 //
 // Use this for testing against a local or staging environment:
 //
-//	client := commerce.NewClient(apiKey, commerce.WithBaseURL("http://localhost:8080"))
+//	client := inttegro.NewClient(apiKey, inttegro.WithBaseURL("http://localhost:8080"))
 //
 // The URL is automatically trimmed of trailing slashes.
 func WithBaseURL(baseURL string) ClientOption {
@@ -216,7 +216,7 @@ func WithBaseURL(baseURL string) ClientOption {
 //	        MaxIdleConns: 100,
 //	    },
 //	}
-//	client := commerce.NewClient(apiKey, commerce.WithHTTPClient(httpClient))
+//	client := inttegro.NewClient(apiKey, inttegro.WithHTTPClient(httpClient))
 func WithHTTPClient(httpClient *http.Client) ClientOption {
 	return func(c *Client) {
 		if httpClient != nil {
@@ -225,21 +225,21 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 	}
 }
 
-// NewClient constructs a Commerce API client.
+// NewClient constructs a Inttegro API client.
 //
-// The apiKey parameter is required and should be your Commerce API key
+// The apiKey parameter is required and should be your Inttegro API key
 // from the dashboard (starts with sk_live_ or sk_test_).
 //
 // Options can be passed to customize the client behavior:
 //
 //	// Basic client with defaults
-//	client := commerce.NewClient("sk_live_...")
+//	client := inttegro.NewClient("sk_live_...")
 //
 //	// Client with custom timeout and base URL
-//	client := commerce.NewClient(
+//	client := inttegro.NewClient(
 //	    "sk_test_...",
-//	    commerce.WithBaseURL("https://api.staging.inttegro.com"),
-//	    commerce.WithHTTPClient(&http.Client{Timeout: 60*time.Second}),
+//	    inttegro.WithBaseURL("https://api.staging.inttegro.com"),
+//	    inttegro.WithHTTPClient(&http.Client{Timeout: 60*time.Second}),
 //	)
 //
 // The client is safe for concurrent use by multiple goroutines.
@@ -279,7 +279,7 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	return c
 }
 
-// do executes an HTTP request to the Commerce API.
+// do executes an HTTP request to the Inttegro API.
 //
 // This is an internal method used by all service methods. It handles:
 // - Request serialization (JSON encoding)
@@ -316,6 +316,7 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 
 	req.Header.Set("Authorization", "Bearer "+c.APIKey)
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", "inttegro-sdk-go/"+Version)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

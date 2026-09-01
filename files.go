@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import (
 	"bytes"
@@ -499,5 +499,5 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 	} else if len(respBytes) > 0 {
 		apiErr.Message = string(respBytes)
 	}
-	return nil, fmt.Errorf("commerce api error: %w", apiErr)
+	return nil, fmt.Errorf("inttegro api error: %w", apiErr)
 }

@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import "context"
 
@@ -14,13 +14,13 @@ import "context"
 //
 // Example:
 //
-//	account, err := client.FinancialAccounts.Create(ctx, commerce.FinancialAccountCreateParams{
+//	account, err := client.FinancialAccounts.Create(ctx, inttegro.FinancialAccountCreateParams{
 //	    Label:    "Primary Payout Account",
-//	    Type:     commerce.FinancialAccountTypeWallet,
+//	    Type:     inttegro.FinancialAccountTypeWallet,
 //	    Reference: "main_wallet",
 //	    Currency: "ghs",
-//	    PushConfiguration: &commerce.PullPushConfig{Enabled: commerce.Bool(true)},
-//	    Wallet: &commerce.WalletConfig{...},
+//	    PushConfiguration: &inttegro.PullPushConfig{Enabled: inttegro.Bool(true)},
+//	    Wallet: &inttegro.WalletConfig{...},
 //	})
 //
 // Learn more: https://studio.inttegro.com/set-up-financial-account

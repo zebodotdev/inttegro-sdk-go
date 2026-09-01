@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 // This file exposes every string enum in the public API as a typed constant.
 // Use these symbols in requests instead of spelling wire values by hand.

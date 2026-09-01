@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import (
 	"encoding/json"

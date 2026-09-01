@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import (
 	"context"
@@ -19,26 +19,26 @@ import (
 // Example:
 //
 //	// Create and charge an order
-//	order, err := client.Orders.Create(ctx, commerce.OrderCreateParams{
-//	    CustomerData: &commerce.CustomerData{
+//	order, err := client.Orders.Create(ctx, inttegro.OrderCreateParams{
+//	    CustomerData: &inttegro.CustomerData{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    LineItems: []commerce.OrderLineItem{
+//	    LineItems: []inttegro.OrderLineItem{
 //	        {
-//	            Type: commerce.LineItemTypeProduct,
-//	            Product: &commerce.ProductLineItem{
+//	            Type: inttegro.LineItemTypeProduct,
+//	            Product: &inttegro.ProductLineItem{
 //	                Type:     "digital",
 //	                Name:     "Premium Plan",
 //	                Quantity: 1,
-//	                Price:    commerce.Money{Currency: "usd", Value: 999},
+//	                Price:    inttegro.Money{Currency: "usd", Value: 999},
 //	            },
 //	        },
 //	    },
-//	    BillingDetails: commerce.BillingDetails{...},
-//	    ExecutePayment: commerce.Bool(true),
-//	    RequestMeta: &commerce.RequestMeta{IdempotencyKey: "order_20231215_jane_001"},
+//	    BillingDetails: inttegro.BillingDetails{...},
+//	    ExecutePayment: inttegro.Bool(true),
+//	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_jane_001"},
 //	})
 type OrdersService struct {
 	client *Client
@@ -70,23 +70,23 @@ type OrdersService struct {
 //
 // Example (immediate charge with inline payment method):
 //
-//	order, err := client.Orders.Create(ctx, commerce.OrderCreateParams{
-//	    CustomerData: &commerce.CustomerData{
+//	order, err := client.Orders.Create(ctx, inttegro.OrderCreateParams{
+//	    CustomerData: &inttegro.CustomerData{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    PaymentMethodData: &commerce.PaymentMethodData{
-//	        Type: commerce.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &commerce.MobileMoneyParams{
+//	    PaymentMethodData: &inttegro.PaymentMethodData{
+//	        Type: inttegro.PaymentMethodTypeMobileMoney,
+//	        MobileMoney: &inttegro.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    LineItems: []commerce.OrderLineItem{...},
-//	    BillingDetails: commerce.BillingDetails{...},
-//	    ExecutePayment: commerce.Bool(true),
-//	    RequestMeta: &commerce.RequestMeta{IdempotencyKey: "order_20231215_001"},
+//	    LineItems: []inttegro.OrderLineItem{...},
+//	    BillingDetails: inttegro.BillingDetails{...},
+//	    ExecutePayment: inttegro.Bool(true),
+//	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_001"},
 //	})
 //	if err != nil {
 //	    return err
@@ -192,7 +192,7 @@ func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error)
 //
 // Example (charging with saved payment method):
 //
-//	response, err := client.Orders.Pay(ctx, commerce.OrderPayParams{
+//	response, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
 //	    OrderID:         "or_abc123",
 //	    PaymentMethodID: "pm_def456",
 //	})
@@ -206,11 +206,11 @@ func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error)
 //
 // Example (charging with inline payment method):
 //
-//	response, err := client.Orders.Pay(ctx, commerce.OrderPayParams{
+//	response, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
 //	    OrderID: "or_abc123",
-//	    PaymentMethodData: &commerce.PaymentMethodData{
-//	        Type: commerce.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &commerce.MobileMoneyParams{
+//	    PaymentMethodData: &inttegro.PaymentMethodData{
+//	        Type: inttegro.PaymentMethodTypeMobileMoney,
+//	        MobileMoney: &inttegro.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
@@ -240,7 +240,7 @@ func (s *OrdersService) Pay(ctx context.Context, params OrderPayParams) (*Paymen
 // Example:
 //
 //	// Customer enters OTP: "123456"
-//	order, err := client.Orders.ConfirmPayment(ctx, commerce.OrderConfirmParams{
+//	order, err := client.Orders.ConfirmPayment(ctx, inttegro.OrderConfirmParams{
 //	    OrderID: "or_abc123",
 //	    Token:   "123456",
 //	})
@@ -332,7 +332,7 @@ func (s *OrdersService) FinalizeWithParams(ctx context.Context, params OrderFina
 
 // SendInvoice sends the hosted invoice link for an existing order.
 //
-// Commerce delivers the invoice link to every contact method available on the
+// Inttegro delivers the invoice link to every contact method available on the
 // order customer.
 func (s *OrdersService) SendInvoice(ctx context.Context, params OrderSendInvoiceParams) (*OrderDocumentDeliveryResponse, error) {
 	var resp OrderDocumentDeliveryResponse
@@ -361,7 +361,7 @@ func (s *OrdersService) SendReceipt(ctx context.Context, params OrderSendReceipt
 //   - Triggers payout eligibility countdown
 //
 // Only valid for paid orders. Use PaidOutOfBand if payment happened outside
-// Commerce (cash, bank transfer, etc).
+// Inttegro (cash, bank transfer, etc).
 //
 // Parameters:
 //   - params.OrderID: The order to complete (required)
@@ -371,7 +371,7 @@ func (s *OrdersService) SendReceipt(ctx context.Context, params OrderSendReceipt
 //
 // Example:
 //
-//	order, err := client.Orders.Complete(ctx, commerce.OrderCompleteParams{
+//	order, err := client.Orders.Complete(ctx, inttegro.OrderCompleteParams{
 //	    OrderID: "or_abc123",
 //	})
 func (s *OrdersService) Complete(ctx context.Context, params OrderCompleteParams) (*Order, error) {
@@ -464,7 +464,7 @@ func stableOrderRequestMeta(action, orderID string) *RequestMeta {
 //
 // Example:
 //
-//	orders, err := client.Orders.Page(ctx, commerce.OrderPageParams{
+//	orders, err := client.Orders.Page(ctx, inttegro.OrderPageParams{
 //	    PageNumber: 1,
 //	    PageSize:   50,
 //	})

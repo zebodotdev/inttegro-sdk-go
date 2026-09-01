@@ -1,10 +1,10 @@
-package commerce
+package inttegro
 
 import "context"
 
 // PayoutsService manages payout configuration, scheduling, and history.
 //
-// Payouts move funds from your Commerce balance to your connected financial
+// Payouts move funds from your Inttegro balance to your connected financial
 // accounts (mobile money, bank, Dosh). Use this service to:
 //
 //   - Configure payout destination accounts
@@ -237,7 +237,7 @@ func (s *PayoutsService) Cancel(ctx context.Context, payoutID string) (*Payout, 
 //
 // Example:
 //
-//	payouts, err := client.Payouts.Page(ctx, commerce.PayoutPageParams{
+//	payouts, err := client.Payouts.Page(ctx, inttegro.PayoutPageParams{
 //	    PageNumber: 1,
 //	    PageSize:   50,
 //	})

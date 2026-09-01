@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import "context"
 
@@ -12,13 +12,13 @@ import "context"
 //
 // Example:
 //
-//	chime, err := client.Chimes.Send(ctx, commerce.SendChimeParams{
-//	    Recipient: commerce.ChimeRecipient{
-//	        Type: commerce.ChimeRecipientTypePhone,
+//	chime, err := client.Chimes.Send(ctx, inttegro.SendChimeParams{
+//	    Recipient: inttegro.ChimeRecipient{
+//	        Type: inttegro.ChimeRecipientTypePhone,
 //	        Phone: &struct{Number string}{Number: "+233244123456"},
 //	    },
 //	    FullMessage: "Your order #12345 has shipped!",
-//	    Transport:   commerce.ChimeTransportSMS,
+//	    Transport:   inttegro.ChimeTransportSMS,
 //	    IdempotencyKey: "chime_order_12345_shipped",
 //	})
 type ChimesService struct {

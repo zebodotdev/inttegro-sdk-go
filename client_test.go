@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import (
 	"context"
@@ -32,6 +32,9 @@ func TestDoSuccess(t *testing.T) {
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.Header.Get("Authorization"); got != "Bearer sk_test_123" {
 			t.Fatalf("expected auth header set, got %q", got)
+		}
+		if got := r.Header.Get("User-Agent"); got != "inttegro-sdk-go/"+Version {
+			t.Fatalf("expected SDK user agent, got %q", got)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		io.WriteString(w, `{"ok":true}`)

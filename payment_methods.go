@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 import "context"
 
@@ -16,16 +16,16 @@ import "context"
 // Example:
 //
 //	// Tokenize and verify a mobile money wallet
-//	pm, err := client.PaymentMethods.Tokenize(ctx, commerce.TokenizePaymentMethodParams{
+//	pm, err := client.PaymentMethods.Tokenize(ctx, inttegro.TokenizePaymentMethodParams{
 //	    CustomerID: "cu_abc123",
-//	    PaymentMethodData: commerce.PaymentMethodData{
-//	        Type: commerce.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &commerce.MobileMoneyParams{
+//	    PaymentMethodData: inttegro.PaymentMethodData{
+//	        Type: inttegro.PaymentMethodTypeMobileMoney,
+//	        MobileMoney: &inttegro.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    VerifyImmediately: commerce.Bool(true),
+//	    VerifyImmediately: inttegro.Bool(true),
 //	})
 //
 // Learn more: https://studio.inttegro.com/save-payment-methods

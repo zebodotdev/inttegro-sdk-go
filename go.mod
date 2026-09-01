@@ -1,3 +1,3 @@
-module github.com/zebodotdev/commerce-sdk-go
+module github.com/zebodotdev/inttegro-sdk-go
 
 go 1.25

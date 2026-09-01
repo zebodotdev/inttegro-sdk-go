@@ -1,13 +1,13 @@
-package commerce
+package inttegro
 
 import "context"
 
-// AppsService manages applications associated with Commerce API keys.
+// AppsService manages applications associated with Inttegro API keys.
 type AppsService struct {
 	client *Client
 }
 
-// Create creates a Commerce application.
+// Create creates a Inttegro application.
 func (s *AppsService) Create(ctx context.Context, payload any) (map[string]any, error) {
 	var resp map[string]any
 	if err := s.client.do(ctx, "POST", "/apps/create", payload, &resp); err != nil {

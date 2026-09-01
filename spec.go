@@ -1,8 +1,8 @@
-package commerce
+package inttegro
 
 import "context"
 
-// SpecService provides access to Commerce platform specifications.
+// SpecService provides access to Inttegro platform specifications.
 //
 // Use this service to discover supported features before integrating:
 //   - Supported countries and currencies
@@ -23,7 +23,7 @@ type SpecService struct {
 	client *Client
 }
 
-// Countries retrieves Commerce capabilities for all supported countries.
+// Countries retrieves Inttegro capabilities for all supported countries.
 //
 // Returns a map of country code to specification. Use this to discover
 // supported currencies, payment methods, and payout options before building

@@ -1,8 +1,8 @@
-package commerce
+package inttegro
 
 import "context"
 
-// FileReferencesService manages Commerce resource file references.
+// FileReferencesService manages Inttegro resource file references.
 type FileReferencesService struct {
 	client *Client
 }
@@ -25,7 +25,7 @@ type FileReferenceReconcileResponse struct {
 	Reconciled bool `json:"reconciled"`
 }
 
-// Reconcile replaces the live file references for a Commerce resource.
+// Reconcile replaces the live file references for a Inttegro resource.
 func (s *FileReferencesService) Reconcile(ctx context.Context, params FileReferenceReconcileParams) (*FileReferenceReconcileResponse, error) {
 	var resp FileReferenceReconcileResponse
 	if err := s.client.do(ctx, "POST", "/file_references/reconcile", params, &resp); err != nil {

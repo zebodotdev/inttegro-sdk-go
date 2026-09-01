@@ -1,4 +1,4 @@
-package commerce
+package inttegro
 
 // String returns a pointer to the provided string value.
 //
@@ -7,21 +7,21 @@ package commerce
 // Example:
 //
 //	params := OrderCreateParams{
-//	    Number: commerce.String("ORD-2023-00123"),
+//	    Number: inttegro.String("ORD-2023-00123"),
 //	}
 func String(v string) *string { return &v }
 
 // Bool returns a pointer to the provided boolean value.
 //
 // Useful for setting optional boolean flags that require pointers.
-// Many Commerce API parameters use *bool to distinguish between
+// Many Inttegro API parameters use *bool to distinguish between
 // explicit false and unset (nil).
 //
 // Example:
 //
 //	params := OrderCreateParams{
-//	    ExecutePayment: commerce.Bool(true),
-//	    Finalize:       commerce.Bool(true),
+//	    ExecutePayment: inttegro.Bool(true),
+//	    Finalize:       inttegro.Bool(true),
 //	}
 func Bool(v bool) *bool { return &v }
 

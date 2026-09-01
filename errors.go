@@ -1,10 +1,10 @@
-package commerce
+package inttegro
 
 import (
 	"fmt"
 )
 
-// APIError represents a structured error response from the Commerce API.
+// APIError represents a structured error response from the Inttegro API.
 //
 // All API errors (HTTP status >= 400) are returned as *APIError. The error
 // contains a machine-readable code, human-readable message, and additional context.
@@ -23,7 +23,7 @@ import (
 //
 //	order, err := client.Orders.Create(ctx, params)
 //	if err != nil {
-//	    if apiErr, ok := err.(*commerce.APIError); ok {
+//	    if apiErr, ok := err.(*inttegro.APIError); ok {
 //	        fmt.Printf("Error code: %s\n", apiErr.Code)
 //	        fmt.Printf("Type: %s\n", apiErr.Type)
 //	        fmt.Printf("Message: %s\n", apiErr.Message)

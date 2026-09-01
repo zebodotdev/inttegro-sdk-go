@@ -10,7 +10,7 @@ COPY . .
 # This target runs checks and emits a source tarball in /out.
 FROM base AS dist
 RUN go test ./...
-RUN mkdir -p /out && tar -czf /out/commerce-sdk-go.tar.gz .
+RUN mkdir -p /out && tar -czf /out/inttegro-sdk-go.tar.gz .
 
 # CI target (use in GitHub Actions)
 FROM base AS ci
