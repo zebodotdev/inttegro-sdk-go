@@ -97,6 +97,16 @@ Go-specific features:
 
 See the [API reference](https://studio.inttegro.com/api-reference) for request fields and lifecycle rules, [errors](https://studio.inttegro.com/errors) for recovery guidance, and [idempotency](https://studio.inttegro.com/idempotency) for safe retries.
 
+## Verify a release
+
+Go installs the module from the tagged Git repository, directly or through a module proxy, and records module checksums in `go.sum`. The corresponding GitHub release contains an archive of the exact tagged commit, SHA-256 checksums, and a Sigstore attestation tied to the release workflow.
+
+```bash
+sha256sum --check SHA256SUMS
+gh attestation verify inttegro-sdk-go-1.0.0.tar.gz \
+  --repo zebodotdev/inttegro-sdk-go
+```
+
 ## Develop
 
 ```bash
