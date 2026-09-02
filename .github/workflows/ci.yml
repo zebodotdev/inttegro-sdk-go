@@ -12,11 +12,21 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      INTTEGRO_OPENAPI_SPEC: openapi/commerce.yml
 
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
+
+      - name: Checkout OpenAPI contract
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: zebodotdev/openapi
+          ref: 7f9e846dc4202e2abb75733e99c69e4fd5b86fae
+          path: openapi
           persist-credentials: false
 
       - name: Set up Go
