@@ -1,5 +1,7 @@
 # Inttegro Go SDK
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/zebodotdev/inttegro-sdk-go/badge)](https://scorecard.dev/viewer/?uri=github.com/zebodotdev/inttegro-sdk-go)
+
 The official Go client for building server-side Inttegro integrations.
 
 > **Fastest, most modern path:** connect an agent to [Inttegro MCP](https://studio.inttegro.com/inttegro-mcp) at `https://mcp.inttegro.com`, then ask it to run `design_integration`. It will produce an implementation and test plan for your application. Use this SDK when you are ready to connect that plan to your Go service.
