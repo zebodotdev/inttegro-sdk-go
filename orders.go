@@ -384,14 +384,14 @@ func (s *OrdersService) Complete(ctx context.Context, params OrderCompleteParams
 	return &resp.Order, nil
 }
 
-// Cancel cancels an order and refunds any captured payment.
+// Cancel cancels an order.
 //
 // Canceling an order:
 //   - Prevents future payment attempts
-//   - Refunds captured payment (if applicable)
 //   - Marks order as permanently closed
 //
-// Cannot cancel orders that are already completed or refunded.
+// This operation does not move funds or create a refund. Use Refunds.Create
+// when funds must be returned for paid line items.
 //
 // Parameters:
 //   - orderID: The order to cancel (required)
@@ -418,33 +418,15 @@ func (s *OrdersService) CancelWithParams(ctx context.Context, params OrderCancel
 	return &resp.Order, nil
 }
 
-// Refund issues a full refund for a paid order.
+// Refund creates a refund through the compatibility /orders/refund route.
+// It accepts and returns the same contract as Refunds.Create.
 //
-// Refunding an order:
-//   - Returns full order amount to customer
-//   - Reverses the balance transaction
-//   - Marks order as refunded
-//
-// Only valid for paid, completed orders. Refunds are final and cannot be
-// reversed. Partial refunds are not currently supported—refunds are always
-// for the full order amount.
-//
-// Parameters:
-//   - orderID: The order to refund (required)
-//
-// Returns the refunded order.
-//
-// Example:
-//
-//	order, err := client.Orders.Refund(ctx, "or_abc123")
-func (s *OrdersService) Refund(ctx context.Context, orderID string) (*Order, error) {
-	var resp struct {
-		Order Order `json:"order"`
-	}
-	if err := s.client.do(ctx, "POST", "/orders/refund", OrderRefundParams{OrderID: orderID}, &resp); err != nil {
-		return nil, err
-	}
-	return &resp.Order, nil
+// Deprecated: use Refunds.Create for new integrations.
+func (s *OrdersService) Refund(
+	ctx context.Context,
+	request CreateRefundRequest,
+) (*RefundResponse, error) {
+	return createRefund(ctx, s.client, "/orders/refund", request)
 }
 
 func stableOrderRequestMeta(action, orderID string) *RequestMeta {

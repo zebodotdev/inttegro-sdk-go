@@ -84,6 +84,33 @@ func main() {
 
 Amounts use integer minor units: `5000` GHS is GHS 50.00. Reuse the same idempotency key when retrying the same logical write. If you omit one, the SDK generates a UUIDv7 key for mutating calls.
 
+## Refund paid line items
+
+Create a partial or full refund by selecting the paid order line items and the
+amount to return from each one:
+
+```go
+lineReason := inttegro.RefundReasonItemDamaged
+response, err := client.Refunds.Create(context.Background(), inttegro.CreateRefundRequest{
+	OrderID: "or_0123456789abcdefghijklmnopqrstuvwxyzABCD",
+	Reason:  inttegro.RefundReasonRequestedByCustomer,
+	LineItems: []inttegro.CreateRefundLineItem{{
+		OrderLineItemID: "oli_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN",
+		RefundAmount:    inttegro.Money{Currency: "ghs", Value: 2500},
+		Reason:          &lineReason,
+		ReasonDetails:   "damaged in transit",
+	}},
+	Reference: "RETURN-123",
+})
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Println(response.Refund.ID, response.Refund.Status)
+```
+
+Refunds return funds to the original payment method and are processed
+asynchronously. Use `Refunds.Lookup` to retrieve the current status.
+
 ## Work with the API
 
 The SDK covers orders and checkout, customers, products and prices, purchase intents, payment methods, balances, payouts and refunds, notifications, files, application settings, keys, and country specifications. Services use exported fields such as `PurchaseIntents` and `PaymentMethods`.

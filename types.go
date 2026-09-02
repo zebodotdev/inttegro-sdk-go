@@ -978,31 +978,15 @@ type OrderCompleteParams struct {
 //
 // Canceling an order:
 // - Prevents any future payment attempts
-// - Refunds any captured payment (if applicable)
 // - Marks order as permanently closed
 //
-// Cannot cancel orders that are already completed or refunded.
+// This operation does not move funds or create a refund.
 type OrderCancelParams struct {
 	// OrderID is the order to cancel (required).
 	OrderID string `json:"order_id"`
 
 	// RequestMeta carries per-request controls such as idempotency.
 	RequestMeta *RequestMeta `json:"request_meta,omitempty"`
-}
-
-// OrderRefundParams issues a refund for a paid order.
-//
-// Refunding an order:
-// - Returns the full order amount to the customer
-// - Reverses the balance transaction
-// - Marks order as refunded
-//
-// Only valid for paid, completed orders. Refunds are final and cannot
-// be reversed. Partial refunds are not currently supported—refunds are
-// always for the full order amount.
-type OrderRefundParams struct {
-	// OrderID is the order to refund (required).
-	OrderID string `json:"order_id"`
 }
 
 // OrderPageParams specifies pagination for listing orders.
@@ -1329,19 +1313,19 @@ type LineItemGroup struct {
 // Orders are the central resource in Inttegro, representing a purchase
 // transaction from cart to fulfillment. Orders go through several states:
 //
-// 1. draft: Created but not finalized
-// 2. sealed: Finalized and ready for payment
+// 1. preparing: Created but not finalized
+// 2. requires_payment: Finalized and ready for payment
 // 3. paid: Payment succeeded
 // 4. completed: Fulfilled and settled
-// 5. cancelled: Permanently canceled
-// 6. refunded: Payment returned to customer
+// 5. canceled: Permanently canceled
+// 6. expired: Payment window elapsed
 type Order struct {
 	// ID is the unique order identifier (read-only).
 	// Starts with "or_". Example: "or_abc123def456"
 	ID string `json:"id"`
 
 	// Status is the order's current state (read-only).
-	// Values: "draft", "sealed", "paid", "completed", "cancelled", "refunded"
+	// Values: "preparing", "requires_payment", "paid", "completed", "canceled", "expired", "unknown"
 	Status OrderStatus `json:"status"`
 
 	// Number is the human-readable order number.
@@ -1426,6 +1410,43 @@ type Order struct {
 	Refunds []Refund `json:"refunds,omitempty"`
 }
 
+// CreateRefundLineItem requests a refund allocation against one paid order
+// line item. Reason and ReasonDetails are independent from the overall reason.
+type CreateRefundLineItem struct {
+	OrderLineItemID string        `json:"order_line_item_id"`
+	RefundAmount    Money         `json:"refund_amount"`
+	Reason          *RefundReason `json:"reason,omitempty"`
+	ReasonDetails   string        `json:"reason_details,omitempty"`
+}
+
+// CreateRefundRequest starts a refund for 1 to 64 paid order line items.
+type CreateRefundRequest struct {
+	LineItems     []CreateRefundLineItem `json:"line_items"`
+	OrderID       string                 `json:"order_id"`
+	Reason        RefundReason           `json:"reason"`
+	CustomData    map[string]string      `json:"custom_data,omitempty"`
+	ReasonDetails string                 `json:"reason_details,omitempty"`
+	Reference     string                 `json:"reference,omitempty"`
+	RequestMeta   *RequestMeta           `json:"request_meta,omitempty"`
+}
+
+// CancelRefundRequest cancels a refund that has not begun processing.
+type CancelRefundRequest struct {
+	RefundID    string       `json:"refund_id"`
+	RequestMeta *RequestMeta `json:"request_meta,omitempty"`
+}
+
+// LookupRefundRequest identifies the refund to retrieve.
+type LookupRefundRequest struct {
+	RefundID string `json:"refund_id"`
+}
+
+// PageRefundsRequest selects a one-based refund page. PageNumber is required.
+type PageRefundsRequest struct {
+	PageNumber int `json:"page_number"`
+	PageSize   int `json:"page_size,omitempty"`
+}
+
 // RefundLineItem is one immutable order-line allocation in a refund.
 type RefundLineItem struct {
 	ID                 string        `json:"id"`
@@ -1452,6 +1473,24 @@ type Refund struct {
 	SucceededAt   *string           `json:"succeeded_at,omitempty"`
 	FailedAt      *string           `json:"failed_at,omitempty"`
 	CanceledAt    *string           `json:"canceled_at,omitempty"`
+}
+
+// RefundResponse is the response envelope returned by refund create, cancel,
+// and lookup operations.
+type RefundResponse struct {
+	Refund Refund `json:"refund"`
+}
+
+// RefundPage contains one page of refunds.
+type RefundPage struct {
+	Number  int      `json:"number"`
+	Refunds []Refund `json:"refunds"`
+	Size    int      `json:"size"`
+}
+
+// RefundPageResponse is returned by Refunds.Page.
+type RefundPageResponse struct {
+	Page RefundPage `json:"page"`
 }
 
 // PaymentResponse is returned from the Orders.Pay method.

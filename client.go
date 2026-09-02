@@ -115,6 +115,9 @@ type Client struct {
 	// See OrdersService for available operations.
 	Orders *OrdersService
 
+	// Refunds provides refund creation, lookup, cancellation, and paging.
+	Refunds *RefundsService
+
 	// Chimes provides access to notification sending and scheduling.
 	// Send SMS or email notifications to customers.
 	Chimes *ChimesService
@@ -254,6 +257,7 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	}
 
 	c.Orders = &OrdersService{client: c}
+	c.Refunds = &RefundsService{client: c}
 	c.Chimes = &ChimesService{client: c}
 	c.Schedules = &SchedulesService{client: c}
 	c.Broadcasts = &BroadcastsService{client: c}

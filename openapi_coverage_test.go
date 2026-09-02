@@ -206,6 +206,24 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Orders.Page(ctx, OrderPageParams{PageNumber: 1, PageSize: 20})
 	check(err)
+	refundRequest := CreateRefundRequest{
+		OrderID: "or_1",
+		Reason:  RefundReasonRequestedByCustomer,
+		LineItems: []CreateRefundLineItem{{
+			OrderLineItemID: "oli_1",
+			RefundAmount:    Money{Currency: "ghs", Value: 100},
+		}},
+	}
+	_, err = client.Refunds.Create(ctx, refundRequest)
+	check(err)
+	_, err = client.Orders.Refund(ctx, refundRequest)
+	check(err)
+	_, err = client.Refunds.Cancel(ctx, CancelRefundRequest{RefundID: "rf_1"})
+	check(err)
+	_, err = client.Refunds.Lookup(ctx, LookupRefundRequest{RefundID: "rf_1"})
+	check(err)
+	_, err = client.Refunds.Page(ctx, PageRefundsRequest{PageNumber: 1, PageSize: 20})
+	check(err)
 
 	_, err = client.Apps.Create(ctx, map[string]any{"name": "App"})
 	check(err)
@@ -394,8 +412,17 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 
 func openAPICoverageResponse() map[string]any {
 	return map[string]any{
-		"ok":                true,
-		"order":             map[string]any{"id": "or_1"},
+		"ok":    true,
+		"order": map[string]any{"id": "or_1"},
+		"refund": map[string]any{
+			"id":         "rf_1",
+			"order_id":   "or_1",
+			"status":     "pending",
+			"total":      map[string]any{"currency": "ghs", "value": 100},
+			"line_items": []any{},
+			"reason":     "requested_by_customer",
+			"created_at": "2026-01-01T00:00:00Z",
+		},
 		"delivery":          map[string]any{"document_kind": "invoice", "document_url": "https://pages.inttegro.com/invoices/or_1"},
 		"payment_method":    map[string]any{"id": "pm_1", "customer_id": "cu_1", "type": "mobile_money", "created_at": "2026-01-01T00:00:00Z"},
 		"settings":          map[string]any{},
@@ -440,6 +467,7 @@ func openAPICoverageResponse() map[string]any {
 			"total":              0,
 			"has_more":           false,
 			"orders":             []any{},
+			"refunds":            []any{},
 			"chimes":             []any{},
 			"customers":          []any{},
 			"keys":               []any{},
