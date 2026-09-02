@@ -1420,6 +1420,38 @@ type Order struct {
 	// Invoice contains invoice document links and delivery status.
 	// Nil if order not finalized.
 	Invoice *Invoice `json:"invoice,omitempty"`
+
+	// Refunds contains every refund issued for this order, newest first.
+	// It is omitted when no refunds exist.
+	Refunds []Refund `json:"refunds,omitempty"`
+}
+
+// RefundLineItem is one immutable order-line allocation in a refund.
+type RefundLineItem struct {
+	ID                 string        `json:"id"`
+	OrderLineItemID    string        `json:"order_line_item_id"`
+	OriginalAmountPaid Money         `json:"original_amount_paid"`
+	RefundAmount       Money         `json:"refund_amount"`
+	Reason             *RefundReason `json:"reason,omitempty"`
+	ReasonDetails      string        `json:"reason_details,omitempty"`
+}
+
+// Refund is the canonical refund object embedded in order responses.
+type Refund struct {
+	ID            string            `json:"id"`
+	OrderID       string            `json:"order_id"`
+	Status        RefundStatus      `json:"status"`
+	Total         Money             `json:"total"`
+	LineItems     []RefundLineItem  `json:"line_items"`
+	Reason        RefundReason      `json:"reason"`
+	ReasonDetails string            `json:"reason_details,omitempty"`
+	Reference     string            `json:"reference,omitempty"`
+	CustomData    map[string]string `json:"custom_data,omitempty"`
+	CreatedAt     string            `json:"created_at"`
+	ProcessingAt  *string           `json:"processing_at,omitempty"`
+	SucceededAt   *string           `json:"succeeded_at,omitempty"`
+	FailedAt      *string           `json:"failed_at,omitempty"`
+	CanceledAt    *string           `json:"canceled_at,omitempty"`
 }
 
 // PaymentResponse is returned from the Orders.Pay method.
