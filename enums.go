@@ -207,15 +207,6 @@ const (
 	PaymentConfirmationChannelPush  PaymentConfirmationChannel = "push"
 )
 
-type MobileMoneyNetwork string
-
-const (
-	MobileMoneyNetworkAirtel   MobileMoneyNetwork = "airtel"
-	MobileMoneyNetworkMTN      MobileMoneyNetwork = "mtn"
-	MobileMoneyNetworkTelecel  MobileMoneyNetwork = "telecel"
-	MobileMoneyNetworkVodafone MobileMoneyNetwork = "vodafone"
-)
-
 type ProductType string
 
 const (
@@ -264,14 +255,6 @@ const (
 	PurchaseIntentActivityTypePaymentStarted PurchaseIntentActivityType = "payment_started"
 	PurchaseIntentActivityTypeViewed         PurchaseIntentActivityType = "viewed"
 )
-
-type WalletType string
-
-const WalletTypeMobileMoney WalletType = "mobile_money"
-
-type BankAccountType string
-
-const BankAccountTypeGhanaBankAccount BankAccountType = "ghana_bank_account"
 
 type MessageTemplateChannel string
 

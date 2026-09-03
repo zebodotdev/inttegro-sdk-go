@@ -1,6 +1,11 @@
 package inttegro
 
-import "github.com/zebodotdev/inttegro-sdk-go/v4/money"
+import (
+	"github.com/zebodotdev/inttegro-sdk-go/v4/bankaccounts"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/paymentmethods"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/wallets"
+)
 
 // RequestMeta carries per-request controls that do not change the operation payload.
 type RequestMeta struct {
@@ -27,7 +32,7 @@ type Price struct {
 type MobileMoneyParams struct {
 	// Network is the mobile money network code.
 	// Examples: "mtn", "vodafone", "airteltigo", "airtel", "telecel".
-	Network MobileMoneyNetwork `json:"network"`
+	Network paymentmethods.MobileMoneyNetwork `json:"network"`
 
 	// AccountNumber is the mobile money account phone number.
 	// Must include country code. Example: "+233244123456"
@@ -683,10 +688,10 @@ type OrderPayoutFinancialAccount struct {
 	Type FinancialAccountType `json:"type"`
 
 	// Wallet contains mobile money details when Type is "wallet".
-	Wallet *WalletConfig `json:"wallet,omitempty"`
+	Wallet *wallets.Config `json:"wallet,omitempty"`
 
 	// BankAccount contains bank account details when Type is "bank_account".
-	BankAccount *BankAccountConfig `json:"bank_account,omitempty"`
+	BankAccount *bankaccounts.Config `json:"bank_account,omitempty"`
 
 	// DoshAccount contains Dosh wallet details when Type is "dosh_account".
 	DoshAccount map[string]any `json:"dosh_account,omitempty"`
@@ -1063,8 +1068,8 @@ type PaymentMethod struct {
 
 	// MobileMoney contains wallet details when Type is "mobile_money".
 	MobileMoney *struct {
-		AccountNumber string             `json:"account_number,omitempty"`
-		Network       MobileMoneyNetwork `json:"network,omitempty"`
+		AccountNumber string                            `json:"account_number,omitempty"`
+		Network       paymentmethods.MobileMoneyNetwork `json:"network,omitempty"`
 	} `json:"mobile_money,omitempty"`
 
 	// BankAccount contains bank details when Type is "bank_account".
@@ -1752,104 +1757,6 @@ type Chime struct {
 	Transmission any `json:"transmission,omitempty"`
 }
 
-// BankAccountOwnerAddress captures the account holder's address.
-type BankAccountOwnerAddress struct {
-	// ID is the unique address identifier (read-only).
-	ID string `json:"id,omitempty"`
-
-	// ApplicationID is the owning application ID (read-only).
-	ApplicationID string `json:"application_id,omitempty"`
-
-	// Name is a label for the address (required).
-	Name string `json:"name"`
-
-	// Phone is a contact phone number (optional).
-	Phone string `json:"phone,omitempty"`
-
-	// Line1 is the first line of the address (required).
-	Line1 string `json:"line_1"`
-
-	// Line2 is the second line of the address (optional).
-	Line2 string `json:"line_2,omitempty"`
-
-	// City is the city or town (required).
-	City string `json:"city"`
-
-	// Region is the region or state (required).
-	Region string `json:"region"`
-
-	// PostCode is the postal or ZIP code (optional).
-	PostCode string `json:"post_code,omitempty"`
-
-	// Country is the country name or code (required).
-	Country string `json:"country"`
-}
-
-// BankAccountOwner captures account holder information.
-type BankAccountOwner struct {
-	// Name is the account holder's full name (required).
-	Name string `json:"name"`
-
-	// Address is the account holder's address (required).
-	Address BankAccountOwnerAddress `json:"address"`
-}
-
-// GhanaBankAccount contains Ghana bank account details.
-type GhanaBankAccount struct {
-	// BankName is the name of the banking institution (optional).
-	BankName string `json:"bank_name,omitempty"`
-
-	// Branch is the bank branch identifier or name (optional).
-	Branch string `json:"branch,omitempty"`
-
-	// Number is the bank account number (required).
-	Number string `json:"number"`
-
-	// SortCode is required if SwiftCode is not provided.
-	SortCode string `json:"sort_code,omitempty"`
-
-	// SwiftCode is required if SortCode is not provided.
-	SwiftCode string `json:"swift_code,omitempty"`
-
-	// Holder is the account holder information (required).
-	Holder BankAccountOwner `json:"holder"`
-}
-
-// BankAccountConfig describes bank account configuration.
-type BankAccountConfig struct {
-	// ID is the unique bank account identifier (read-only).
-	ID string `json:"id,omitempty"`
-
-	// Type specifies the bank account type (e.g., "ghana_bank_account").
-	Type BankAccountType `json:"type"`
-
-	// GhanaBankAccount is required when Type is "ghana_bank_account".
-	GhanaBankAccount *GhanaBankAccount `json:"ghana_bank_account,omitempty"`
-}
-
-// WalletConfig describes mobile money wallet configuration.
-//
-// Used when creating wallet-type financial accounts for receiving payouts.
-type WalletConfig struct {
-	// Type specifies the wallet category.
-	// Currently only "mobile_money" is supported.
-	Type WalletType `json:"type"`
-
-	// MobileMoney contains mobile money wallet details.
-	MobileMoney *struct {
-		// ID is assigned by the API (read-only).
-		ID string `json:"id,omitempty"`
-
-		// AccountNumber is the mobile money wallet number with country code.
-		// Example: "+233244123456"
-		AccountNumber string `json:"account_number"`
-
-		// Network is the mobile money network code.
-		// Examples: "mtn", "vodafone", "airteltigo", "airtel", "telecel"
-		Network MobileMoneyNetwork `json:"network"`
-	} `json:"mobile_money,omitempty"`
-}
-
 // PullPushConfig configures whether an account can send or receive funds.
 //
 // Pull configuration controls whether Inttegro can debit the account.
@@ -1884,14 +1791,11 @@ type PullPushConfig struct {
 //	    PushConfiguration: &inttegro.PullPushConfig{
 //	        Enabled: inttegro.Bool(true),
 //	    },
-//	    Wallet: &inttegro.WalletConfig{
-//	        Type: "mobile_money",
-//	        MobileMoney: &struct{
-//	            AccountNumber string `json:"account_number"`
-//	            Network string `json:"network"`
-//	        }{
+//	    Wallet: &wallets.Config{
+//	        Type: wallets.TypeMobileMoney,
+//	        MobileMoney: &wallets.MobileMoney{
 //	            AccountNumber: "+233244123456",
-//	            Network: "mtn",
+//	            Network: paymentmethods.MobileMoneyNetworkMTN,
 //	        },
 //	    },
 //	}
@@ -1929,10 +1833,10 @@ type FinancialAccountCreateParams struct {
 	PushConfiguration *PullPushConfig `json:"push_configuration,omitempty"`
 
 	// Wallet contains mobile money wallet details (required when Type is "wallet").
-	Wallet *WalletConfig `json:"wallet,omitempty"`
+	Wallet *wallets.Config `json:"wallet,omitempty"`
 
 	// BankAccount contains bank account details (required when Type is "bank_account").
-	BankAccount *BankAccountConfig `json:"bank_account,omitempty"`
+	BankAccount *bankaccounts.Config `json:"bank_account,omitempty"`
 
 	// DoshAccount contains Dosh wallet details (required when Type is "dosh_account").
 	DoshAccount map[string]any `json:"dosh_account,omitempty"`
@@ -1941,7 +1845,7 @@ type FinancialAccountCreateParams struct {
 	CustomData map[string]string `json:"custom_data,omitempty"`
 
 	// Owner contains financial account owner information (required for payouts).
-	Owner *BankAccountOwner `json:"owner,omitempty"`
+	Owner *bankaccounts.Owner `json:"owner,omitempty"`
 }
 
 // FinancialAccountDisablePushParams disables push configuration for a financial account.
@@ -1996,10 +1900,10 @@ type FinancialAccount struct {
 	PushConfiguration *PullPushConfig `json:"push_configuration,omitempty"`
 
 	// Wallet contains mobile money wallet details (when Type is "wallet").
-	Wallet *WalletConfig `json:"wallet,omitempty"`
+	Wallet *wallets.Config `json:"wallet,omitempty"`
 
 	// BankAccount contains bank account details (when Type is "bank_account").
-	BankAccount *BankAccountConfig `json:"bank_account,omitempty"`
+	BankAccount *bankaccounts.Config `json:"bank_account,omitempty"`
 
 	// DoshAccount contains Dosh wallet details (when Type is "dosh_account").
 	DoshAccount map[string]any `json:"dosh_account,omitempty"`
@@ -2008,7 +1912,7 @@ type FinancialAccount struct {
 	CustomData map[string]string `json:"custom_data,omitempty"`
 
 	// Owner contains financial account owner information.
-	Owner *BankAccountOwner `json:"owner,omitempty"`
+	Owner *bankaccounts.Owner `json:"owner,omitempty"`
 
 	// Verification contains verification status and requirements.
 	// Nil if verification not started or not required.

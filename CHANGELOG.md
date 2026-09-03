@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.0 - 2026-09-03
+
+- Added focused `wallets` and `bankaccounts` packages for financial-account variants.
+- Added a `paymentmethods` package for shared mobile-money network values.
+- Preserved the existing root names as type aliases for source compatibility.
+
 ## 4.1.0 - 2026-09-03
 
 - Added the referenced product ID to returned catalog prices.

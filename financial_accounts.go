@@ -20,7 +20,7 @@ import "context"
 //	    Reference: "main_wallet",
 //	    Currency: "ghs",
 //	    PushConfiguration: &inttegro.PullPushConfig{Enabled: inttegro.Bool(true)},
-//	    Wallet: &inttegro.WalletConfig{...},
+//	    Wallet: &wallets.Config{...},
 //	})
 //
 // Learn more: https://studio.inttegro.com/set-up-financial-account
