@@ -276,6 +276,7 @@ type CatalogPrice struct {
 	About      string        `json:"about,omitempty"`
 	Active     bool          `json:"active"`
 	Nominal    *money.Amount `json:"nominal,omitempty"`
+	ProductID  string        `json:"product_id,omitempty"`
 	Product    *Product      `json:"product,omitempty"`
 	CreatedAt  string        `json:"created_at,omitempty"`
 	UpdatedAt  string        `json:"updated_at,omitempty"`

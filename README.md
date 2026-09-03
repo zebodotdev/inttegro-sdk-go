@@ -135,7 +135,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-4.0.1.tar.gz \
+gh attestation verify inttegro-sdk-go-4.1.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

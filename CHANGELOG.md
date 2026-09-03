@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.0 - 2026-09-03
+
+- Added the referenced product ID to returned catalog prices.
+
 ## 4.0.1 - 2026-09-03
 
 - Corrected the order creation example to use the typed `OrderLineItemParams` request variant.
