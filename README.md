@@ -11,7 +11,7 @@ All official Inttegro SDKs expose the same API capabilities. This module adds Go
 ## Install
 
 ```bash
-go get github.com/zebodotdev/inttegro-sdk-go
+go get github.com/zebodotdev/inttegro-sdk-go/v2
 ```
 
 Store your secret key in the server environment:
@@ -36,7 +36,7 @@ import (
 	"log"
 	"os"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v2"
 )
 
 func main() {
@@ -132,7 +132,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-1.0.0.tar.gz \
+gh attestation verify inttegro-sdk-go-2.0.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

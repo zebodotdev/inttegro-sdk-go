@@ -76,7 +76,9 @@ func (s *ChimesService) Page(ctx context.Context, params ChimePageParams) (*Chim
 //
 // Useful for reminders, follow-ups, or coordinated campaigns.
 func (s *ChimesService) Schedule(ctx context.Context, params ScheduleChimeParams) (*ScheduledChime, error) {
-	var resp ScheduleResponse
+	var resp struct {
+		ScheduledChime ScheduledChime `json:"scheduled_chime"`
+	}
 	if err := s.client.do(ctx, "POST", "/chimes/schedule", params, &resp); err != nil {
 		return nil, err
 	}
@@ -84,10 +86,12 @@ func (s *ChimesService) Schedule(ctx context.Context, params ScheduleChimeParams
 }
 
 // Broadcast sends a chime to many recipients.
-func (s *ChimesService) Broadcast(ctx context.Context, params BroadcastChimeParams) (*BroadcastResponse, error) {
-	var resp BroadcastResponse
+func (s *ChimesService) Broadcast(ctx context.Context, params BroadcastChimeParams) (*BroadcastCreation, error) {
+	var resp struct {
+		Broadcast BroadcastCreation `json:"broadcast"`
+	}
 	if err := s.client.do(ctx, "POST", "/chimes/broadcast", params, &resp); err != nil {
 		return nil, err
 	}
-	return &resp, nil
+	return &resp.Broadcast, nil
 }

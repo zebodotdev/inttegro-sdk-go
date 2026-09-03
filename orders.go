@@ -185,28 +185,24 @@ func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error)
 //   - PaymentMethodData: Inline payment details (optional, mutually exclusive with PaymentMethodID)
 //   - PaidOutOfBand: Mark as paid externally (optional)
 //
-// Returns a PaymentResponse with:
-//   - Payment ID and status
-//   - Whether confirmation (OTP) is required
-//   - Whether confirmation was sent
+// Returns the updated order with its payment and next-action state.
 //
 // Example (charging with saved payment method):
 //
-//	response, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
+//	order, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
 //	    OrderID:         "or_abc123",
 //	    PaymentMethodID: "pm_def456",
 //	})
 //	if err != nil {
 //	    return err
 //	}
-//	if response.RequiresConfirmation {
-//	    // Customer must provide OTP
+//	if order.Payment != nil && order.Payment.NextAction != nil {
 //	    // Prompt for OTP and call ConfirmPayment()
 //	}
 //
 // Example (charging with inline payment method):
 //
-//	response, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
+//	order, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
 //	    OrderID: "or_abc123",
 //	    PaymentMethodData: &inttegro.PaymentMethodData{
 //	        Type: inttegro.PaymentMethodTypeMobileMoney,
@@ -217,13 +213,15 @@ func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error)
 //	    },
 //	})
 //
-// Learn more: https://studio.inttegro.com/charge-order
-func (s *OrdersService) Pay(ctx context.Context, params OrderPayParams) (*PaymentResponse, error) {
-	var resp PaymentResponse
+// Learn more: https://studio.inttegro.com/orders#pay-for-an-order
+func (s *OrdersService) Pay(ctx context.Context, params OrderPayParams) (*Order, error) {
+	var resp struct {
+		Order Order `json:"order"`
+	}
 	if err := s.client.do(ctx, "POST", "/orders/pay", params, &resp); err != nil {
 		return nil, err
 	}
-	return &resp, nil
+	return &resp.Order, nil
 }
 
 // ConfirmPayment confirms a payment using an OTP token.
@@ -269,25 +267,31 @@ func (s *OrdersService) ConfirmPayment(ctx context.Context, params OrderConfirmP
 // Parameters:
 //   - orderID: The order needing a new confirmation token (required)
 //
-// Returns nil on success, error if request fails.
+// Returns the updated order with the new confirmation request.
 //
 // Example:
 //
 //	// Customer says they didn't receive OTP
-//	err := client.Orders.RequestConfirmation(ctx, "or_abc123")
+//	order, err := client.Orders.RequestConfirmation(ctx, "or_abc123")
 //	if err != nil {
 //	    return err
 //	}
 //	// New OTP sent, prompt customer again
-func (s *OrdersService) RequestConfirmation(ctx context.Context, orderID string) error {
+func (s *OrdersService) RequestConfirmation(ctx context.Context, orderID string) (*Order, error) {
 	return s.RequestConfirmationWithParams(ctx, OrderRequestConfirmationParams{
 		OrderID:     orderID,
 		RequestMeta: stableOrderRequestMeta("request_confirmation", orderID),
 	})
 }
 
-func (s *OrdersService) RequestConfirmationWithParams(ctx context.Context, params OrderRequestConfirmationParams) error {
-	return s.client.do(ctx, "POST", "/orders/request_confirmation", params, nil)
+func (s *OrdersService) RequestConfirmationWithParams(ctx context.Context, params OrderRequestConfirmationParams) (*Order, error) {
+	var resp struct {
+		Order Order `json:"order"`
+	}
+	if err := s.client.do(ctx, "POST", "/orders/request_confirmation", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Order, nil
 }
 
 // Finalize seals an order and generates hosted checkout page and invoice.
@@ -334,8 +338,8 @@ func (s *OrdersService) FinalizeWithParams(ctx context.Context, params OrderFina
 //
 // Inttegro delivers the invoice link to every contact method available on the
 // order customer.
-func (s *OrdersService) SendInvoice(ctx context.Context, params OrderSendInvoiceParams) (*OrderDocumentDeliveryResponse, error) {
-	var resp OrderDocumentDeliveryResponse
+func (s *OrdersService) SendInvoice(ctx context.Context, params OrderSendInvoiceParams) (*OrderDocumentDeliveryResult, error) {
+	var resp OrderDocumentDeliveryResult
 	if err := s.client.do(ctx, "POST", "/orders/send_invoice", params, &resp); err != nil {
 		return nil, err
 	}
@@ -345,8 +349,8 @@ func (s *OrdersService) SendInvoice(ctx context.Context, params OrderSendInvoice
 // SendReceipt sends the hosted receipt link for a paid order.
 //
 // Receipt delivery is only valid after the order has been paid.
-func (s *OrdersService) SendReceipt(ctx context.Context, params OrderSendReceiptParams) (*OrderDocumentDeliveryResponse, error) {
-	var resp OrderDocumentDeliveryResponse
+func (s *OrdersService) SendReceipt(ctx context.Context, params OrderSendReceiptParams) (*OrderDocumentDeliveryResult, error) {
+	var resp OrderDocumentDeliveryResult
 	if err := s.client.do(ctx, "POST", "/orders/send_receipt", params, &resp); err != nil {
 		return nil, err
 	}
@@ -425,7 +429,7 @@ func (s *OrdersService) CancelWithParams(ctx context.Context, params OrderCancel
 func (s *OrdersService) Refund(
 	ctx context.Context,
 	request CreateRefundRequest,
-) (*RefundResponse, error) {
+) (*Refund, error) {
 	return createRefund(ctx, s.client, "/orders/refund", request)
 }
 

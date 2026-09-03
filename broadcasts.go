@@ -9,7 +9,9 @@ type BroadcastsService struct {
 
 // Lookup retrieves broadcast details by broadcast ID.
 func (s *BroadcastsService) Lookup(ctx context.Context, broadcastID string) (*BroadcastDetail, error) {
-	var resp LookupBroadcastResponse
+	var resp struct {
+		Broadcast BroadcastDetail `json:"broadcast"`
+	}
 	if err := s.client.do(ctx, "POST", "/broadcasts/lookup", LookupBroadcastParams{BroadcastID: broadcastID}, &resp); err != nil {
 		return nil, err
 	}
@@ -18,7 +20,9 @@ func (s *BroadcastsService) Lookup(ctx context.Context, broadcastID string) (*Br
 
 // Cancel cancels a broadcast by broadcast ID.
 func (s *BroadcastsService) Cancel(ctx context.Context, broadcastID string) (*BroadcastDetail, error) {
-	var resp BroadcastCancelResponse
+	var resp struct {
+		Broadcast BroadcastDetail `json:"broadcast"`
+	}
 	if err := s.client.do(ctx, "POST", "/broadcasts/cancel", CancelBroadcastParams{BroadcastID: broadcastID}, &resp); err != nil {
 		return nil, err
 	}

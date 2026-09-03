@@ -18,6 +18,17 @@ func (s *CustomersService) Create(ctx context.Context, params CreateCustomerPara
 	return &resp.Customer, nil
 }
 
+// Update replaces the supplied fields on a customer record.
+func (s *CustomersService) Update(ctx context.Context, params UpdateCustomerParams, opts ...RequestOption) (*Customer, error) {
+	var resp struct {
+		Customer Customer `json:"customer"`
+	}
+	if err := s.client.doJSON(ctx, "/customers/update", params, applyRequestOptions(opts), &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Customer, nil
+}
+
 // Lookup retrieves a customer by ID.
 func (s *CustomersService) Lookup(ctx context.Context, customerID string) (*Customer, error) {
 	var resp struct {

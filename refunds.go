@@ -11,7 +11,7 @@ type RefundsService struct {
 func (s *RefundsService) Create(
 	ctx context.Context,
 	request CreateRefundRequest,
-) (*RefundResponse, error) {
+) (*Refund, error) {
 	return createRefund(ctx, s.client, "/refunds/create", request)
 }
 
@@ -19,36 +19,42 @@ func (s *RefundsService) Create(
 func (s *RefundsService) Cancel(
 	ctx context.Context,
 	request CancelRefundRequest,
-) (*RefundResponse, error) {
-	var response RefundResponse
+) (*Refund, error) {
+	var response struct {
+		Refund Refund `json:"refund"`
+	}
 	if err := s.client.do(ctx, "POST", "/refunds/cancel", request, &response); err != nil {
 		return nil, err
 	}
-	return &response, nil
+	return &response.Refund, nil
 }
 
 // Lookup retrieves the current state of one refund.
 func (s *RefundsService) Lookup(
 	ctx context.Context,
 	request LookupRefundRequest,
-) (*RefundResponse, error) {
-	var response RefundResponse
+) (*Refund, error) {
+	var response struct {
+		Refund Refund `json:"refund"`
+	}
 	if err := s.client.do(ctx, "POST", "/refunds/lookup", request, &response); err != nil {
 		return nil, err
 	}
-	return &response, nil
+	return &response.Refund, nil
 }
 
 // Page returns one page of refunds, newest first.
 func (s *RefundsService) Page(
 	ctx context.Context,
 	request PageRefundsRequest,
-) (*RefundPageResponse, error) {
-	var response RefundPageResponse
+) (*RefundPage, error) {
+	var response struct {
+		Page RefundPage `json:"page"`
+	}
 	if err := s.client.do(ctx, "POST", "/refunds/page", request, &response); err != nil {
 		return nil, err
 	}
-	return &response, nil
+	return &response.Page, nil
 }
 
 func createRefund(
@@ -56,10 +62,12 @@ func createRefund(
 	client *Client,
 	path string,
 	request CreateRefundRequest,
-) (*RefundResponse, error) {
-	var response RefundResponse
+) (*Refund, error) {
+	var response struct {
+		Refund Refund `json:"refund"`
+	}
 	if err := client.do(ctx, "POST", path, request, &response); err != nil {
 		return nil, err
 	}
-	return &response, nil
+	return &response.Refund, nil
 }

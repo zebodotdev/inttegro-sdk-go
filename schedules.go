@@ -9,7 +9,9 @@ type SchedulesService struct {
 
 // Lookup retrieves scheduled chime details by schedule ID.
 func (s *SchedulesService) Lookup(ctx context.Context, scheduleID string) (*ScheduleDetail, error) {
-	var resp ScheduleLookupResponse
+	var resp struct {
+		ScheduledChime ScheduleDetail `json:"scheduled_chime"`
+	}
 	if err := s.client.do(ctx, "POST", "/schedules/lookup", LookupScheduleParams{ScheduleID: scheduleID}, &resp); err != nil {
 		return nil, err
 	}
@@ -18,7 +20,9 @@ func (s *SchedulesService) Lookup(ctx context.Context, scheduleID string) (*Sche
 
 // Cancel cancels a scheduled chime by schedule ID.
 func (s *SchedulesService) Cancel(ctx context.Context, scheduleID string) (*ScheduleDetail, error) {
-	var resp ScheduleCancelResponse
+	var resp struct {
+		ScheduledChime ScheduleDetail `json:"scheduled_chime"`
+	}
 	if err := s.client.do(ctx, "POST", "/schedules/cancel", CancelScheduleParams{ScheduleID: scheduleID}, &resp); err != nil {
 		return nil, err
 	}

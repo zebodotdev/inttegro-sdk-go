@@ -344,6 +344,21 @@ type CreateCustomerParams struct {
 	CustomData map[string]string `json:"custom_data,omitempty"`
 }
 
+// UpdateCustomerParams replaces the supplied fields on an existing customer.
+// Omitted fields remain unchanged.
+type UpdateCustomerParams struct {
+	CustomerID      string            `json:"customer_id"`
+	BillingAddress  *Address          `json:"billing_address,omitempty"`
+	CustomData      map[string]string `json:"custom_data,omitempty"`
+	Email           string            `json:"email_address,omitempty"`
+	Name            string            `json:"name,omitempty"`
+	PhoneNumber     string            `json:"phone_number,omitempty"`
+	Reference       string            `json:"reference,omitempty"`
+	ShippingAddress *Address          `json:"shipping_address,omitempty"`
+	Suffix          string            `json:"suffix,omitempty"`
+	Title           string            `json:"title,omitempty"`
+}
+
 // LookupCustomerParams looks up a customer by ID.
 type LookupCustomerParams struct {
 	CustomerID string `json:"customer_id"`
@@ -1010,8 +1025,8 @@ type OrderPageParams struct {
 	PageSize int `json:"page_size,omitempty"`
 }
 
-// OrderDocumentDeliveryResponse contains an order and document delivery result.
-type OrderDocumentDeliveryResponse struct {
+// OrderDocumentDeliveryResult contains an order and document delivery result.
+type OrderDocumentDeliveryResult struct {
 	Order    Order                 `json:"order"`
 	Delivery OrderDocumentDelivery `json:"delivery"`
 }
@@ -1033,7 +1048,7 @@ type OrderDocumentDeliveryAttempt struct {
 	Error   string          `json:"error,omitempty"`
 }
 
-// PaymentMethodObject represents a tokenized payment method.
+// PaymentMethod represents a tokenized payment method.
 //
 // Payment methods are saved customer payment instruments that can be
 // charged repeatedly without re-entering payment details.
@@ -1041,7 +1056,7 @@ type OrderDocumentDeliveryAttempt struct {
 // Payment methods must be verified before use (except when confirms_use
 // is false). Verification sends an OTP to confirm the customer owns the
 // payment instrument.
-type PaymentMethodObject struct {
+type PaymentMethod struct {
 	// ID is the unique payment method identifier.
 	// Starts with "pm_". Example: "pm_abc123def456"
 	ID string `json:"id"`
@@ -1226,7 +1241,7 @@ type Payment struct {
 	Amount *Money `json:"amount,omitempty"`
 
 	// PaymentMethod is the charged payment method details.
-	PaymentMethod *PaymentMethodObject `json:"payment_method,omitempty"`
+	PaymentMethod *PaymentMethod `json:"payment_method,omitempty"`
 
 	// LatestAttempt is the most recent payment attempt.
 	// Nil if no attempts yet.
@@ -1475,45 +1490,11 @@ type Refund struct {
 	CanceledAt    *string           `json:"canceled_at,omitempty"`
 }
 
-// RefundResponse is the response envelope returned by refund create, cancel,
-// and lookup operations.
-type RefundResponse struct {
-	Refund Refund `json:"refund"`
-}
-
 // RefundPage contains one page of refunds.
 type RefundPage struct {
 	Number  int      `json:"number"`
 	Refunds []Refund `json:"refunds"`
 	Size    int      `json:"size"`
-}
-
-// RefundPageResponse is returned by Refunds.Page.
-type RefundPageResponse struct {
-	Page RefundPage `json:"page"`
-}
-
-// PaymentResponse is returned from the Orders.Pay method.
-//
-// Provides a summary of the payment initiation result, including whether
-// customer action (like OTP confirmation) is required.
-type PaymentResponse struct {
-	// PaymentID is the created payment's ID.
-	PaymentID string `json:"payment_id,omitempty"`
-
-	// OrderID is the charged order's ID.
-	OrderID string `json:"order_id,omitempty"`
-
-	// Status is the payment's current state.
-	// Values: "initiated", "requires_action", "processing", "paid", "failed"
-	Status PaymentResponseStatus `json:"status,omitempty"`
-
-	// RequiresConfirmation indicates whether customer must provide OTP.
-	RequiresConfirmation bool `json:"requires_confirmation,omitempty"`
-
-	// ConfirmationSent indicates whether OTP was sent to customer.
-	// True when confirms_use is enabled and OTP was delivered.
-	ConfirmationSent bool `json:"confirmation_sent,omitempty"`
 }
 
 // ChimeRecipient specifies who should receive a notification chime.
@@ -1674,11 +1655,6 @@ type ScheduledChime struct {
 	ExecutedAt  *string  `json:"executed_at,omitempty"`
 }
 
-// ScheduleResponse wraps a scheduled chime response.
-type ScheduleResponse struct {
-	ScheduledChime ScheduledChime `json:"scheduled_chime"`
-}
-
 // BroadcastChimeParams sends a broadcast chime to multiple recipients.
 type BroadcastChimeParams struct {
 	Recipients       []string `json:"recipients,omitempty"`
@@ -1690,8 +1666,8 @@ type BroadcastChimeParams struct {
 	IdempotencyKey   string   `json:"idempotency_key,omitempty"`
 }
 
-// BroadcastResponse summarizes a broadcast enqueue request.
-type BroadcastResponse struct {
+// BroadcastCreation summarizes a broadcast enqueue request.
+type BroadcastCreation struct {
 	BroadcastID     string `json:"broadcast_id,omitempty"`
 	Status          string `json:"status,omitempty"`
 	RecipientsCount int    `json:"recipients_count,omitempty"`
@@ -1730,16 +1706,6 @@ type CancelScheduleParams struct {
 	ScheduleID string `json:"schedule_id"`
 }
 
-// ScheduleLookupResponse wraps a scheduled chime lookup response.
-type ScheduleLookupResponse struct {
-	ScheduledChime ScheduleDetail `json:"scheduled_chime"`
-}
-
-// ScheduleCancelResponse wraps a scheduled chime cancel response.
-type ScheduleCancelResponse struct {
-	ScheduledChime ScheduleDetail `json:"scheduled_chime"`
-}
-
 // LookupBroadcastParams specifies which broadcast to retrieve.
 type LookupBroadcastParams struct {
 	BroadcastID string `json:"broadcast_id"`
@@ -1748,16 +1714,6 @@ type LookupBroadcastParams struct {
 // CancelBroadcastParams specifies which broadcast to cancel.
 type CancelBroadcastParams struct {
 	BroadcastID string `json:"broadcast_id"`
-}
-
-// LookupBroadcastResponse wraps a broadcast lookup response.
-type LookupBroadcastResponse struct {
-	Broadcast BroadcastDetail `json:"broadcast"`
-}
-
-// BroadcastCancelResponse wraps a broadcast cancel response.
-type BroadcastCancelResponse struct {
-	Broadcast BroadcastDetail `json:"broadcast"`
 }
 
 // LookupChimeParams specifies which chime to retrieve.
@@ -2091,11 +2047,6 @@ type FinancialAccountsPage struct {
 	Accounts []FinancialAccount `json:"accounts,omitempty"`
 }
 
-// PageFinancialAccountsResponse wraps a page of accounts.
-type PageFinancialAccountsResponse struct {
-	Page FinancialAccountsPage `json:"page"`
-}
-
 // PaymentMethodSettings contains acceptance configuration for each payment method type.
 //
 // Controls which payment methods customers can use and whether OTP confirmation
@@ -2405,37 +2356,20 @@ type VerifyPaymentMethodParams struct {
 	PaymentMethodID string `json:"payment_method_id"`
 }
 
-// VerificationStatusResponse contains verification state and delivery details.
-type VerificationStatusResponse struct {
-	// Verification contains verification progress and OTP delivery info.
-	Verification *struct {
-		// PaymentMethodID is the payment method being verified.
-		PaymentMethodID string `json:"payment_method_id,omitempty"`
+// PaymentMethodVerificationSession contains verification state and delivery details.
+type PaymentMethodVerificationSession struct {
+	PaymentMethodID string                             `json:"payment_method_id,omitempty"`
+	Status          string                             `json:"status,omitempty"`
+	TokenSentAt     *string                            `json:"token_sent_at,omitempty"`
+	ExpiresAt       *string                            `json:"expires_at,omitempty"`
+	Delivery        *PaymentMethodVerificationDelivery `json:"delivery,omitempty"`
+}
 
-		// Status is the verification state.
-		// Values: "pending", "verified", "failed"
-		Status string `json:"status,omitempty"`
-
-		// TokenSentAt is when OTP was sent (ISO 8601).
-		TokenSentAt *string `json:"token_sent_at,omitempty"`
-
-		// ExpiresAt is when OTP expires (ISO 8601).
-		// Customer must confirm before this time.
-		ExpiresAt *string `json:"expires_at,omitempty"`
-
-		// Delivery contains OTP delivery details.
-		Delivery *struct {
-			// Recipient is where OTP was sent.
-			Recipient string `json:"recipient,omitempty"`
-
-			// Channel is the delivery method.
-			// Values: "sms", "ussd"
-			Channel string `json:"channel,omitempty"`
-
-			// SenderID is the SMS sender name.
-			SenderID string `json:"sender_id,omitempty"`
-		} `json:"delivery,omitempty"`
-	} `json:"verification,omitempty"`
+// PaymentMethodVerificationDelivery describes where a verification token was sent.
+type PaymentMethodVerificationDelivery struct {
+	Recipient string `json:"recipient,omitempty"`
+	Channel   string `json:"channel,omitempty"`
+	SenderID  string `json:"sender_id,omitempty"`
 }
 
 // ConfirmPaymentMethodVerificationParams submits the OTP to complete verification.
@@ -2467,8 +2401,8 @@ type DeletePaymentMethodParams struct {
 	PaymentMethodID string `json:"payment_method_id"`
 }
 
-// DeletePaymentMethodResponse confirms deletion.
-type DeletePaymentMethodResponse struct {
+// PaymentMethodDeletion confirms deletion.
+type PaymentMethodDeletion struct {
 	// Deleted indicates whether deletion succeeded.
 	Deleted bool `json:"deleted"`
 

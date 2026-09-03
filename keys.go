@@ -83,7 +83,8 @@ type SecretKeyUsagePage struct {
 	Rows    []SecretKeyUsageRow `json:"rows"`
 }
 
-type SecretKeyUsageResponse struct {
+// SecretKeyUsage contains key metadata and its recent authentication outcomes.
+type SecretKeyUsage struct {
 	Key   SecretKey          `json:"key"`
 	Usage SecretKeyUsagePage `json:"usage"`
 }
@@ -154,8 +155,8 @@ func (s *KeysService) DestroyWithParams(ctx context.Context, params DestroySecre
 }
 
 // Usage retrieves recent public authentication outcomes for a secret key.
-func (s *KeysService) Usage(ctx context.Context, params SecretKeyUsageParams) (*SecretKeyUsageResponse, error) {
-	var resp SecretKeyUsageResponse
+func (s *KeysService) Usage(ctx context.Context, params SecretKeyUsageParams) (*SecretKeyUsage, error) {
+	var resp SecretKeyUsage
 	if err := s.client.do(ctx, "POST", "/keys/usage", params, &resp); err != nil {
 		return nil, err
 	}

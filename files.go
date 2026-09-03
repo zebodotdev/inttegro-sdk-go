@@ -63,7 +63,6 @@ type FilesPage struct {
 
 type FileDownload struct {
 	io.ReadCloser
-	Response *http.Response
 }
 
 func (d *FileDownload) SaveTo(path string) error {
@@ -155,7 +154,7 @@ func (s *FilesService) Contents(ctx context.Context, params FileContentsParams) 
 	if err != nil {
 		return nil, err
 	}
-	return &FileDownload{ReadCloser: resp.Body, Response: resp}, nil
+	return &FileDownload{ReadCloser: resp.Body}, nil
 }
 
 func (s *FilesService) Delete(ctx context.Context, fileID string) (*File, error) {
@@ -273,7 +272,7 @@ func (s *FileLinksService) Open(ctx context.Context, url string) (*FileDownload,
 	if err != nil {
 		return nil, err
 	}
-	return &FileDownload{ReadCloser: resp.Body, Response: resp}, nil
+	return &FileDownload{ReadCloser: resp.Body}, nil
 }
 
 type UploadRequestConstraints struct {
@@ -327,6 +326,21 @@ type UploadRequestPageParams struct {
 type UploadRequestCancelParams struct {
 	CanceledBy FileActor `json:"canceled_by"`
 	ID         string    `json:"id"`
+}
+
+type UploadRequestReviewReason struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Param   string `json:"param,omitempty"`
+}
+
+type UploadRequestReviewParams struct {
+	AttemptID      string                      `json:"attempt_id,omitempty"`
+	AttemptOrdinal int64                       `json:"attempt_ordinal,omitempty"`
+	Decision       string                      `json:"decision"`
+	ID             string                      `json:"id"`
+	PublicMessage  string                      `json:"public_message,omitempty"`
+	Reasons        []UploadRequestReviewReason `json:"reasons,omitempty"`
 }
 
 type UploadRequestFulfillParams struct {
@@ -388,6 +402,17 @@ func (s *UploadRequestsService) Cancel(ctx context.Context, params UploadRequest
 		UploadRequest UploadRequest `json:"upload_request"`
 	}
 	if err := s.client.doJSON(ctx, "/upload_requests/cancel", params, applyRequestOptions(opts), &resp); err != nil {
+		return nil, err
+	}
+	return &resp.UploadRequest, nil
+}
+
+// Review records a manual approval or rejection for an upload attempt.
+func (s *UploadRequestsService) Review(ctx context.Context, params UploadRequestReviewParams, opts ...RequestOption) (*UploadRequest, error) {
+	var resp struct {
+		UploadRequest UploadRequest `json:"upload_request"`
+	}
+	if err := s.client.doJSON(ctx, "/upload_requests/review", params, applyRequestOptions(opts), &resp); err != nil {
 		return nil, err
 	}
 	return &resp.UploadRequest, nil

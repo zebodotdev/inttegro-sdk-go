@@ -21,14 +21,14 @@ type BalanceBreakdown struct {
 	IncludesTransactionsBefore string         `json:"includes_transactions_before,omitempty"`
 }
 
-// BalancesResponse is returned from /balances.
-type BalancesResponse struct {
+// BalanceSnapshot is the current balance breakdown keyed by currency.
+type BalanceSnapshot struct {
 	Balances map[string]BalanceBreakdown `json:"balances"`
 }
 
 // Get retrieves the current balances snapshot.
-func (s *BalancesService) Get(ctx context.Context) (*BalancesResponse, error) {
-	var resp BalancesResponse
+func (s *BalancesService) Get(ctx context.Context) (*BalanceSnapshot, error) {
+	var resp BalanceSnapshot
 	if err := s.client.do(ctx, "POST", "/balances", map[string]any{}, &resp); err != nil {
 		return nil, err
 	}

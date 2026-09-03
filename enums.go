@@ -397,14 +397,14 @@ const (
 	CheckoutPaymentStatusCancelled      CheckoutPaymentStatus = "cancelled"
 )
 
-type PaymentResponseStatus string
+type PaymentResultStatus string
 
 const (
-	PaymentResponseStatusPending              PaymentResponseStatus = "pending"
-	PaymentResponseStatusRequiresConfirmation PaymentResponseStatus = "requires_confirmation"
-	PaymentResponseStatusProcessing           PaymentResponseStatus = "processing"
-	PaymentResponseStatusSucceeded            PaymentResponseStatus = "succeeded"
-	PaymentResponseStatusFailed               PaymentResponseStatus = "failed"
+	PaymentResultStatusPending              PaymentResultStatus = "pending"
+	PaymentResultStatusRequiresConfirmation PaymentResultStatus = "requires_confirmation"
+	PaymentResultStatusProcessing           PaymentResultStatus = "processing"
+	PaymentResultStatusSucceeded            PaymentResultStatus = "succeeded"
+	PaymentResultStatusFailed               PaymentResultStatus = "failed"
 )
 
 type OrderCreatedFromResourceType string

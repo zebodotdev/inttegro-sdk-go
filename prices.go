@@ -77,6 +77,17 @@ func (s *PricesService) Deactivate(ctx context.Context, priceID string) (*Price,
 	return s.priceAction(ctx, "/prices/deactivate", priceID)
 }
 
+// Archive permanently archives a price and marks it inactive.
+func (s *PricesService) Archive(ctx context.Context, priceID string, opts ...RequestOption) (*Price, error) {
+	var resp struct {
+		Price Price `json:"price"`
+	}
+	if err := s.client.doJSON(ctx, "/prices/archive", PriceActionParams{PriceID: priceID}, applyRequestOptions(opts), &resp); err != nil {
+		return nil, err
+	}
+	return &resp.Price, nil
+}
+
 func (s *PricesService) priceAction(ctx context.Context, path, priceID string) (*Price, error) {
 	var resp struct {
 		Price Price `json:"price"`

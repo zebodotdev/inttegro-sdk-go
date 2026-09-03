@@ -39,10 +39,10 @@ type PaymentMethodPageParams struct {
 	PageSize   int    `json:"page_size,omitempty"`
 }
 
-type PaymentMethodsPage struct {
-	Number         int                   `json:"number,omitempty"`
-	Size           int                   `json:"size,omitempty"`
-	PaymentMethods []PaymentMethodObject `json:"payment_methods,omitempty"`
+type PaymentMethodPage struct {
+	Number         int             `json:"number,omitempty"`
+	Size           int             `json:"size,omitempty"`
+	PaymentMethods []PaymentMethod `json:"payment_methods,omitempty"`
 }
 
 type PaymentMethodActionParams struct {
@@ -55,9 +55,9 @@ type PaymentMethodActionParams struct {
 // The customer owns the payment method—only they can delete it.
 //
 // Learn more: https://studio.inttegro.com/tokenize-payment-methods
-func (s *PaymentMethodsService) Tokenize(ctx context.Context, params TokenizePaymentMethodParams) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Tokenize(ctx context.Context, params TokenizePaymentMethodParams) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod PaymentMethodObject `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/tokenize", params, &resp); err != nil {
 		return nil, err
@@ -69,28 +69,30 @@ func (s *PaymentMethodsService) Tokenize(ctx context.Context, params TokenizePay
 //
 // Required before first use (unless confirms_use is false). Returns verification
 // status and OTP delivery details.
-func (s *PaymentMethodsService) Verify(ctx context.Context, paymentMethodID string) (*VerificationStatusResponse, error) {
+func (s *PaymentMethodsService) Verify(ctx context.Context, paymentMethodID string) (*PaymentMethodVerificationSession, error) {
 	return s.VerifyWithParams(ctx, VerifyPaymentMethodParams{
 		PaymentMethodID: paymentMethodID,
 		RequestMeta:     stablePaymentMethodRequestMeta("verify", paymentMethodID),
 	})
 }
 
-func (s *PaymentMethodsService) VerifyWithParams(ctx context.Context, params VerifyPaymentMethodParams) (*VerificationStatusResponse, error) {
-	var resp VerificationStatusResponse
+func (s *PaymentMethodsService) VerifyWithParams(ctx context.Context, params VerifyPaymentMethodParams) (*PaymentMethodVerificationSession, error) {
+	var resp struct {
+		Verification PaymentMethodVerificationSession `json:"verification"`
+	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/verify", params, &resp); err != nil {
 		return nil, err
 	}
-	return &resp, nil
+	return &resp.Verification, nil
 }
 
 // ConfirmVerification submits the OTP to complete verification.
 //
 // Call this after Verify() once the customer provides their OTP.
 // Returns the verified payment method.
-func (s *PaymentMethodsService) ConfirmVerification(ctx context.Context, params ConfirmPaymentMethodVerificationParams) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) ConfirmVerification(ctx context.Context, params ConfirmPaymentMethodVerificationParams) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod PaymentMethodObject `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/confirm_verification", params, &resp); err != nil {
 		return nil, err
@@ -101,9 +103,9 @@ func (s *PaymentMethodsService) ConfirmVerification(ctx context.Context, params 
 // Lookup retrieves payment method details by ID.
 //
 // Returns masked payment details, verification status, and enabled state.
-func (s *PaymentMethodsService) Lookup(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Lookup(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod PaymentMethodObject `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/lookup", LookupPaymentMethodParams{PaymentMethodID: paymentMethodID}, &resp); err != nil {
 		return nil, err
@@ -112,9 +114,9 @@ func (s *PaymentMethodsService) Lookup(ctx context.Context, paymentMethodID stri
 }
 
 // Page retrieves a paginated list of payment methods.
-func (s *PaymentMethodsService) Page(ctx context.Context, params PaymentMethodPageParams) (*PaymentMethodsPage, error) {
+func (s *PaymentMethodsService) Page(ctx context.Context, params PaymentMethodPageParams) (*PaymentMethodPage, error) {
 	var resp struct {
-		Page PaymentMethodsPage `json:"page"`
+		Page PaymentMethodPage `json:"page"`
 	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/page", params, &resp); err != nil {
 		return nil, err
@@ -123,9 +125,9 @@ func (s *PaymentMethodsService) Page(ctx context.Context, params PaymentMethodPa
 }
 
 // Update modifies mutable payment method fields.
-func (s *PaymentMethodsService) Update(ctx context.Context, payload any) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Update(ctx context.Context, payload any) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod PaymentMethodObject `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.do(ctx, "POST", "/payment_methods/update", payload, &resp); err != nil {
 		return nil, err
@@ -134,33 +136,33 @@ func (s *PaymentMethodsService) Update(ctx context.Context, payload any) (*Payme
 }
 
 // Activate marks a payment method active.
-func (s *PaymentMethodsService) Activate(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Activate(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/activate", paymentMethodID)
 }
 
 // Disactivate marks a payment method inactive.
-func (s *PaymentMethodsService) Disactivate(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Disactivate(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/disactivate", paymentMethodID)
 }
 
 // Deactivate is an alias for Disactivate.
-func (s *PaymentMethodsService) Deactivate(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Deactivate(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.Disactivate(ctx, paymentMethodID)
 }
 
 // Archive archives a payment method.
-func (s *PaymentMethodsService) Archive(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Archive(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/archive", paymentMethodID)
 }
 
 // Unarchive unarchives a payment method.
-func (s *PaymentMethodsService) Unarchive(ctx context.Context, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) Unarchive(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/unarchive", paymentMethodID)
 }
 
-func (s *PaymentMethodsService) paymentMethodAction(ctx context.Context, path, paymentMethodID string) (*PaymentMethodObject, error) {
+func (s *PaymentMethodsService) paymentMethodAction(ctx context.Context, path, paymentMethodID string) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod PaymentMethodObject `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.do(ctx, "POST", path, PaymentMethodActionParams{PaymentMethodID: paymentMethodID}, &resp); err != nil {
 		return nil, err
@@ -172,15 +174,15 @@ func (s *PaymentMethodsService) paymentMethodAction(ctx context.Context, path, p
 //
 // Deleted payment methods cannot be restored. Customers can delete their
 // own payment methods—merchants cannot prevent this or restore them.
-func (s *PaymentMethodsService) Delete(ctx context.Context, paymentMethodID string) (*DeletePaymentMethodResponse, error) {
+func (s *PaymentMethodsService) Delete(ctx context.Context, paymentMethodID string) (*PaymentMethodDeletion, error) {
 	return s.DeleteWithParams(ctx, DeletePaymentMethodParams{
 		PaymentMethodID: paymentMethodID,
 		RequestMeta:     stablePaymentMethodRequestMeta("delete", paymentMethodID),
 	})
 }
 
-func (s *PaymentMethodsService) DeleteWithParams(ctx context.Context, params DeletePaymentMethodParams) (*DeletePaymentMethodResponse, error) {
-	var resp DeletePaymentMethodResponse
+func (s *PaymentMethodsService) DeleteWithParams(ctx context.Context, params DeletePaymentMethodParams) (*PaymentMethodDeletion, error) {
+	var resp PaymentMethodDeletion
 	if err := s.client.do(ctx, "POST", "/payment_methods/delete", params, &resp); err != nil {
 		return nil, err
 	}

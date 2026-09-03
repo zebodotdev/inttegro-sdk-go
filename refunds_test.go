@@ -89,13 +89,13 @@ func TestRefundsServiceUsesCanonicalContracts(t *testing.T) {
 		"page_number": float64(2), "page_size": float64(25),
 	})
 
-	assertDecodedRefund(t, created.Refund)
-	assertDecodedRefund(t, canceled.Refund)
-	assertDecodedRefund(t, lookedUp.Refund)
-	if page.Page.Number != 2 || page.Page.Size != 1 || len(page.Page.Refunds) != 1 {
-		t.Fatalf("decoded refund page = %#v", page.Page)
+	assertDecodedRefund(t, *created)
+	assertDecodedRefund(t, *canceled)
+	assertDecodedRefund(t, *lookedUp)
+	if page.Number != 2 || page.Size != 1 || len(page.Refunds) != 1 {
+		t.Fatalf("decoded refund page = %#v", page)
 	}
-	assertDecodedRefund(t, page.Page.Refunds[0])
+	assertDecodedRefund(t, page.Refunds[0])
 }
 
 func TestRefundCreateRequestOmitsOptionalFields(t *testing.T) {

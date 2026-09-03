@@ -48,3 +48,74 @@ func TestOrderDocumentDeliveryEndpointsMatchSpec(t *testing.T) {
 		}
 	}
 }
+
+func TestOrdersPayReturnsOrder(t *testing.T) {
+	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/orders/pay" {
+			t.Fatalf("path = %q, want /orders/pay", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"order": map[string]any{
+				"id":     "or_123",
+				"status": "requires_payment",
+				"payment": map[string]any{
+					"id":     "py_123",
+					"status": "requires_action",
+				},
+			},
+		})
+	}))
+	if client == nil {
+		return
+	}
+	defer close()
+
+	order, err := client.Orders.Pay(context.Background(), OrderPayParams{OrderID: "or_123"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if order.ID != "or_123" {
+		t.Fatalf("order.ID = %q, want or_123", order.ID)
+	}
+	if order.Payment == nil || order.Payment.ID != "py_123" {
+		t.Fatalf("order.Payment = %#v, want payment py_123", order.Payment)
+	}
+}
+
+func TestOrdersRequestConfirmationReturnsOrder(t *testing.T) {
+	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/orders/request_confirmation" {
+			t.Fatalf("path = %q, want /orders/request_confirmation", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"order": map[string]any{
+				"id":     "or_123",
+				"status": "requires_payment",
+				"payment": map[string]any{
+					"id":     "py_123",
+					"status": "requires_action",
+					"next_action": map[string]any{
+						"type": "confirm_payment",
+					},
+				},
+			},
+		})
+	}))
+	if client == nil {
+		return
+	}
+	defer close()
+
+	order, err := client.Orders.RequestConfirmation(context.Background(), "or_123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if order.ID != "or_123" {
+		t.Fatalf("order.ID = %q, want or_123", order.ID)
+	}
+	if order.Payment == nil || order.Payment.NextAction == nil {
+		t.Fatalf("order.Payment.NextAction missing: %#v", order.Payment)
+	}
+}

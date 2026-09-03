@@ -90,13 +90,13 @@ func TestAppsEndpointsMatchSpec(t *testing.T) {
 	defer close()
 
 	ctx := context.Background()
-	if _, err := client.Apps.Create(ctx, map[string]any{"name": "App"}); err != nil {
+	if _, err := client.Apps.Create(ctx, CreateAppParams{Name: "App"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := client.Apps.Lookup(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Apps.Update(ctx, map[string]any{"alias": "app"}); err != nil {
+	if _, err := client.Apps.Update(ctx, UpdateAppParams{Alias: String("app")}); err != nil {
 		t.Fatal(err)
 	}
 

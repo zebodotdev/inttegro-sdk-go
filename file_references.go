@@ -21,13 +21,14 @@ type FileReferenceReconcileParams struct {
 	References   []FileReferenceInput `json:"references,omitempty"`
 }
 
-type FileReferenceReconcileResponse struct {
+// FileReferenceReconciliation reports whether the reference set was reconciled.
+type FileReferenceReconciliation struct {
 	Reconciled bool `json:"reconciled"`
 }
 
 // Reconcile replaces the live file references for a Inttegro resource.
-func (s *FileReferencesService) Reconcile(ctx context.Context, params FileReferenceReconcileParams) (*FileReferenceReconcileResponse, error) {
-	var resp FileReferenceReconcileResponse
+func (s *FileReferencesService) Reconcile(ctx context.Context, params FileReferenceReconcileParams) (*FileReferenceReconciliation, error) {
+	var resp FileReferenceReconciliation
 	if err := s.client.do(ctx, "POST", "/file_references/reconcile", params, &resp); err != nil {
 		return nil, err
 	}
