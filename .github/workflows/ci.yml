@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: zebodotdev/openapi
-          ref: e1f3fdcd435c87fd6fe5e0a3a9660a8138523255
+          ref: e98fe874f1e4a2a1b4682f6f80db9c205f49f5fe
           path: openapi
           persist-credentials: false
 
