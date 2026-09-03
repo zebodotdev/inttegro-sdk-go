@@ -21,14 +21,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Checkout OpenAPI contract
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: zebodotdev/openapi
-          ref: 7f9e846dc4202e2abb75733e99c69e4fd5b86fae
-          path: openapi
-          persist-credentials: false
-
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
@@ -61,6 +53,16 @@ jobs:
         with:
           go-version-input: "1.25.x"
           go-package: ./...
+
+      # govulncheck-action performs its own clean checkout, so the contract must
+      # be added after it or the untracked openapi directory is removed.
+      - name: Checkout OpenAPI contract
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: zebodotdev/openapi
+          ref: 7f9e846dc4202e2abb75733e99c69e4fd5b86fae
+          path: openapi
+          persist-credentials: false
 
       - name: Go test
         run: go test ./... -coverprofile=coverage.out
