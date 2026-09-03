@@ -11,7 +11,7 @@ All official Inttegro SDKs expose the same API capabilities. This module adds Go
 ## Install
 
 ```bash
-go get github.com/zebodotdev/inttegro-sdk-go/v2
+go get github.com/zebodotdev/inttegro-sdk-go/v3
 ```
 
 Store your secret key in the server environment:
@@ -36,7 +36,7 @@ import (
 	"log"
 	"os"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v2"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v3"
 )
 
 func main() {
@@ -91,7 +91,7 @@ amount to return from each one:
 
 ```go
 lineReason := inttegro.RefundReasonItemDamaged
-response, err := client.Refunds.Create(context.Background(), inttegro.CreateRefundRequest{
+refund, err := client.Refunds.Create(context.Background(), inttegro.CreateRefundRequest{
 	OrderID: "or_0123456789abcdefghijklmnopqrstuvwxyzABCD",
 	Reason:  inttegro.RefundReasonRequestedByCustomer,
 	LineItems: []inttegro.CreateRefundLineItem{{
@@ -105,7 +105,7 @@ response, err := client.Refunds.Create(context.Background(), inttegro.CreateRefu
 if err != nil {
 	log.Fatal(err)
 }
-fmt.Println(response.Refund.ID, response.Refund.Status)
+fmt.Println(refund.ID, refund.Status)
 ```
 
 Refunds return funds to the original payment method and are processed
@@ -117,7 +117,7 @@ The SDK covers orders and checkout, customers, products and prices, purchase int
 
 Go-specific features:
 
-- Typed request and response structs with exported constants for public enum values.
+- Typed request and domain structs with exported constants for public enum values.
 - `context.Context` on every operation for deadlines and cancellation.
 - Safe sharing across goroutines.
 - Standard-library HTTP with no runtime dependencies.
@@ -132,7 +132,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-2.0.0.tar.gz \
+gh attestation verify inttegro-sdk-go-3.0.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

@@ -26,8 +26,10 @@ type ChimesService struct {
 }
 
 type ChimePageParams struct {
-	PageNumber int `json:"page_number,omitempty"`
-	PageSize   int `json:"page_size,omitempty"`
+	CustomerID string `json:"customer_id,omitempty"`
+	PageNumber int    `json:"page_number,omitempty"`
+	PageSize   int    `json:"page_size,omitempty"`
+	Recipient  string `json:"recipient,omitempty"`
 }
 
 type ChimesPage struct {

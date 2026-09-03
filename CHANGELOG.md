@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0 - 2026-09-03
+
+- Breaking: price creation now accepts the canonical nested `Money` amount instead of
+  the obsolete flat currency and integer amount fields.
+- Chime page parameters now expose the API's customer and recipient filters.
+- Corrected README examples and terminology to show direct domain return values.
+
 ## 2.0.0 - 2026-09-03
 
 - Breaking: resource methods now return domain objects and pages directly instead of response wrappers.

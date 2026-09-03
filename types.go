@@ -128,11 +128,8 @@ type ProductPrice struct {
 	Currency string `json:"currency,omitempty"`
 }
 
-// ProductPriceAmount represents a product price amount in smallest currency units.
-type ProductPriceAmount struct {
-	Currency string `json:"currency"`
-	Value    int64  `json:"value"`
-}
+// ProductPriceAmount is the money value used by product price operations.
+type ProductPriceAmount = Money
 
 // ProductDefaultUnitPrice represents a product's loaded default unit price.
 type ProductDefaultUnitPrice struct {
@@ -281,8 +278,7 @@ type CreatePriceParams struct {
 	ProductID string `json:"product_id,omitempty"`
 	Label     string `json:"label,omitempty"`
 	About     string `json:"about,omitempty"`
-	Currency  string `json:"currency"`
-	Amount    int64  `json:"amount"`
+	Amount    Money  `json:"amount"`
 }
 
 // LookupPriceParams looks up a price by ID.
