@@ -1,6 +1,10 @@
 package inttegro
 
-import "context"
+import (
+	"context"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
+)
 
 // PurchaseIntentsService manages Buy link purchase intents.
 type PurchaseIntentsService struct {
@@ -17,21 +21,31 @@ type PurchaseIntentProductSelector struct {
 	VariantSetID string `json:"variant_set_id,omitempty"`
 }
 
-type PurchaseIntentAmount struct {
-	Currency string `json:"currency"`
-	Value    int64  `json:"value"`
+type PurchaseIntentPriceSelector struct {
+	ID         string                             `json:"id,omitempty"`
+	Nominal    *PriceParams                       `json:"nominal,omitempty"`
+	Original   *PurchaseIntentOriginalPriceParams `json:"original,omitempty"`
+	OriginalID string                             `json:"original_id,omitempty"`
 }
 
-type PurchaseIntentPriceSelector struct {
-	ID         string                       `json:"id,omitempty"`
-	Nominal    *PurchaseIntentAmount        `json:"nominal,omitempty"`
-	Original   *PurchaseIntentOriginalPrice `json:"original,omitempty"`
-	OriginalID string                       `json:"original_id,omitempty"`
+type PurchaseIntentOriginalPriceParams struct {
+	ID      string       `json:"id,omitempty"`
+	Nominal *PriceParams `json:"nominal,omitempty"`
 }
 
 type PurchaseIntentOriginalPrice struct {
-	ID      string                `json:"id,omitempty"`
-	Nominal *PurchaseIntentAmount `json:"nominal,omitempty"`
+	Active  bool          `json:"active"`
+	ID      string        `json:"id,omitempty"`
+	Label   string        `json:"label,omitempty"`
+	Nominal *money.Amount `json:"nominal,omitempty"`
+}
+
+type PurchaseIntentPrice struct {
+	Active   bool                         `json:"active"`
+	ID       string                       `json:"id,omitempty"`
+	Label    string                       `json:"label,omitempty"`
+	Nominal  *money.Amount                `json:"nominal,omitempty"`
+	Original *PurchaseIntentOriginalPrice `json:"original,omitempty"`
 }
 
 type PurchaseIntentUsage struct {
@@ -96,7 +110,7 @@ type PurchaseIntentActivity struct {
 	ProductID        string                             `json:"product_id,omitempty"`
 	VariantProductID string                             `json:"variant_product_id,omitempty"`
 	Quantity         int                                `json:"quantity,omitempty"`
-	Amount           *Money                             `json:"amount,omitempty"`
+	Amount           *money.Amount                      `json:"amount,omitempty"`
 	OrderID          string                             `json:"order_id,omitempty"`
 	PaymentID        string                             `json:"payment_id,omitempty"`
 	ErrorCode        string                             `json:"error_code,omitempty"`
@@ -120,7 +134,7 @@ type PurchaseIntent struct {
 	UpdatedAt          string                     `json:"updated_at,omitempty"`
 	Activity           *PurchaseIntentActivityLog `json:"activity,omitempty"`
 	Product            *Product                   `json:"product,omitempty"`
-	Price              *ProductPriceSummary       `json:"price,omitempty"`
+	Price              *PurchaseIntentPrice       `json:"price,omitempty"`
 }
 
 type PurchaseIntentsPage struct {

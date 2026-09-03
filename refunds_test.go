@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
 )
 
 func TestRefundsServiceUsesCanonicalContracts(t *testing.T) {
@@ -104,7 +106,7 @@ func TestRefundCreateRequestOmitsOptionalFields(t *testing.T) {
 		Reason:  RefundReasonItemReturned,
 		LineItems: []CreateRefundLineItem{{
 			OrderLineItemID: "oli_123",
-			RefundAmount:    Money{Currency: "ghs", Value: 100},
+			RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 100},
 		}},
 	})
 	if err != nil {
@@ -132,7 +134,7 @@ func TestRefundOmitsOptionalResponseFields(t *testing.T) {
 		ID:        "rf_123",
 		OrderID:   "or_123",
 		Status:    RefundStatusPending,
-		Total:     Money{Currency: "ghs", Value: 100},
+		Total:     money.Amount{Currency: money.GHS, Value: 100},
 		LineItems: []RefundLineItem{},
 		Reason:    RefundReasonItemReturned,
 		CreatedAt: "2026-09-02T10:00:00Z",
@@ -244,7 +246,7 @@ func fullCreateRefundRequest() CreateRefundRequest {
 		Reason:  RefundReasonRequestedByCustomer,
 		LineItems: []CreateRefundLineItem{{
 			OrderLineItemID: "oli_123",
-			RefundAmount:    Money{Currency: "ghs", Value: 2500},
+			RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 2500},
 			Reason:          &lineReason,
 			ReasonDetails:   "damaged in transit",
 		}},

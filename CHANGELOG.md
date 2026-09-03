@@ -1,8 +1,14 @@
 # Changelog
 
+## 4.0.0 - 2026-09-03
+
+- Breaking: replaced `OrderPaymentStatus` with the domain-level `PaymentStatus` type.
+- Breaking: separated request `money.AmountParams` and `PriceParams` from returned `money.Amount`, `Price`, and `CatalogPrice` values.
+- Added typed order line-item request variants and corrected purchase-intent price shapes.
+
 ## 3.0.0 - 2026-09-03
 
-- Breaking: price creation now accepts the canonical nested `Money` amount instead of
+- Breaking: price creation now accepts the canonical nested `money.AmountParams` instead of
   the obsolete flat currency and integer amount fields.
 - Chime page parameters now expose the API's customer and recipient filters.
 - Corrected README examples and terminology to show direct domain return values.

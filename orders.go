@@ -25,14 +25,17 @@ import (
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    LineItems: []inttegro.OrderLineItem{
+//	    LineItems: []inttegro.OrderLineItemParams{
 //	        {
 //	            Type: inttegro.LineItemTypeProduct,
-//	            Product: &inttegro.ProductLineItem{
+//	            Product: &inttegro.ProductLineItemParams{
 //	                Type:     "digital",
 //	                Name:     "Premium Plan",
 //	                Quantity: 1,
-//	                Price:    inttegro.Money{Currency: "usd", Value: 999},
+//	                Price: inttegro.PriceParams{AmountParams: money.AmountParams{
+//	                    Currency: money.USD,
+//	                    Value:    999,
+//	                }},
 //	            },
 //	        },
 //	    },

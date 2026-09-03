@@ -19,9 +19,9 @@ func (s *ProductsService) Create(ctx context.Context, params CreateProductParams
 }
 
 // AddPrice adds a price to an existing product.
-func (s *ProductsService) AddPrice(ctx context.Context, params AddProductPriceParams) (*Price, error) {
+func (s *ProductsService) AddPrice(ctx context.Context, params AddProductPriceParams) (*CatalogPrice, error) {
 	var resp struct {
-		Price Price `json:"price"`
+		Price CatalogPrice `json:"price"`
 	}
 	if err := s.client.do(ctx, "POST", "/products/add_price", params, &resp); err != nil {
 		return nil, err

@@ -11,7 +11,7 @@ All official Inttegro SDKs expose the same API capabilities. This module adds Go
 ## Install
 
 ```bash
-go get github.com/zebodotdev/inttegro-sdk-go/v3
+go get github.com/zebodotdev/inttegro-sdk-go/v4
 ```
 
 Store your secret key in the server environment:
@@ -36,7 +36,8 @@ import (
 	"log"
 	"os"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v3"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v4"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
 )
 
 func main() {
@@ -52,11 +53,13 @@ func main() {
 			RedirectURL: "https://example.com/orders/complete",
 			CancelURL:   "https://example.com/cart",
 		},
-		LineItems: []inttegro.OrderLineItem{{
-			Type: inttegro.LineItemTypeProduct,
-			Product: &inttegro.ProductLineItem{
-				Type: inttegro.ProductTypeDigital, Name: "Monthly subscription", Quantity: 1,
-				Price: inttegro.Money{Currency: "ghs", Value: 5000},
+		LineItems: []inttegro.OrderLineItemParams{{
+            Type: inttegro.LineItemTypeProduct,
+            Product: &inttegro.ProductLineItemParams{
+                Type: inttegro.ProductTypeDigital, Name: "Monthly subscription", Quantity: 1,
+                Price: inttegro.PriceParams{AmountParams: money.AmountParams{
+                    Currency: money.GHS, Value: 5000,
+                }},
 			},
 		}},
 		BillingDetails: inttegro.BillingDetails{
@@ -96,7 +99,7 @@ refund, err := client.Refunds.Create(context.Background(), inttegro.CreateRefund
 	Reason:  inttegro.RefundReasonRequestedByCustomer,
 	LineItems: []inttegro.CreateRefundLineItem{{
 		OrderLineItemID: "oli_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN",
-		RefundAmount:    inttegro.Money{Currency: "ghs", Value: 2500},
+		RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 2500},
 		Reason:          &lineReason,
 		ReasonDetails:   "damaged in transit",
 	}},
@@ -132,7 +135,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-3.0.0.tar.gz \
+gh attestation verify inttegro-sdk-go-4.0.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

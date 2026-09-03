@@ -12,6 +12,8 @@ import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
 )
 
 var openAPICapabilityURLPaths = map[string]bool{
@@ -214,7 +216,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 		Reason:  RefundReasonRequestedByCustomer,
 		LineItems: []CreateRefundLineItem{{
 			OrderLineItemID: "oli_1",
-			RefundAmount:    Money{Currency: "ghs", Value: 100},
+			RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 100},
 		}},
 	}
 	_, err = client.Refunds.Create(ctx, refundRequest)
@@ -359,7 +361,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Products.AddPrice(ctx, AddProductPriceParams{
 		ProductID: "prod_1",
-		Amount:    ProductPriceAmount{Currency: "ghs", Value: 100},
+		Amount:    money.AmountParams{Currency: money.GHS, Value: 100},
 	})
 	check(err)
 	_, err = client.Products.Lookup(ctx, "prod_1")
@@ -393,7 +395,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	_, err = client.PurchaseIntents.Page(ctx, PagePurchaseIntentsParams{PageNumber: 1, PageSize: 20})
 	check(err)
 
-	_, err = client.Prices.Create(ctx, CreatePriceParams{Amount: Money{Currency: "ghs", Value: 100}})
+	_, err = client.Prices.Create(ctx, CatalogPriceParams{Amount: money.AmountParams{Currency: money.GHS, Value: 100}})
 	check(err)
 	_, err = client.Prices.Lookup(ctx, "pr_1")
 	check(err)

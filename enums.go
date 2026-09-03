@@ -361,18 +361,18 @@ const (
 	OrderStatusUnknown         OrderStatus = "unknown"
 )
 
-type OrderPaymentStatus string
+type PaymentStatus string
 
 const (
-	OrderPaymentStatusInitiated      OrderPaymentStatus = "initiated"
-	OrderPaymentStatusRequiresAction OrderPaymentStatus = "requires_action"
-	OrderPaymentStatusOverdue        OrderPaymentStatus = "overdue"
-	OrderPaymentStatusExecuted       OrderPaymentStatus = "executed"
-	OrderPaymentStatusPaid           OrderPaymentStatus = "paid"
-	OrderPaymentStatusCanceled       OrderPaymentStatus = "canceled"
-	OrderPaymentStatusExpired        OrderPaymentStatus = "expired"
-	OrderPaymentStatusFailed         OrderPaymentStatus = "failed"
-	OrderPaymentStatusUnknown        OrderPaymentStatus = "unknown"
+	PaymentStatusInitiated      PaymentStatus = "initiated"
+	PaymentStatusRequiresAction PaymentStatus = "requires_action"
+	PaymentStatusOverdue        PaymentStatus = "overdue"
+	PaymentStatusExecuted       PaymentStatus = "executed"
+	PaymentStatusPaid           PaymentStatus = "paid"
+	PaymentStatusCanceled       PaymentStatus = "canceled"
+	PaymentStatusExpired        PaymentStatus = "expired"
+	PaymentStatusFailed         PaymentStatus = "failed"
+	PaymentStatusUnknown        PaymentStatus = "unknown"
 )
 
 type PaymentAttemptStatus string

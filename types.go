@@ -1,36 +1,23 @@
 package inttegro
 
+import "github.com/zebodotdev/inttegro-sdk-go/v4/money"
+
 // RequestMeta carries per-request controls that do not change the operation payload.
 type RequestMeta struct {
 	// IdempotencyKey safely identifies retries for mutation requests.
 	IdempotencyKey string `json:"idempotency_key,omitempty"`
 }
 
-// Money represents a monetary amount in a specific currency.
-//
-// Amounts are always expressed in minor units (cents, pesewas, centimes, etc).
-// For example, $10.50 USD is represented as Currency: "usd", Value: 1050.
-//
-// Example:
-//
-//	// Ten dollars and fifty cents
-//	amount := inttegro.Money{Currency: "usd", Value: 1050}
-//
-//	// Five thousand Ghanaian cedis (GHS 50.00)
-//	amount := inttegro.Money{Currency: "ghs", Value: 5000}
-//
-// Currency codes follow ISO 4217 (lowercase). Value must be a positive integer
-// for most operations (charges, payouts, line items).
-type Money struct {
-	// Currency is the three-letter ISO 4217 currency code (lowercase).
-	// Supported currencies: usd, ghs, kes, ugx, tzs, xof, xaf, and more.
-	// Query /spec/countries to see supported currencies by country.
-	Currency string `json:"currency"`
+// PriceParams is an inline price supplied in a request. It embeds the amount
+// fields because the API's price shape is {currency, value}, not
+// {amount: {currency, value}}.
+type PriceParams struct {
+	money.AmountParams
+}
 
-	// Value is the amount in minor units (cents, pesewas, etc).
-	// For zero-decimal currencies (e.g., JPY), this represents the actual amount.
-	// Must be positive for charges and payouts.
-	Value int64 `json:"value"`
+// Price is an inline price returned by the API.
+type Price struct {
+	money.Amount
 }
 
 // MobileMoneyParams describes a mobile money wallet.
@@ -122,32 +109,23 @@ type ProductCategory struct {
 	Slug string `json:"slug,omitempty"`
 }
 
-// ProductPrice represents a catalog product price.
-type ProductPrice struct {
-	Amount   int64  `json:"amount,omitempty"`
-	Currency string `json:"currency,omitempty"`
-}
-
-// ProductPriceAmount is the money value used by product price operations.
-type ProductPriceAmount = Money
-
 // ProductDefaultUnitPrice represents a product's loaded default unit price.
 type ProductDefaultUnitPrice struct {
-	ID         string              `json:"id,omitempty"`
-	ProductID  string              `json:"product_id,omitempty"`
-	Label      string              `json:"label,omitempty"`
-	About      string              `json:"about,omitempty"`
-	Nominal    *ProductPriceAmount `json:"nominal,omitempty"`
-	CreatedAt  string              `json:"created_at,omitempty"`
-	UpdatedAt  string              `json:"updated_at,omitempty"`
-	ArchivedAt string              `json:"archived_at,omitempty"`
+	ID         string        `json:"id,omitempty"`
+	ProductID  string        `json:"product_id,omitempty"`
+	Label      string        `json:"label,omitempty"`
+	About      string        `json:"about,omitempty"`
+	Nominal    *money.Amount `json:"nominal,omitempty"`
+	CreatedAt  string        `json:"created_at,omitempty"`
+	UpdatedAt  string        `json:"updated_at,omitempty"`
+	ArchivedAt string        `json:"archived_at,omitempty"`
 }
 
 // ProductPriceSummary represents a product price listed with a product response.
 type ProductPriceSummary struct {
-	ID      string              `json:"id,omitempty"`
-	Label   string              `json:"label,omitempty"`
-	Nominal *ProductPriceAmount `json:"nominal,omitempty"`
+	ID      string        `json:"id,omitempty"`
+	Label   string        `json:"label,omitempty"`
+	Nominal *money.Amount `json:"nominal,omitempty"`
 }
 
 // ProductShipmentDimensions describes physical dimensions.
@@ -187,7 +165,6 @@ type CreateProductParams struct {
 	About       string                `json:"about,omitempty"`
 	TaxCode     string                `json:"tax_code,omitempty"`
 	Category    *ProductCategory      `json:"category,omitempty"`
-	Price       *ProductPrice         `json:"price,omitempty"`
 	Shipment    *ProductShipmentInput `json:"shipment,omitempty"`
 	Media       []ProductMediaItem    `json:"media,omitempty"`
 	Attributes  map[string]string     `json:"attributes,omitempty"`
@@ -208,7 +185,6 @@ type UpdateProductParams struct {
 	About       string                `json:"about,omitempty"`
 	TaxCode     string                `json:"tax_code,omitempty"`
 	Category    *ProductCategory      `json:"category,omitempty"`
-	Price       *ProductPrice         `json:"price,omitempty"`
 	Shipment    *ProductShipmentInput `json:"shipment,omitempty"`
 	Media       []ProductMediaItem    `json:"media,omitempty"`
 	Attributes  map[string]string     `json:"attributes,omitempty"`
@@ -225,7 +201,7 @@ type AddProductPriceParams struct {
 	ProductID    string             `json:"product_id"`
 	Label        string             `json:"label,omitempty"`
 	About        string             `json:"about,omitempty"`
-	Amount       ProductPriceAmount `json:"amount"`
+	Amount       money.AmountParams `json:"amount"`
 	SetAsDefault bool               `json:"set_as_default,omitempty"`
 }
 
@@ -252,7 +228,6 @@ type Product struct {
 	About            string                   `json:"about,omitempty"`
 	TaxCode          string                   `json:"tax_code,omitempty"`
 	Category         *ProductCategory         `json:"category,omitempty"`
-	Price            *ProductPrice            `json:"price,omitempty"`
 	DefaultUnitPrice *ProductDefaultUnitPrice `json:"default_unit_price,omitempty"`
 	Prices           []ProductPriceSummary    `json:"prices,omitempty"`
 	Shipment         *ProductShipment         `json:"shipment,omitempty"`
@@ -273,12 +248,12 @@ type ProductsPage struct {
 	Products []Product `json:"products,omitempty"`
 }
 
-// CreatePriceParams creates a catalog price.
-type CreatePriceParams struct {
-	ProductID string `json:"product_id,omitempty"`
-	Label     string `json:"label,omitempty"`
-	About     string `json:"about,omitempty"`
-	Amount    Money  `json:"amount"`
+// CatalogPriceParams creates a catalog price.
+type CatalogPriceParams struct {
+	ProductID string             `json:"product_id,omitempty"`
+	Label     string             `json:"label,omitempty"`
+	About     string             `json:"about,omitempty"`
+	Amount    money.AmountParams `json:"amount"`
 }
 
 // LookupPriceParams looks up a price by ID.
@@ -294,20 +269,14 @@ type UpdatePriceParams struct {
 	About     string `json:"about,omitempty"`
 }
 
-// PriceNominal represents a price amount.
-type PriceNominal struct {
-	Currency string `json:"currency"`
-	Value    int64  `json:"value"`
-	Sign     int    `json:"sign"`
-}
-
-// Price represents a catalog price.
-type Price struct {
+// CatalogPrice represents a catalog price resource.
+type CatalogPrice struct {
 	ID         string        `json:"id,omitempty"`
-	ProductID  string        `json:"product_id,omitempty"`
 	Label      string        `json:"label,omitempty"`
 	About      string        `json:"about,omitempty"`
-	Nominal    *PriceNominal `json:"nominal,omitempty"`
+	Active     bool          `json:"active"`
+	Nominal    *money.Amount `json:"nominal,omitempty"`
+	Product    *Product      `json:"product,omitempty"`
 	CreatedAt  string        `json:"created_at,omitempty"`
 	UpdatedAt  string        `json:"updated_at,omitempty"`
 	ArchivedAt string        `json:"archived_at,omitempty"`
@@ -468,26 +437,22 @@ type Shipping struct {
 	Address Address `json:"address"`
 }
 
-// ProductLineItem represents a product in the order cart.
+// ProductLineItemParams represents a product supplied in an order request.
 //
 // Products are goods or services sold to customers. Each product has a unit
 // price, quantity, and optional descriptive information.
 //
 // Example:
 //
-//	item := &inttegro.ProductLineItem{
+//	item := &inttegro.ProductLineItemParams{
 //	    Type:     "physical",
 //	    Name:     "Wireless Headphones",
 //	    About:    "Bluetooth 5.0, 30-hour battery",
 //	    Quantity: 2,
-//	    Price:    inttegro.Money{Currency: "usd", Value: 7999}, // $79.99 each
+//	    Price:    inttegro.PriceParams{AmountParams: money.AmountParams{Currency: money.USD, Value: 7999}}, // $79.99 each
 //	    Reference: "SKU-12345",
 //	}
-type ProductLineItem struct {
-	// ID is assigned by the API when the order is created (read-only).
-	// Don't set this when creating orders.
-	ID string `json:"id,omitempty"`
-
+type ProductLineItemParams struct {
 	// Type indicates whether the product is physical or digital (required).
 	// Values: "physical" or "digital"
 	// Physical products require shipping address.
@@ -510,7 +475,7 @@ type ProductLineItem struct {
 
 	// Price is the unit price per item (required).
 	// In minor units. The line item total is Price.Value * Quantity.
-	Price Money `json:"price"`
+	Price PriceParams `json:"price"`
 
 	// Reference is your internal product identifier (optional).
 	// Link to your inventory system's SKU or product ID.
@@ -529,23 +494,32 @@ type ProductLineItem struct {
 	CustomData map[string]string `json:"custom_data,omitempty"`
 }
 
-// FeeLineItem represents an additional charge like service or processing fees.
+// ProductLineItem is a product returned in an order.
+type ProductLineItem struct {
+	ID         string            `json:"id"`
+	Type       ProductType       `json:"type"`
+	Name       string            `json:"name"`
+	About      string            `json:"about,omitempty"`
+	Quantity   int64             `json:"quantity"`
+	Price      Price             `json:"price"`
+	Reference  string            `json:"reference,omitempty"`
+	TaxCode    string            `json:"tax_code,omitempty"`
+	CustomData map[string]string `json:"custom_data,omitempty"`
+}
+
+// FeeLineItemParams represents an additional charge supplied in a request.
 //
 // Fees are one-time charges added to the order subtotal. Unlike products,
 // fees don't have quantities—they're always a fixed amount.
 //
 // Example:
 //
-//	fee := &inttegro.FeeLineItem{
+//	fee := &inttegro.FeeLineItemParams{
 //	    Label:       "Service Fee",
 //	    Description: "Platform usage fee",
-//	    Amount:      inttegro.Money{Currency: "usd", Value: 299}, // $2.99
+//	    Amount:      money.AmountParams{Currency: money.USD, Value: 299}, // $2.99
 //	}
-type FeeLineItem struct {
-	// ID is assigned by the API when the order is created (read-only).
-	// Don't set this when creating orders.
-	ID string `json:"id,omitempty"`
-
+type FeeLineItemParams struct {
 	// Label is the fee name (optional but recommended).
 	// Displayed on invoices. Example: "Service Fee", "Processing Fee"
 	// Maximum 255 characters.
@@ -567,27 +541,33 @@ type FeeLineItem struct {
 
 	// Amount is the total fee charge (required).
 	// In minor units. Not multiplied by any quantity.
-	Amount Money `json:"amount"`
+	Amount money.AmountParams `json:"amount"`
 }
 
-// ShippingLineItem represents the delivery charge for physical goods.
+// FeeLineItem is an additional charge returned in an order.
+type FeeLineItem struct {
+	ID          string            `json:"id"`
+	Label       string            `json:"label"`
+	Description string            `json:"description,omitempty"`
+	TaxCode     string            `json:"tax_code,omitempty"`
+	CustomData  map[string]string `json:"custom_data,omitempty"`
+	Amount      money.Amount      `json:"amount"`
+}
+
+// ShippingLineItemParams represents a delivery charge supplied in a request.
 //
 // Only needed when selling physical products. Automatically omitted for
 // orders containing only digital products.
 //
 // Example:
 //
-//	shipping := &inttegro.ShippingLineItem{
-//	    Fee: inttegro.Money{Currency: "usd", Value: 500}, // $5.00
+//	shipping := &inttegro.ShippingLineItemParams{
+//	    Fee: money.AmountParams{Currency: money.USD, Value: 500}, // $5.00
 //	}
-type ShippingLineItem struct {
-	// ID is assigned by the API when the order is created (read-only).
-	// Don't set this when creating orders.
-	ID string `json:"id,omitempty"`
-
+type ShippingLineItemParams struct {
 	// Fee is the total shipping charge (required).
 	// In minor units. Not multiplied by any quantity.
-	Fee Money `json:"fee"`
+	Fee money.AmountParams `json:"fee"`
 
 	// TaxCode specifies the tax treatment (optional).
 	// Used for tax calculation when tax integration is enabled.
@@ -599,7 +579,15 @@ type ShippingLineItem struct {
 	CustomData map[string]string `json:"custom_data,omitempty"`
 }
 
-// OrderLineItem is a discriminated union of line item types.
+// ShippingLineItem is a delivery charge returned in an order.
+type ShippingLineItem struct {
+	ID         string            `json:"id"`
+	Fee        money.Amount      `json:"fee"`
+	TaxCode    string            `json:"tax_code,omitempty"`
+	CustomData map[string]string `json:"custom_data,omitempty"`
+}
+
+// OrderLineItemParams is a discriminated union supplied in an order request.
 //
 // Each order line item is one of three types: product, fee, or shipping.
 // Set Type and the corresponding field (Product, Fee, or Shipping).
@@ -607,39 +595,47 @@ type ShippingLineItem struct {
 //
 // Example (product):
 //
-//	lineItem := inttegro.OrderLineItem{
+//	lineItem := inttegro.OrderLineItemParams{
 //	    Type: inttegro.LineItemTypeProduct,
-//	    Product: &inttegro.ProductLineItem{
+//	    Product: &inttegro.ProductLineItemParams{
 //	        Type:     "digital",
 //	        Name:     "Premium Subscription",
 //	        Quantity: 1,
-//	        Price:    inttegro.Money{Currency: "usd", Value: 999},
+//	        Price:    inttegro.PriceParams{AmountParams: money.AmountParams{Currency: money.USD, Value: 999}},
 //	    },
 //	}
 //
 // Example (fee):
 //
-//	lineItem := inttegro.OrderLineItem{
+//	lineItem := inttegro.OrderLineItemParams{
 //	    Type: inttegro.LineItemTypeFee,
-//	    Fee: &inttegro.FeeLineItem{
+//	    Fee: &inttegro.FeeLineItemParams{
 //	        Label:  "Platform Fee",
-//	        Amount: inttegro.Money{Currency: "usd", Value: 299},
+//	        Amount: money.AmountParams{Currency: money.USD, Value: 299},
 //	    },
 //	}
-type OrderLineItem struct {
+type OrderLineItemParams struct {
 	// Type specifies which variant is active (required).
 	Type LineItemType `json:"type"`
 
 	// Product is populated when Type is LineItemTypeProduct.
 	// Nil for other types.
-	Product *ProductLineItem `json:"product,omitempty"`
+	Product *ProductLineItemParams `json:"product,omitempty"`
 
 	// Fee is populated when Type is LineItemTypeFee.
 	// Nil for other types.
-	Fee *FeeLineItem `json:"fee,omitempty"`
+	Fee *FeeLineItemParams `json:"fee,omitempty"`
 
 	// Shipping is populated when Type is LineItemTypeShipping.
 	// Nil for other types.
+	Shipping *ShippingLineItemParams `json:"shipping,omitempty"`
+}
+
+// OrderLineItem is a discriminated union returned by the API.
+type OrderLineItem struct {
+	Type     LineItemType      `json:"type"`
+	Product  *ProductLineItem  `json:"product,omitempty"`
+	Fee      *FeeLineItem      `json:"fee,omitempty"`
 	Shipping *ShippingLineItem `json:"shipping,omitempty"`
 }
 
@@ -727,14 +723,14 @@ type OrderPayoutFinancialAccount struct {
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    LineItems: []inttegro.OrderLineItem{
+//	    LineItems: []inttegro.OrderLineItemParams{
 //	        {
 //	            Type: inttegro.LineItemTypeProduct,
-//	            Product: &inttegro.ProductLineItem{
+//	            Product: &inttegro.ProductLineItemParams{
 //	                Type:     "digital",
 //	                Name:     "Premium Plan",
 //	                Quantity: 1,
-//	                Price:    inttegro.Money{Currency: "ghs", Value: 10000},
+//	                Price:    inttegro.PriceParams{AmountParams: money.AmountParams{Currency: money.GHS, Value: 10000}},
 //	            },
 //	        },
 //	    },
@@ -830,7 +826,7 @@ type OrderCreateParams struct {
 	// LineItems is the list of products, fees, and shipping charges (required).
 	// Must have at least one line item. Orders without line items are invalid.
 	// The order total is calculated from all line items.
-	LineItems []OrderLineItem `json:"line_items"`
+	LineItems []OrderLineItemParams `json:"line_items"`
 
 	// CustomData holds arbitrary key-value metadata for the order (optional).
 	// Both keys and values must be strings.
@@ -1227,14 +1223,14 @@ type Payment struct {
 
 	// Status is the payment's current state.
 	// Values: "initiated", "requires_action", "processing", "paid", "failed"
-	Status OrderPaymentStatus `json:"status,omitempty"`
+	Status PaymentStatus `json:"status,omitempty"`
 
 	// StatementDescriptor is what appears on the customer's statement.
 	// Maximum 22 characters.
 	StatementDescriptor string `json:"statement_descriptor,omitempty"`
 
 	// Amount is the charged amount.
-	Amount *Money `json:"amount,omitempty"`
+	Amount *money.Amount `json:"amount,omitempty"`
 
 	// PaymentMethod is the charged payment method details.
 	PaymentMethod *PaymentMethod `json:"payment_method,omitempty"`
@@ -1316,7 +1312,7 @@ type LineItemGroup struct {
 
 	// Total is the sum of all line items.
 	// This is the order amount before any fees or discounts.
-	Total Money `json:"total"`
+	Total money.Amount `json:"total"`
 }
 
 // Order represents a complete order object.
@@ -1424,10 +1420,10 @@ type Order struct {
 // CreateRefundLineItem requests a refund allocation against one paid order
 // line item. Reason and ReasonDetails are independent from the overall reason.
 type CreateRefundLineItem struct {
-	OrderLineItemID string        `json:"order_line_item_id"`
-	RefundAmount    Money         `json:"refund_amount"`
-	Reason          *RefundReason `json:"reason,omitempty"`
-	ReasonDetails   string        `json:"reason_details,omitempty"`
+	OrderLineItemID string             `json:"order_line_item_id"`
+	RefundAmount    money.AmountParams `json:"refund_amount"`
+	Reason          *RefundReason      `json:"reason,omitempty"`
+	ReasonDetails   string             `json:"reason_details,omitempty"`
 }
 
 // CreateRefundRequest starts a refund for 1 to 64 paid order line items.
@@ -1462,8 +1458,8 @@ type PageRefundsRequest struct {
 type RefundLineItem struct {
 	ID                 string        `json:"id"`
 	OrderLineItemID    string        `json:"order_line_item_id"`
-	OriginalAmountPaid Money         `json:"original_amount_paid"`
-	RefundAmount       Money         `json:"refund_amount"`
+	OriginalAmountPaid money.Amount  `json:"original_amount_paid"`
+	RefundAmount       money.Amount  `json:"refund_amount"`
 	Reason             *RefundReason `json:"reason,omitempty"`
 	ReasonDetails      string        `json:"reason_details,omitempty"`
 }
@@ -1473,7 +1469,7 @@ type Refund struct {
 	ID            string            `json:"id"`
 	OrderID       string            `json:"order_id"`
 	Status        RefundStatus      `json:"status"`
-	Total         Money             `json:"total"`
+	Total         money.Amount      `json:"total"`
 	LineItems     []RefundLineItem  `json:"line_items"`
 	Reason        RefundReason      `json:"reason"`
 	ReasonDetails string            `json:"reason_details,omitempty"`
@@ -2175,7 +2171,7 @@ type Payout struct {
 	DestinationID string `json:"destination_id,omitempty"`
 
 	// Amount is the payout total (read-only).
-	Amount *Money `json:"amount,omitempty"`
+	Amount *money.Amount `json:"amount,omitempty"`
 
 	// Status is the payout's current state (read-only).
 	// Values include "scheduled", "initiated", "processing", "succeeded", "failed", "canceled"
@@ -2209,7 +2205,7 @@ type Payout struct {
 
 	// MaxAmount is the maximum amount authorized for scheduled payouts (read-only).
 	// This may differ from Amount when payout execution has not started.
-	MaxAmount *Money `json:"max_amount,omitempty"`
+	MaxAmount *money.Amount `json:"max_amount,omitempty"`
 
 	// ExecutedAt is when the payout was submitted to the network (ISO 8601, read-only).
 	// Nil if not yet executed.
@@ -2251,13 +2247,13 @@ type BalanceTransaction struct {
 	OrderID string `json:"order_id"`
 
 	// Amount is the transaction amount in the public money shape.
-	Amount Money `json:"amount"`
+	Amount money.Amount `json:"amount"`
 
 	// Deprecated: the reviewed API does not return amount_expected. Use Amount.
-	AmountExpected *Money `json:"amount_expected,omitempty"`
+	AmountExpected *money.Amount `json:"amount_expected,omitempty"`
 
 	// Deprecated: the reviewed API does not return amount_available. Use Amount.
-	AmountAvailable *Money `json:"amount_available,omitempty"`
+	AmountAvailable *money.Amount `json:"amount_available,omitempty"`
 
 	// AvailableAt is when funds become eligible for payout (ISO 8601, read-only).
 	AvailableAt *string `json:"available_at,omitempty"`

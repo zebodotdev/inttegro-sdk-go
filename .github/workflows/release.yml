@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
           runtime_version="$(sed -n 's/^const Version = "\([^"]*\)"$/\1/p' version.go)"
           test "${GITHUB_REF_NAME}" = "v${runtime_version}"
-          test "$(go list -m)" = "github.com/zebodotdev/inttegro-sdk-go/v3"
+          test "$(go list -m)" = "github.com/zebodotdev/inttegro-sdk-go/v4"
           test "$(git rev-list -n 1 "${GITHUB_REF_NAME}")" = "${GITHUB_SHA}"
 
       - name: Run the release checks
@@ -88,7 +88,7 @@ jobs:
             echo "tag=${GITHUB_REF_NAME}"
             echo "commit=${GITHUB_SHA}"
             echo "workflow=${GITHUB_WORKFLOW_REF}"
-            echo "module=github.com/zebodotdev/inttegro-sdk-go/v3"
+            echo "module=github.com/zebodotdev/inttegro-sdk-go/v4"
           } > artifacts/PROVENANCE.txt
           (
             cd artifacts

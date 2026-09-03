@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
 )
 
 func TestProductsEndpointsMatchSpec(t *testing.T) {
@@ -29,7 +31,7 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 	}
 	if _, err := client.Products.AddPrice(ctx, AddProductPriceParams{
 		ProductID:    "prod_123",
-		Amount:       ProductPriceAmount{Currency: "ghs", Value: 5000},
+		Amount:       money.AmountParams{Currency: money.GHS, Value: 5000},
 		SetAsDefault: true,
 	}); err != nil {
 		t.Fatal(err)

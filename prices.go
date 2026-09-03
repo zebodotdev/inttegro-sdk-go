@@ -14,9 +14,9 @@ type PricePageParams struct {
 }
 
 type PricesPage struct {
-	Number int     `json:"number,omitempty"`
-	Size   int     `json:"size,omitempty"`
-	Prices []Price `json:"prices,omitempty"`
+	Number int            `json:"number,omitempty"`
+	Size   int            `json:"size,omitempty"`
+	Prices []CatalogPrice `json:"prices,omitempty"`
 }
 
 type PriceActionParams struct {
@@ -24,9 +24,9 @@ type PriceActionParams struct {
 }
 
 // Create creates a price.
-func (s *PricesService) Create(ctx context.Context, params CreatePriceParams) (*Price, error) {
+func (s *PricesService) Create(ctx context.Context, params CatalogPriceParams) (*CatalogPrice, error) {
 	var resp struct {
-		Price Price `json:"price"`
+		Price CatalogPrice `json:"price"`
 	}
 	if err := s.client.do(ctx, "POST", "/prices/create", params, &resp); err != nil {
 		return nil, err
@@ -35,9 +35,9 @@ func (s *PricesService) Create(ctx context.Context, params CreatePriceParams) (*
 }
 
 // Lookup retrieves a price by ID.
-func (s *PricesService) Lookup(ctx context.Context, priceID string) (*Price, error) {
+func (s *PricesService) Lookup(ctx context.Context, priceID string) (*CatalogPrice, error) {
 	var resp struct {
-		Price Price `json:"price"`
+		Price CatalogPrice `json:"price"`
 	}
 	if err := s.client.do(ctx, "POST", "/prices/lookup", LookupPriceParams{PriceID: priceID}, &resp); err != nil {
 		return nil, err
@@ -57,9 +57,9 @@ func (s *PricesService) Page(ctx context.Context, params PricePageParams) (*Pric
 }
 
 // Update updates a price.
-func (s *PricesService) Update(ctx context.Context, params UpdatePriceParams) (*Price, error) {
+func (s *PricesService) Update(ctx context.Context, params UpdatePriceParams) (*CatalogPrice, error) {
 	var resp struct {
-		Price Price `json:"price"`
+		Price CatalogPrice `json:"price"`
 	}
 	if err := s.client.do(ctx, "POST", "/prices/update", params, &resp); err != nil {
 		return nil, err
@@ -68,19 +68,19 @@ func (s *PricesService) Update(ctx context.Context, params UpdatePriceParams) (*
 }
 
 // Activate reactivates an inactive price.
-func (s *PricesService) Activate(ctx context.Context, priceID string) (*Price, error) {
+func (s *PricesService) Activate(ctx context.Context, priceID string) (*CatalogPrice, error) {
 	return s.priceAction(ctx, "/prices/activate", priceID)
 }
 
 // Deactivate marks a price inactive.
-func (s *PricesService) Deactivate(ctx context.Context, priceID string) (*Price, error) {
+func (s *PricesService) Deactivate(ctx context.Context, priceID string) (*CatalogPrice, error) {
 	return s.priceAction(ctx, "/prices/deactivate", priceID)
 }
 
 // Archive permanently archives a price and marks it inactive.
-func (s *PricesService) Archive(ctx context.Context, priceID string, opts ...RequestOption) (*Price, error) {
+func (s *PricesService) Archive(ctx context.Context, priceID string, opts ...RequestOption) (*CatalogPrice, error) {
 	var resp struct {
-		Price Price `json:"price"`
+		Price CatalogPrice `json:"price"`
 	}
 	if err := s.client.doJSON(ctx, "/prices/archive", PriceActionParams{PriceID: priceID}, applyRequestOptions(opts), &resp); err != nil {
 		return nil, err
@@ -88,9 +88,9 @@ func (s *PricesService) Archive(ctx context.Context, priceID string, opts ...Req
 	return &resp.Price, nil
 }
 
-func (s *PricesService) priceAction(ctx context.Context, path, priceID string) (*Price, error) {
+func (s *PricesService) priceAction(ctx context.Context, path, priceID string) (*CatalogPrice, error) {
 	var resp struct {
-		Price Price `json:"price"`
+		Price CatalogPrice `json:"price"`
 	}
 	if err := s.client.do(ctx, "POST", path, PriceActionParams{PriceID: priceID}, &resp); err != nil {
 		return nil, err
