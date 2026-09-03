@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.1 - 2026-09-03
+
+- Corrected the order creation example to use the typed `OrderLineItemParams` request variant.
+
 ## 4.0.0 - 2026-09-03
 
 - Breaking: replaced `OrderPaymentStatus` with the domain-level `PaymentStatus` type.

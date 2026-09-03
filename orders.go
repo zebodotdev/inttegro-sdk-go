@@ -86,7 +86,7 @@ type OrdersService struct {
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    LineItems: []inttegro.OrderLineItem{...},
+//	    LineItems: []inttegro.OrderLineItemParams{...},
 //	    BillingDetails: inttegro.BillingDetails{...},
 //	    ExecutePayment: inttegro.Bool(true),
 //	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_001"},
