@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp "${{ steps.attest.outputs.bundle-path }}" artifacts/ATTESTATION.sigstore.jsonl
+          cp "${{ steps.attest.outputs.bundle-path }}" artifacts/ATTESTATIONS.sigstore
           {
             echo "repository=https://github.com/${GITHUB_REPOSITORY}"
             echo "tag=${GITHUB_REF_NAME}"
@@ -92,14 +92,20 @@ jobs:
           } > artifacts/PROVENANCE.txt
           (
             cd artifacts
-            sha256sum ./*.tar.gz ./ATTESTATION.sigstore.jsonl ./PROVENANCE.txt > SHA256SUMS
+            sha256sum ./*.tar.gz ./ATTESTATIONS.sigstore ./PROVENANCE.txt > SHA256SUMS
           )
 
-      - name: Publish the immutable GitHub release
+      - name: Create the draft GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh release create "${GITHUB_REF_NAME}" artifacts/*
+          --draft
           --generate-notes
           --title "Inttegro Go SDK ${GITHUB_REF_NAME}"
           --verify-tag
+
+      - name: Finalize the immutable GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "${GITHUB_REF_NAME}" --draft=false
