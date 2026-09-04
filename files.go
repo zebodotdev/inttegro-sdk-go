@@ -119,7 +119,7 @@ func (s *FilesService) Create(ctx context.Context, params FileCreateParams) (*Fi
 	var resp struct {
 		File File `json:"file"`
 	}
-	if err := s.client.doRaw(ctx, "POST", "/files/create", &body, writer.FormDataContentType(), params.IdempotencyKey, true, &resp); err != nil {
+	if err := s.client.doRaw(ctx, "POST", "/files/create", &body, writer.FormDataContentType(), params.IdempotencyKey, true, &resp, ""); err != nil {
 		return nil, err
 	}
 	return &resp.File, nil
@@ -150,7 +150,7 @@ func (s *FilesService) Contents(ctx context.Context, params FileContentsParams) 
 	if err != nil {
 		return nil, err
 	}
-	resp, err := s.client.rawResponse(ctx, "POST", "/files/contents", bytes.NewReader(body), "application/json", "", true)
+	resp, err := s.client.rawResponse(ctx, "POST", "/files/contents", bytes.NewReader(body), "application/json", "", true, "")
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +268,7 @@ func (s *FileLinksService) Revoke(ctx context.Context, params FileLinkRevokePara
 }
 
 func (s *FileLinksService) Open(ctx context.Context, url string) (*FileDownload, error) {
-	resp, err := s.client.rawResponse(ctx, "GET", url, nil, "", "", false)
+	resp, err := s.client.rawResponse(ctx, "GET", url, nil, "", "", false, "file_links.download")
 	if err != nil {
 		return nil, err
 	}
@@ -442,7 +442,7 @@ func (s *UploadRequestsService) Fulfill(ctx context.Context, params UploadReques
 		UploadRequest UploadRequest `json:"upload_request"`
 		File          File          `json:"file"`
 	}
-	if err := s.client.doRaw(ctx, "POST", params.UploadURL, &body, writer.FormDataContentType(), "", false, &resp); err != nil {
+	if err := s.client.doRaw(ctx, "POST", params.UploadURL, &body, writer.FormDataContentType(), "", false, &resp, "upload_requests.upload"); err != nil {
 		return nil, nil, err
 	}
 	return &resp.UploadRequest, &resp.File, nil
@@ -461,11 +461,11 @@ func (c *Client) doJSON(ctx context.Context, path string, body any, opts request
 	if err != nil {
 		return err
 	}
-	return c.doRaw(ctx, "POST", path, bytes.NewReader(raw), "application/json", opts.IdempotencyKey, true, out)
+	return c.doRaw(ctx, "POST", path, bytes.NewReader(raw), "application/json", opts.IdempotencyKey, true, out, "")
 }
 
-func (c *Client) doRaw(ctx context.Context, method, pathOrURL string, body io.Reader, contentType, idempotencyKey string, authenticated bool, out any) error {
-	resp, err := c.rawResponse(ctx, method, pathOrURL, body, contentType, idempotencyKey, authenticated)
+func (c *Client) doRaw(ctx context.Context, method, pathOrURL string, body io.Reader, contentType, idempotencyKey string, authenticated bool, out any, operation string) error {
+	resp, err := c.rawResponse(ctx, method, pathOrURL, body, contentType, idempotencyKey, authenticated, operation)
 	if err != nil {
 		return err
 	}
@@ -483,13 +483,17 @@ func (c *Client) doRaw(ctx context.Context, method, pathOrURL string, body io.Re
 	return json.Unmarshal(respBytes, out)
 }
 
-func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body io.Reader, contentType, idempotencyKey string, authenticated bool) (*http.Response, error) {
+func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body io.Reader, contentType, idempotencyKey string, authenticated bool, operation string) (*http.Response, error) {
+	ctx, telemetry := c.startRequestTelemetry(ctx, method, pathOrURL, operation)
+	defer telemetry.end()
+
 	url := pathOrURL
 	if len(pathOrURL) == 0 || pathOrURL[0] == '/' {
 		url = c.BaseURL + pathOrURL
 	}
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
+		telemetry.fail("request_error")
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/json")
@@ -504,17 +508,22 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 	} else if authenticated && strings.EqualFold(method, "POST") && isIdempotentMutationPath(pathOrURL) && !strings.HasPrefix(contentType, "application/json") {
 		req.Header.Set("Idempotency-Key", generateIdempotencyKey())
 	}
+	telemetry.inject(ctx, req.Header)
+	telemetry.attempt()
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
+		telemetry.fail(classifyTelemetryError(err, "transport_error"))
 		return nil, err
 	}
+	telemetry.response(resp)
 	if resp.StatusCode < 400 {
 		return resp, nil
 	}
 	defer resp.Body.Close()
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		telemetry.fail("read_error")
 		return nil, err
 	}
 	apiErr := &APIError{StatusCode: resp.StatusCode, Body: respBytes}
@@ -524,5 +533,6 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 	} else if len(respBytes) > 0 {
 		apiErr.Message = string(respBytes)
 	}
+	telemetry.fail(fmt.Sprintf("http_%d", resp.StatusCode))
 	return nil, fmt.Errorf("inttegro api error: %w", apiErr)
 }

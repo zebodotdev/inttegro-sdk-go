@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.3.0 - 2026-09-04
+
+- Added vendor-neutral OpenTelemetry spans for logical SDK operations, HTTP attempts, response receipt, decoding, and safe failure categories.
+- Added W3C trace-context propagation plus global or per-client tracer-provider and propagator configuration.
+- Kept request bodies, credentials, resource identifiers, dynamic URLs, and error details out of telemetry.
+
 ## 4.2.0 - 2026-09-03
 
 - Added focused `wallets` and `bankaccounts` packages for financial-account variants.

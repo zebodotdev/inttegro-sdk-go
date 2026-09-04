@@ -10,6 +10,10 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 )
 
 var uuidV7Pattern = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`)
@@ -82,6 +86,134 @@ func TestDoAPIError(t *testing.T) {
 	if apiErr.URL == "" {
 		t.Fatalf("expected url to be set")
 	}
+}
+
+func TestTelemetryTracesLogicalOperationAndRedactsRequestData(t *testing.T) {
+	recorder := tracetest.NewSpanRecorder()
+	provider := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(recorder))
+	t.Cleanup(func() { _ = provider.Shutdown(context.Background()) })
+
+	var traceparent string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		traceparent = r.Header.Get("traceparent")
+		w.Header().Set("x-request-id", "req_telemetry")
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"order":{"id":"or_private_123"}}`)
+	}))
+	defer server.Close()
+
+	client := NewClient(
+		"sk_test_do_not_trace",
+		WithBaseURL(server.URL),
+		WithTracerProvider(provider),
+		WithTextMapPropagator(propagation.TraceContext{}),
+	)
+	var response map[string]any
+	if err := client.do(context.Background(), "POST", "/orders/lookup", map[string]string{"order_id": "or_private_123"}, &response); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if traceparent == "" {
+		t.Fatal("expected traceparent to be propagated")
+	}
+
+	spans := recorder.Ended()
+	if len(spans) != 1 {
+		t.Fatalf("ended spans = %d, want 1", len(spans))
+	}
+	span := spans[0]
+	if got := span.Name(); got != "inttegro.orders.lookup" {
+		t.Fatalf("span name = %q, want inttegro.orders.lookup", got)
+	}
+	assertSpanAttribute(t, span, "inttegro.operation.name", "orders.lookup")
+	assertSpanAttribute(t, span, "http.response.status_code", "200")
+	assertSpanAttribute(t, span, "inttegro.request.id", "req_telemetry")
+	assertSpanEvent(t, span, "inttegro.request.prepared")
+	assertSpanEvent(t, span, "inttegro.http.attempt.started")
+	assertSpanEvent(t, span, "inttegro.response.received")
+	assertSpanEvent(t, span, "inttegro.response.decoded")
+
+	telemetryText := spanTelemetryText(span)
+	for _, secret := range []string{"sk_test_do_not_trace", "or_private_123"} {
+		if strings.Contains(telemetryText, secret) {
+			t.Fatalf("telemetry contained private value %q: %s", secret, telemetryText)
+		}
+	}
+}
+
+func TestTelemetryDoesNotNameUnknownRoutesFromResourceIDs(t *testing.T) {
+	operation, route, serverAddress := telemetryRequestDetails(
+		"https://api.inttegro.com",
+		"/orders/or_private_123",
+		"",
+	)
+	if operation != "http.request" || route != "" || serverAddress != "api.inttegro.com" {
+		t.Fatalf("request details = (%q, %q, %q), want bounded fallback", operation, route, serverAddress)
+	}
+}
+
+func TestTelemetryRecordsSafeHTTPFailure(t *testing.T) {
+	recorder := tracetest.NewSpanRecorder()
+	provider := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(recorder))
+	t.Cleanup(func() { _ = provider.Shutdown(context.Background()) })
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+		io.WriteString(w, `{"message":"sk_live_private must never be traced"}`)
+	}))
+	defer server.Close()
+
+	client := NewClient("sk_live_private", WithBaseURL(server.URL), WithTracerProvider(provider))
+	if err := client.do(context.Background(), "POST", "/orders/lookup", map[string]string{"order_id": "or_private"}, nil); err == nil {
+		t.Fatal("expected API error")
+	}
+
+	spans := recorder.Ended()
+	if len(spans) != 1 {
+		t.Fatalf("ended spans = %d, want 1", len(spans))
+	}
+	span := spans[0]
+	assertSpanAttribute(t, span, "error.type", "http_401")
+	assertSpanEvent(t, span, "inttegro.request.failed")
+	telemetryText := spanTelemetryText(span)
+	if strings.Contains(telemetryText, "sk_live_private") || strings.Contains(telemetryText, "or_private") {
+		t.Fatalf("failure telemetry contained private request data: %s", telemetryText)
+	}
+}
+
+func assertSpanAttribute(t *testing.T, span sdktrace.ReadOnlySpan, key, want string) {
+	t.Helper()
+	for _, attr := range span.Attributes() {
+		if string(attr.Key) == key && attr.Value.Emit() == want {
+			return
+		}
+	}
+	t.Fatalf("span attribute %q = %q not found", key, want)
+}
+
+func assertSpanEvent(t *testing.T, span sdktrace.ReadOnlySpan, want string) {
+	t.Helper()
+	for _, event := range span.Events() {
+		if event.Name == want {
+			return
+		}
+	}
+	t.Fatalf("span event %q not found", want)
+}
+
+func spanTelemetryText(span sdktrace.ReadOnlySpan) string {
+	var builder strings.Builder
+	for _, attr := range span.Attributes() {
+		builder.WriteString(string(attr.Key))
+		builder.WriteString(attr.Value.Emit())
+	}
+	for _, event := range span.Events() {
+		builder.WriteString(event.Name)
+		for _, attr := range event.Attributes {
+			builder.WriteString(string(attr.Key))
+			builder.WriteString(attr.Value.Emit())
+		}
+	}
+	return builder.String()
 }
 
 func TestDoGeneratesRequestMetaIdempotencyKeyForMutations(t *testing.T) {

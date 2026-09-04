@@ -114,6 +114,20 @@ fmt.Println(refund.ID, refund.Status)
 Refunds return funds to the original payment method and are processed
 asynchronously. Use `Refunds.Lookup` to retrieve the current status.
 
+## Observe SDK operations
+
+The SDK emits vendor-neutral OpenTelemetry spans through your application's provider. It never configures an exporter or sends telemetry by itself. Configure the global provider and propagator at application startup, or use the client options to inject them:
+
+```go
+client := inttegro.NewClient(
+	os.Getenv("INTTEGRO_API_KEY"),
+	inttegro.WithTracerProvider(tracerProvider),
+	inttegro.WithTextMapPropagator(propagation.TraceContext{}),
+)
+```
+
+Spans are named after logical operations such as `inttegro.orders.create`. HTTP attempts, response receipt, and decoding are span events. API keys, bodies, resource IDs, dynamic URLs, and error messages are never recorded. See [SDK observability](https://studio.inttegro.com/sdk-observability) for the complete contract and use `WithTelemetryEnabled(false)` when needed.
+
 ## Work with the API
 
 The SDK covers orders and checkout, customers, products and prices, purchase intents, payment methods, balances, payouts and refunds, notifications, files, application settings, keys, and country specifications. Services use exported fields such as `PurchaseIntents` and `PaymentMethods`.
@@ -123,7 +137,7 @@ Go-specific features:
 - Typed request and domain structs with exported constants for public enum values.
 - `context.Context` on every operation for deadlines and cancellation.
 - Safe sharing across goroutines.
-- Standard-library HTTP with no runtime dependencies.
+- Standard-library HTTP with the lightweight OpenTelemetry API for application-owned tracing.
 - `WithHTTPClient` and `WithBaseURL` options for proxies, connection pools, tests, and custom timeouts.
 - Package-level godoc for resource methods and models.
 
@@ -135,7 +149,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-4.2.0.tar.gz \
+gh attestation verify inttegro-sdk-go-4.3.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

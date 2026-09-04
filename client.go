@@ -79,6 +79,10 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -110,6 +114,11 @@ type Client struct {
 	// Defaults to a client with 30 second timeout.
 	// Customize using WithHTTPClient option for proxy, retry, or timeout control.
 	HTTPClient *http.Client
+
+	tracerProvider   trace.TracerProvider
+	propagator       propagation.TextMapPropagator
+	tracer           trace.Tracer
+	telemetryEnabled bool
 
 	// Orders provides access to order creation, payment, and lifecycle management.
 	// See OrdersService for available operations.
@@ -228,6 +237,35 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 	}
 }
 
+// WithTracerProvider uses provider for Inttegro client spans. When omitted,
+// the OpenTelemetry global tracer provider is used.
+func WithTracerProvider(provider trace.TracerProvider) ClientOption {
+	return func(c *Client) {
+		if provider != nil {
+			c.tracerProvider = provider
+		}
+	}
+}
+
+// WithTextMapPropagator uses propagator to inject distributed-tracing context.
+// When omitted, the OpenTelemetry global text-map propagator is used.
+func WithTextMapPropagator(propagator propagation.TextMapPropagator) ClientOption {
+	return func(c *Client) {
+		if propagator != nil {
+			c.propagator = propagator
+		}
+	}
+}
+
+// WithTelemetryEnabled controls Inttegro's OpenTelemetry instrumentation.
+// Instrumentation is enabled by default but remains a no-op unless the
+// application configures an OpenTelemetry tracer provider.
+func WithTelemetryEnabled(enabled bool) ClientOption {
+	return func(c *Client) {
+		c.telemetryEnabled = enabled
+	}
+}
+
 // NewClient constructs a Inttegro API client.
 //
 // The apiKey parameter is required and should be your Inttegro API key
@@ -248,13 +286,17 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 // The client is safe for concurrent use by multiple goroutines.
 func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
-		APIKey:     apiKey,
-		BaseURL:    strings.TrimRight(DefaultBaseURL, "/"),
-		HTTPClient: &http.Client{Timeout: defaultTimeout},
+		APIKey:           apiKey,
+		BaseURL:          strings.TrimRight(DefaultBaseURL, "/"),
+		HTTPClient:       &http.Client{Timeout: defaultTimeout},
+		tracerProvider:   otel.GetTracerProvider(),
+		propagator:       otel.GetTextMapPropagator(),
+		telemetryEnabled: true,
 	}
 	for _, opt := range opts {
 		opt(c)
 	}
+	c.tracer = c.tracerProvider.Tracer("inttegro", trace.WithInstrumentationVersion(Version))
 
 	c.Orders = &OrdersService{client: c}
 	c.Refunds = &RefundsService{client: c}
@@ -303,10 +345,14 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 		return errors.New("api key is required")
 	}
 
+	ctx, telemetry := c.startRequestTelemetry(ctx, method, path, "")
+	defer telemetry.end()
+
 	var reqBody io.Reader
 	if body != nil {
 		raw, err := c.jsonRequestBody(method, path, body, "")
 		if err != nil {
+			telemetry.fail("encode_error")
 			return fmt.Errorf("encode request body: %w", err)
 		}
 		reqBody = bytes.NewReader(raw)
@@ -315,6 +361,7 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	url := c.BaseURL + path
 	req, err := http.NewRequestWithContext(ctx, method, url, reqBody)
 	if err != nil {
+		telemetry.fail("request_error")
 		return fmt.Errorf("create request: %w", err)
 	}
 
@@ -324,15 +371,20 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
+	telemetry.inject(ctx, req.Header)
+	telemetry.attempt()
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
+		telemetry.fail(classifyTelemetryError(err, "transport_error"))
 		return fmt.Errorf("execute request: %w", err)
 	}
 	defer resp.Body.Close()
+	telemetry.response(resp)
 
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		telemetry.fail("read_error")
 		return fmt.Errorf("read response: %w", err)
 	}
 
@@ -352,13 +404,16 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 		if apiErr.Message == "" && len(respBytes) > 0 {
 			apiErr.Message = string(respBytes)
 		}
+		telemetry.fail(fmt.Sprintf("http_%d", resp.StatusCode))
 		return apiErr
 	}
 
 	if out != nil && len(respBytes) > 0 {
 		if err := json.Unmarshal(respBytes, out); err != nil {
+			telemetry.fail("decode_error")
 			return fmt.Errorf("decode response: %w", err)
 		}
+		telemetry.decoded()
 	}
 
 	return nil
