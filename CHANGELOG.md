@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.3.1 - 2026-09-04
+
+- Added the MIT license to the released module source so package documentation can be displayed by pkg.go.dev.
+
 ## 4.3.0 - 2026-09-04
 
 - Added vendor-neutral OpenTelemetry spans for logical SDK operations, HTTP attempts, response receipt, decoding, and safe failure categories.
