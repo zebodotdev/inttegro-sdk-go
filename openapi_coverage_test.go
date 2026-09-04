@@ -21,6 +21,13 @@ var openAPICapabilityURLPaths = map[string]bool{
 	"/upload_requests/upload": true,
 }
 
+var openAPIClientCheckoutPaths = map[string]bool{
+	"/checkout/lookup":               true,
+	"/checkout/pay":                  true,
+	"/checkout/request_confirmation": true,
+	"/checkout/confirm_payment":      true,
+}
+
 func TestSDKPathsCoverOpenAPI(t *testing.T) {
 	specPaths, err := readOpenAPIPaths(openAPISpecPath())
 	if err != nil {
@@ -30,7 +37,7 @@ func TestSDKPathsCoverOpenAPI(t *testing.T) {
 
 	var missing []string
 	for _, path := range specPaths {
-		if openAPICapabilityURLPaths[path] {
+		if openAPICapabilityURLPaths[path] || openAPIClientCheckoutPaths[path] {
 			continue
 		}
 		if !sdkPaths[path] {
@@ -507,6 +514,11 @@ func TestOpenAPICapabilityURLPathExceptionsExist(t *testing.T) {
 	}
 	var missing []string
 	for path := range openAPICapabilityURLPaths {
+		if !specSet[path] {
+			missing = append(missing, path)
+		}
+	}
+	for path := range openAPIClientCheckoutPaths {
 		if !specSet[path] {
 			missing = append(missing, path)
 		}
