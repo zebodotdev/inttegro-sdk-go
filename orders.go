@@ -58,7 +58,7 @@ type OrdersService struct {
 // Parameters:
 //   - CustomerData OR CustomerID: Specify customer (exactly one required)
 //   - LineItems: Products, fees, and shipping charges (required)
-//   - BillingDetails: Billing contact and address (required)
+//   - BillingDetails: Billing contact and address (optional)
 //   - PaymentMethodID OR PaymentMethodData: Payment method (optional)
 //   - ExecutePayment: Charge immediately (optional, requires payment method)
 //   - Finalize: Generate checkout page (optional)
@@ -482,7 +482,7 @@ func (p OrderCreateParams) Validate() error {
 	if len(p.LineItems) == 0 {
 		return fmt.Errorf("line_items is required")
 	}
-	if p.BillingDetails.Name == "" || p.BillingDetails.Email == "" || p.BillingDetails.PhoneNumber == "" {
+	if p.BillingDetails != (BillingDetails{}) && (p.BillingDetails.Name == "" || p.BillingDetails.Email == "" || p.BillingDetails.PhoneNumber == "") {
 		return fmt.Errorf("billing_details.name, email_address, and phone_number are required")
 	}
 	if p.CustomerData == nil && p.CustomerID == "" {

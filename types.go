@@ -1,6 +1,9 @@
 package inttegro
 
 import (
+	"bytes"
+	"encoding/json"
+
 	"github.com/zebodotdev/inttegro-sdk-go/v4/bankaccounts"
 	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
 	"github.com/zebodotdev/inttegro-sdk-go/v4/paymentmethods"
@@ -114,6 +117,21 @@ type ProductCategory struct {
 	Slug string `json:"slug,omitempty"`
 }
 
+// UnmarshalJSON accepts both the canonical category string and the legacy
+// expanded category object so existing callers keep their field accessors.
+func (c *ProductCategory) UnmarshalJSON(data []byte) error {
+	trimmed := bytes.TrimSpace(data)
+	if bytes.Equal(trimmed, []byte("null")) {
+		*c = ProductCategory{}
+		return nil
+	}
+	if len(trimmed) > 0 && trimmed[0] == '"' {
+		return json.Unmarshal(trimmed, &c.Name)
+	}
+	type categoryAlias ProductCategory
+	return json.Unmarshal(trimmed, (*categoryAlias)(c))
+}
+
 // ProductDefaultUnitPrice represents a product's loaded default unit price.
 type ProductDefaultUnitPrice struct {
 	ID         string        `json:"id,omitempty"`
@@ -131,6 +149,7 @@ type ProductPriceSummary struct {
 	ID      string        `json:"id,omitempty"`
 	Label   string        `json:"label,omitempty"`
 	Nominal *money.Amount `json:"nominal,omitempty"`
+	Active  bool          `json:"active,omitempty"`
 }
 
 // ProductShipmentDimensions describes physical dimensions.
@@ -244,6 +263,95 @@ type Product struct {
 	CreatedAt        string                   `json:"created_at,omitempty"`
 	UpdatedAt        string                   `json:"updated_at,omitempty"`
 	ArchivedAt       string                   `json:"archived_at,omitempty"`
+}
+
+// UnmarshalJSON accepts the current Product response while preserving the
+// legacy exported category, media, and attribute field types used by v4
+// callers. A future major version can expose the canonical shapes directly.
+func (p *Product) UnmarshalJSON(data []byte) error {
+	type productAlias Product
+	decoded := struct {
+		Media      json.RawMessage `json:"media"`
+		Attributes json.RawMessage `json:"attributes"`
+		*productAlias
+	}{productAlias: (*productAlias)(p)}
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	p.Media = nil
+	p.Attributes = nil
+	if err := decodeProductMedia(decoded.Media, &p.Media); err != nil {
+		return err
+	}
+	return decodeProductAttributes(decoded.Attributes, &p.Attributes)
+}
+
+func decodeProductMedia(data json.RawMessage, target *[]ProductMediaItem) error {
+	trimmed := bytes.TrimSpace(data)
+	if len(trimmed) == 0 || bytes.Equal(trimmed, []byte("null")) {
+		return nil
+	}
+	if trimmed[0] == '[' {
+		return json.Unmarshal(trimmed, target)
+	}
+	var media struct {
+		HeroImage   string   `json:"hero_image"`
+		Thumbnail   string   `json:"thumbnail"`
+		WebPageURL  string   `json:"web_page_url"`
+		BrandLogo   string   `json:"brand_logo"`
+		Infographic string   `json:"infographic"`
+		PromoVideo  string   `json:"promo_video"`
+		DemoVideo   string   `json:"demo_video"`
+		Gallery     []string `json:"gallery"`
+		Downloads   []string `json:"downloads"`
+	}
+	if err := json.Unmarshal(trimmed, &media); err != nil {
+		return err
+	}
+	appendItem := func(kind, value string) {
+		if value != "" {
+			*target = append(*target, ProductMediaItem{Type: kind, URL: value})
+		}
+	}
+	appendItem("hero_image", media.HeroImage)
+	appendItem("thumbnail", media.Thumbnail)
+	appendItem("web_page_url", media.WebPageURL)
+	appendItem("brand_logo", media.BrandLogo)
+	appendItem("infographic", media.Infographic)
+	appendItem("promo_video", media.PromoVideo)
+	appendItem("demo_video", media.DemoVideo)
+	for _, value := range media.Gallery {
+		appendItem("gallery", value)
+	}
+	for _, value := range media.Downloads {
+		appendItem("download", value)
+	}
+	return nil
+}
+
+func decodeProductAttributes(data json.RawMessage, target *map[string]string) error {
+	trimmed := bytes.TrimSpace(data)
+	if len(trimmed) == 0 || bytes.Equal(trimmed, []byte("null")) {
+		return nil
+	}
+	if trimmed[0] == '{' {
+		return json.Unmarshal(trimmed, target)
+	}
+	var attributes []struct {
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	}
+	if err := json.Unmarshal(trimmed, &attributes); err != nil {
+		return err
+	}
+	values := make(map[string]string, len(attributes))
+	for _, attribute := range attributes {
+		if attribute.Name != "" {
+			values[attribute.Name] = attribute.Value
+		}
+	}
+	*target = values
+	return nil
 }
 
 // ProductsPage holds a page of products.
@@ -838,10 +946,9 @@ type OrderCreateParams struct {
 	// Both keys and values must be strings.
 	CustomData map[string]string `json:"custom_data,omitempty"`
 
-	// BillingDetails captures billing contact and address (required).
-	// Used for invoicing and payment authorization.
-	// The email and phone number receive payment notifications.
-	BillingDetails BillingDetails `json:"billing_details"`
+	// BillingDetails optionally supplies billing contact and address details.
+	// Hosted checkout can collect payment-specific details when this is zero.
+	BillingDetails BillingDetails `json:"billing_details,omitzero"`
 
 	// Shipping provides delivery address for physical goods (optional).
 	// Required only when line items include physical products.

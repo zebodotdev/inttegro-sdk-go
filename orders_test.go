@@ -83,6 +83,32 @@ func TestOrdersPayReturnsOrder(t *testing.T) {
 	}
 }
 
+func TestOrderCreateParamsOmitZeroBillingDetails(t *testing.T) {
+	params := OrderCreateParams{
+		CustomerData: &CustomerData{Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605"},
+		LineItems:    []OrderLineItemParams{{Type: LineItemTypeProduct}},
+	}
+	if err := params.Validate(); err != nil {
+		t.Fatalf("zero billing details should be optional: %v", err)
+	}
+	payload, err := json.Marshal(params)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decoded map[string]json.RawMessage
+	if err := json.Unmarshal(payload, &decoded); err != nil {
+		t.Fatal(err)
+	}
+	if _, exists := decoded["billing_details"]; exists {
+		t.Fatalf("zero billing details must be omitted: %s", payload)
+	}
+
+	params.BillingDetails = BillingDetails{Name: "Akua Mensah"}
+	if err := params.Validate(); err == nil {
+		t.Fatal("partially supplied billing details must be rejected")
+	}
+}
+
 func TestOrdersRequestConfirmationReturnsOrder(t *testing.T) {
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/orders/request_confirmation" {

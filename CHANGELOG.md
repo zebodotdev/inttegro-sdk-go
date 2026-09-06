@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 4.4.1 - 2026-09-06
+
+- Omit zero billing details from Order creation and validate contact fields only when billing details are supplied, matching the optional public API field.
+- Decode canonical Product category, media, attributes, and price activity into the source-compatible v4 Product representation.
+
 ## 4.4.0 - 2026-09-06
 
 - Added opt-in, typed error reporting to application-owned collectors with privacy-safe payloads, stable fingerprints, isolated reporter failures, and no reporting work when unconfigured.

@@ -79,6 +79,35 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 	}
 }
 
+func TestProductDecodesCanonicalMetadata(t *testing.T) {
+	var product Product
+	raw := []byte(`{
+		"id":"prod_123",
+		"type":"service",
+		"name":"August Studio Retainer",
+		"category":"Design",
+		"active":true,
+		"media":{"web_page_url":"https://demos.inttegro.dev/","gallery":["https://example.com/one.jpg"]},
+		"attributes":[{"name":"term","value":"month"}],
+		"prices":[{"id":"pr_123","active":true,"nominal":{"currency":"ghs","value":5000}}]
+	}`)
+	if err := json.Unmarshal(raw, &product); err != nil {
+		t.Fatal(err)
+	}
+	if product.Category == nil || product.Category.Name != "Design" {
+		t.Fatalf("category = %#v, want Design", product.Category)
+	}
+	if len(product.Media) != 2 || product.Media[0].Type != "web_page_url" {
+		t.Fatalf("media = %#v, want canonical media entries", product.Media)
+	}
+	if product.Attributes["term"] != "month" {
+		t.Fatalf("attributes = %#v, want term=month", product.Attributes)
+	}
+	if len(product.Prices) != 1 || !product.Prices[0].Active {
+		t.Fatalf("prices = %#v, want active price", product.Prices)
+	}
+}
+
 func TestAppsEndpointsMatchSpec(t *testing.T) {
 	var paths []string
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
