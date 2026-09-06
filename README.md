@@ -4,6 +4,8 @@
 
 The official Go client for building server-side Inttegro integrations.
 
+[API documentation](https://go.inttegro.dev/) · [Integration guides](https://studio.inttegro.com/sdks/go)
+
 > **Fastest, most modern path:** connect an agent to [Inttegro MCP](https://studio.inttegro.com/inttegro-mcp) at `https://mcp.inttegro.com`, then ask it to run `design_integration`. It will produce an implementation and test plan for your application. Use this SDK when you are ready to connect that plan to your Go service.
 
 All official Inttegro SDKs expose the same API capabilities. This module adds Go-specific types, concurrency, and transport control.
