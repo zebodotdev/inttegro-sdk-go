@@ -51,7 +51,7 @@ jobs:
           else
             git worktree add --detach pages-site
             git -C pages-site switch --orphan gh-pages
-            git -C pages-site rm -rf .
+            git -C pages-site rm -rf --ignore-unmatch .
           fi
 
           rm -rf "pages-site/$DOC_VERSION"
