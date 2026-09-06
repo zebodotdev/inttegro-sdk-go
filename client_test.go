@@ -180,6 +180,85 @@ func TestTelemetryRecordsSafeHTTPFailure(t *testing.T) {
 	}
 }
 
+func TestErrorReportingReportsOnePrivacySafeFinalFailureWhenConfigured(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("x-request-id", "req_456")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		io.WriteString(w, `{"error":{"type":"transient_error","code":"provider_failed","fix_code":"repeat_same_request","message":"private provider detail"}}`)
+	}))
+	defer server.Close()
+
+	var reports []ErrorReport
+	client := NewClient(
+		"sk_live_must_not_appear",
+		WithBaseURL(server.URL),
+		WithTelemetryEnabled(false),
+		WithErrorReporter(func(_ context.Context, report ErrorReport) {
+			reports = append(reports, report)
+			panic("collector unavailable")
+		}),
+	)
+	err := client.do(context.Background(), "POST", "/orders/lookup", map[string]string{"order_id": "or_private"}, nil)
+	var apiErr *APIError
+	if !errors.As(err, &apiErr) {
+		t.Fatalf("error = %T, want *APIError", err)
+	}
+	if len(reports) != 1 {
+		t.Fatalf("reports = %d, want 1", len(reports))
+	}
+	report := reports[0]
+	if report.Category != "http_503" || report.Operation != "orders.lookup" {
+		t.Fatalf("unexpected report identity: %#v", report)
+	}
+	if report.HTTP.Method != "POST" || report.HTTP.Route != "/orders/lookup" || report.HTTP.StatusCode != 503 || report.HTTP.RequestID != "req_456" {
+		t.Fatalf("unexpected HTTP report context: %#v", report.HTTP)
+	}
+	if report.APIError == nil || report.APIError.Type != "transient_error" {
+		t.Fatalf("unexpected API report context: %#v", report.APIError)
+	}
+	if report.Fingerprint != "inttegro:go:orders.lookup:http_503:503" {
+		t.Fatalf("fingerprint = %q", report.Fingerprint)
+	}
+	if apiErr.Report == nil || apiErr.Report.EventID != report.EventID {
+		t.Fatal("API error did not retain the generated report")
+	}
+	encoded, marshalErr := json.Marshal(report)
+	if marshalErr != nil {
+		t.Fatalf("marshal report: %v", marshalErr)
+	}
+	for _, private := range []string{"private provider detail", "sk_live_must_not_appear", "or_private"} {
+		if strings.Contains(string(encoded), private) {
+			t.Fatalf("report contained private value %q: %s", private, encoded)
+		}
+	}
+}
+
+func TestErrorReportingUnexpectedPolicySkipsExpectedAPIErrors(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		io.WriteString(w, `{"error":{"type":"invalid_request_parameter"}}`)
+	}))
+	defer server.Close()
+
+	var reports []ErrorReport
+	client := NewClient(
+		"test",
+		WithBaseURL(server.URL),
+		WithTelemetryEnabled(false),
+		WithErrorReporter(func(_ context.Context, report ErrorReport) { reports = append(reports, report) }),
+	)
+	err := client.do(context.Background(), "POST", "/orders/lookup", nil, nil)
+	var apiErr *APIError
+	if !errors.As(err, &apiErr) {
+		t.Fatalf("error = %T, want *APIError", err)
+	}
+	if len(reports) != 0 || apiErr.Report != nil {
+		t.Fatalf("expected no report for expected API error, got %#v", reports)
+	}
+}
+
 func assertSpanAttribute(t *testing.T, span sdktrace.ReadOnlySpan, key, want string) {
 	t.Helper()
 	for _, attr := range span.Attributes() {

@@ -115,10 +115,12 @@ type Client struct {
 	// Customize using WithHTTPClient option for proxy, retry, or timeout control.
 	HTTPClient *http.Client
 
-	tracerProvider   trace.TracerProvider
-	propagator       propagation.TextMapPropagator
-	tracer           trace.Tracer
-	telemetryEnabled bool
+	tracerProvider       trace.TracerProvider
+	propagator           propagation.TextMapPropagator
+	tracer               trace.Tracer
+	telemetryEnabled     bool
+	errorReporter        ErrorReporter
+	errorReportingPolicy ErrorReportingPolicy
 
 	// Orders provides access to order creation, payment, and lifecycle management.
 	// See OrdersService for available operations.
@@ -266,6 +268,24 @@ func WithTelemetryEnabled(enabled bool) ClientOption {
 	}
 }
 
+// WithErrorReporter configures an application-owned destination for privacy-safe
+// final-failure reports. Without this option, the SDK performs no report preparation.
+func WithErrorReporter(reporter ErrorReporter) ClientOption {
+	return func(c *Client) {
+		c.errorReporter = reporter
+	}
+}
+
+// WithErrorReportingPolicy controls whether expected API errors are reported.
+// The default is ErrorReportingUnexpected.
+func WithErrorReportingPolicy(policy ErrorReportingPolicy) ClientOption {
+	return func(c *Client) {
+		if policy == ErrorReportingAll || policy == ErrorReportingUnexpected {
+			c.errorReportingPolicy = policy
+		}
+	}
+}
+
 // NewClient constructs a Inttegro API client.
 //
 // The apiKey parameter is required and should be your Inttegro API key
@@ -286,12 +306,13 @@ func WithTelemetryEnabled(enabled bool) ClientOption {
 // The client is safe for concurrent use by multiple goroutines.
 func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
-		APIKey:           apiKey,
-		BaseURL:          strings.TrimRight(DefaultBaseURL, "/"),
-		HTTPClient:       &http.Client{Timeout: defaultTimeout},
-		tracerProvider:   otel.GetTracerProvider(),
-		propagator:       otel.GetTextMapPropagator(),
-		telemetryEnabled: true,
+		APIKey:               apiKey,
+		BaseURL:              strings.TrimRight(DefaultBaseURL, "/"),
+		HTTPClient:           &http.Client{Timeout: defaultTimeout},
+		tracerProvider:       otel.GetTracerProvider(),
+		propagator:           otel.GetTextMapPropagator(),
+		telemetryEnabled:     true,
+		errorReportingPolicy: ErrorReportingUnexpected,
 	}
 	for _, opt := range opts {
 		opt(c)
@@ -352,8 +373,9 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	if body != nil {
 		raw, err := c.jsonRequestBody(method, path, body, "")
 		if err != nil {
-			telemetry.fail("encode_error")
-			return fmt.Errorf("encode request body: %w", err)
+			wrapped := fmt.Errorf("encode request body: %w", err)
+			telemetry.failAndReport(ctx, wrapped, "encode_error")
+			return wrapped
 		}
 		reqBody = bytes.NewReader(raw)
 	}
@@ -361,8 +383,9 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	url := c.BaseURL + path
 	req, err := http.NewRequestWithContext(ctx, method, url, reqBody)
 	if err != nil {
-		telemetry.fail("request_error")
-		return fmt.Errorf("create request: %w", err)
+		wrapped := fmt.Errorf("create request: %w", err)
+		telemetry.failAndReport(ctx, wrapped, "request_error")
+		return wrapped
 	}
 
 	req.Header.Set("Authorization", "Bearer "+c.APIKey)
@@ -376,16 +399,18 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		telemetry.fail(classifyTelemetryError(err, "transport_error"))
-		return fmt.Errorf("execute request: %w", err)
+		wrapped := fmt.Errorf("execute request: %w", err)
+		telemetry.failAndReport(ctx, wrapped, "transport_error")
+		return wrapped
 	}
 	defer resp.Body.Close()
 	telemetry.response(resp)
 
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		telemetry.fail("read_error")
-		return fmt.Errorf("read response: %w", err)
+		wrapped := fmt.Errorf("read response: %w", err)
+		telemetry.failAndReport(ctx, wrapped, "read_error")
+		return wrapped
 	}
 
 	if resp.StatusCode >= 400 {
@@ -404,14 +429,16 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 		if apiErr.Message == "" && len(respBytes) > 0 {
 			apiErr.Message = string(respBytes)
 		}
-		telemetry.fail(fmt.Sprintf("http_%d", resp.StatusCode))
+		apiErr.RequestID = resp.Header.Get("x-request-id")
+		telemetry.failAndReport(ctx, apiErr, fmt.Sprintf("http_%d", resp.StatusCode))
 		return apiErr
 	}
 
 	if out != nil && len(respBytes) > 0 {
 		if err := json.Unmarshal(respBytes, out); err != nil {
-			telemetry.fail("decode_error")
-			return fmt.Errorf("decode response: %w", err)
+			wrapped := fmt.Errorf("decode response: %w", err)
+			telemetry.failAndReport(ctx, wrapped, "decode_error")
+			return wrapped
 		}
 		telemetry.decoded()
 	}

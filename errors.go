@@ -68,6 +68,12 @@ type APIError struct {
 	// Body contains the raw response body for debugging.
 	// Useful when error parsing fails or for logging.
 	Body []byte `json:"-"`
+
+	// RequestID is the safe request identifier returned by the API.
+	RequestID string `json:"-"`
+
+	// Report is populated only when an error reporter generated a report.
+	Report *ErrorReport `json:"-"`
 }
 
 func (e *APIError) Error() string {

@@ -128,6 +128,23 @@ client := inttegro.NewClient(
 
 Spans are named after logical operations such as `inttegro.orders.create`. HTTP attempts, response receipt, and decoding are span events. API keys, bodies, resource IDs, dynamic URLs, and error messages are never recorded. See [SDK observability](https://studio.inttegro.com/sdk-observability) for the complete contract and use `WithTelemetryEnabled(false)` when needed.
 
+### Report SDK failures
+
+Provide an application-owned reporter to receive one typed, privacy-safe report after an SDK operation finally fails. The default `ErrorReportingUnexpected` policy reports transport, timeout, decoding, SDK, `unknown_error`, and server-side failures while leaving normal 4xx API errors alone:
+
+```go
+client := inttegro.NewClient(
+	os.Getenv("INTTEGRO_API_KEY"),
+	inttegro.WithErrorReporter(func(ctx context.Context, report inttegro.ErrorReport) {
+		errorCollector.Enqueue(ctx, report)
+	}),
+)
+```
+
+Use `WithErrorReportingPolicy(inttegro.ErrorReportingAll)` to include expected API failures; context cancellation is never reported. Reports contain the logical operation, static route, server host, status and request IDs when available, duration, safe API error codes, SDK identity, stable fingerprint, exception type, and trace IDs when tracing is active. They exclude credentials, headers, bodies, resource IDs, dynamic URLs, error messages, and stack traces. Reporter panics are isolated and the original SDK error is still returned.
+
+Error reporting is completely opt-in. Without `WithErrorReporter`, the SDK does not calculate report metadata, create an event ID or timestamp, allocate a report, or serialize a payload.
+
 ## Work with the API
 
 The SDK covers orders and checkout, customers, products and prices, purchase intents, payment methods, balances, payouts and refunds, notifications, files, application settings, keys, and country specifications. Services use exported fields such as `PurchaseIntents` and `PaymentMethods`.
