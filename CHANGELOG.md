@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+## 4.4.0 - 2026-09-06
+
+- Added opt-in, typed error reporting to application-owned collectors with privacy-safe payloads, stable fingerprints, isolated reporter failures, and no reporting work when unconfigured.
+
 ## 4.3.1 - 2026-09-04
 
 - Added the MIT license to the released module source so package documentation can be displayed by pkg.go.dev.

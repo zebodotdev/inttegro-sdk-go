@@ -493,7 +493,7 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 	}
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
-		telemetry.fail("request_error")
+		telemetry.failAndReport(ctx, err, "request_error")
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/json")
@@ -513,7 +513,7 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		telemetry.fail(classifyTelemetryError(err, "transport_error"))
+		telemetry.failAndReport(ctx, err, "transport_error")
 		return nil, err
 	}
 	telemetry.response(resp)
@@ -523,7 +523,7 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 	defer resp.Body.Close()
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		telemetry.fail("read_error")
+		telemetry.failAndReport(ctx, err, "read_error")
 		return nil, err
 	}
 	apiErr := &APIError{StatusCode: resp.StatusCode, Body: respBytes}
@@ -533,6 +533,7 @@ func (c *Client) rawResponse(ctx context.Context, method, pathOrURL string, body
 	} else if len(respBytes) > 0 {
 		apiErr.Message = string(respBytes)
 	}
-	telemetry.fail(fmt.Sprintf("http_%d", resp.StatusCode))
+	apiErr.RequestID = resp.Header.Get("x-request-id")
+	telemetry.failAndReport(ctx, apiErr, fmt.Sprintf("http_%d", resp.StatusCode))
 	return nil, fmt.Errorf("inttegro api error: %w", apiErr)
 }

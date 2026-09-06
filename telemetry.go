@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -16,8 +17,15 @@ import (
 )
 
 type requestTelemetry struct {
-	span       trace.Span
-	propagator propagation.TextMapPropagator
+	span                 trace.Span
+	propagator           propagation.TextMapPropagator
+	errorReporter        ErrorReporter
+	errorReportingPolicy ErrorReportingPolicy
+	operation            string
+	route                string
+	serverAddress        string
+	method               string
+	startedAt            time.Time
 }
 
 var safeTelemetryResources = map[string]struct{}{
@@ -43,11 +51,24 @@ var safeTelemetryActions = map[string]struct{}{
 }
 
 func (c *Client) startRequestTelemetry(ctx context.Context, method, pathOrURL, explicitOperation string) (context.Context, requestTelemetry) {
-	if !c.telemetryEnabled || c.tracer == nil {
+	if (!c.telemetryEnabled || c.tracer == nil) && c.errorReporter == nil {
 		return ctx, requestTelemetry{}
 	}
 
 	operation, route, serverAddress := telemetryRequestDetails(c.BaseURL, pathOrURL, explicitOperation)
+	telemetry := requestTelemetry{}
+	if c.errorReporter != nil {
+		telemetry.errorReporter = c.errorReporter
+		telemetry.errorReportingPolicy = c.errorReportingPolicy
+		telemetry.operation = operation
+		telemetry.route = route
+		telemetry.serverAddress = serverAddress
+		telemetry.method = method
+		telemetry.startedAt = time.Now()
+	}
+	if !c.telemetryEnabled || c.tracer == nil {
+		return ctx, telemetry
+	}
 	ctx, span := c.tracer.Start(
 		ctx,
 		"inttegro."+operation,
@@ -64,7 +85,9 @@ func (c *Client) startRequestTelemetry(ctx context.Context, method, pathOrURL, e
 		span.SetAttributes(attribute.String("url.template", route))
 	}
 	span.AddEvent("inttegro.request.prepared")
-	return ctx, requestTelemetry{span: span, propagator: c.propagator}
+	telemetry.span = span
+	telemetry.propagator = c.propagator
+	return ctx, telemetry
 }
 
 func (t requestTelemetry) inject(ctx context.Context, headers http.Header) {
