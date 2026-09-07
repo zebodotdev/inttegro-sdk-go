@@ -123,7 +123,6 @@ type PurchaseIntentActivityLog struct {
 
 type PurchaseIntent struct {
 	ID                 string                     `json:"id"`
-	ApplicationID      string                     `json:"application_id"`
 	ProductID          string                     `json:"product_id"`
 	PriceID            string                     `json:"price_id"`
 	Quantity           PurchaseIntentQuantity     `json:"quantity"`
