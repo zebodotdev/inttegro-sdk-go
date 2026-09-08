@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // Complete marks an order as completed and fulfilled.
@@ -28,9 +28,9 @@ import (
 //	order, err := client.Orders.Complete(ctx, order.CompleteParams{
 //	    OrderID: "or_abc123",
 //	})
-func (s *Service) Complete(ctx context.Context, params CompleteParams) (*Resource, error) {
+func (s *Service) Complete(ctx context.Context, params CompleteParams) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/complete", params, &resp); err != nil {
 		return nil, err
@@ -55,16 +55,16 @@ func (s *Service) Complete(ctx context.Context, params CompleteParams) (*Resourc
 // Example:
 //
 //	order, err := client.Orders.Cancel(ctx, "or_abc123")
-func (s *Service) Cancel(ctx context.Context, orderID string) (*Resource, error) {
+func (s *Service) Cancel(ctx context.Context, orderID string) (*Order, error) {
 	return s.CancelWithParams(ctx, CancelParams{
 		OrderID:     orderID,
 		RequestMeta: stableOrderRequestMeta("cancel", orderID),
 	})
 }
 
-func (s *Service) CancelWithParams(ctx context.Context, params CancelParams) (*Resource, error) {
+func (s *Service) CancelWithParams(ctx context.Context, params CancelParams) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/cancel", params, &resp); err != nil {
 		return nil, err

@@ -3,17 +3,17 @@ package messagetemplate
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 type Service struct {
 	client transport.Client
 }
 
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*MessageTemplate, error) {
 	var resp struct {
-		MessageTemplate Resource `json:"message_template"`
+		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	opts := request.Options{IdempotencyKey: params.IdempotencyKey}
 	if err := s.client.DoJSON(ctx, "/message_templates/create", params, opts, &resp); err != nil {
@@ -22,9 +22,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 	return &resp.MessageTemplate, nil
 }
 
-func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, params UpdateParams) (*MessageTemplate, error) {
 	var resp struct {
-		MessageTemplate Resource `json:"message_template"`
+		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	opts := request.Options{IdempotencyKey: params.IdempotencyKey}
 	if err := s.client.DoJSON(ctx, "/message_templates/update", params, opts, &resp); err != nil {
@@ -33,9 +33,9 @@ func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, e
 	return &resp.MessageTemplate, nil
 }
 
-func (s *Service) Publish(ctx context.Context, id string, opts ...request.Option) (*Resource, error) {
+func (s *Service) Publish(ctx context.Context, id string, opts ...request.Option) (*MessageTemplate, error) {
 	var resp struct {
-		MessageTemplate Resource `json:"message_template"`
+		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	requestOpts := request.Apply(opts)
 	if err := s.client.DoJSON(ctx, "/message_templates/publish", map[string]string{"id": id}, requestOpts, &resp); err != nil {
@@ -44,9 +44,9 @@ func (s *Service) Publish(ctx context.Context, id string, opts ...request.Option
 	return &resp.MessageTemplate, nil
 }
 
-func (s *Service) Archive(ctx context.Context, id string, opts ...request.Option) (*Resource, error) {
+func (s *Service) Archive(ctx context.Context, id string, opts ...request.Option) (*MessageTemplate, error) {
 	var resp struct {
-		MessageTemplate Resource `json:"message_template"`
+		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	requestOpts := request.Apply(opts)
 	if err := s.client.DoJSON(ctx, "/message_templates/archive", map[string]string{"id": id}, requestOpts, &resp); err != nil {
@@ -55,9 +55,9 @@ func (s *Service) Archive(ctx context.Context, id string, opts ...request.Option
 	return &resp.MessageTemplate, nil
 }
 
-func (s *Service) Lookup(ctx context.Context, id string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, id string) (*MessageTemplate, error) {
 	var resp struct {
-		MessageTemplate Resource `json:"message_template"`
+		MessageTemplate MessageTemplate `json:"message_template"`
 	}
 	if err := s.client.Do(ctx, "POST", "/message_templates/lookup", map[string]string{"id": id}, &resp); err != nil {
 		return nil, err

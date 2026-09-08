@@ -3,7 +3,7 @@ package balancetransaction
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // BalanceTransactionsService provides access to balance transaction history.
@@ -32,9 +32,9 @@ type Service struct {
 }
 
 // Lookup retrieves a balance transaction by ID.
-func (s *Service) Lookup(ctx context.Context, transactionID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, transactionID string) (*BalanceTransaction, error) {
 	var resp struct {
-		Transaction Resource `json:"transaction"`
+		Transaction BalanceTransaction `json:"transaction"`
 	}
 	if err := s.client.Do(ctx, "POST", "/balance_transactions/lookup", map[string]string{"transaction_id": transactionID}, &resp); err != nil {
 		return nil, err
@@ -46,10 +46,10 @@ func (s *Service) Lookup(ctx context.Context, transactionID string) (*Resource, 
 //
 // Results are sorted by creation date (newest first). Use this to view
 // available balance, track aging, or reconcile payouts.
-func (s *Service) Page(ctx context.Context, params PageParams) ([]Resource, error) {
+func (s *Service) Page(ctx context.Context, params PageParams) ([]BalanceTransaction, error) {
 	var resp struct {
 		Page struct {
-			Transactions []Resource `json:"transactions"`
+			Transactions []BalanceTransaction `json:"transactions"`
 		} `json:"page"`
 	}
 	if err := s.client.Do(ctx, "POST", "/balance_transactions/page", params, &resp); err != nil {

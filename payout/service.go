@@ -3,7 +3,7 @@ package payout
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // PayoutsService manages payout configuration, scheduling, and history.
@@ -89,9 +89,9 @@ func (s *Service) Settings(ctx context.Context) (*Settings, error) {
 }
 
 // Schedule creates a payout to a connected financial account.
-func (s *Service) Schedule(ctx context.Context, params ScheduleParams) (*Resource, error) {
+func (s *Service) Schedule(ctx context.Context, params ScheduleParams) (*Payout, error) {
 	var resp struct {
-		Payout Resource `json:"payout"`
+		Payout Payout `json:"payout"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payouts/schedule", params, &resp); err != nil {
 		return nil, err
@@ -100,9 +100,9 @@ func (s *Service) Schedule(ctx context.Context, params ScheduleParams) (*Resourc
 }
 
 // Lookup retrieves a payout by ID.
-func (s *Service) Lookup(ctx context.Context, payoutID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, payoutID string) (*Payout, error) {
 	var resp struct {
-		Payout Resource `json:"payout"`
+		Payout Payout `json:"payout"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payouts/lookup", map[string]string{"payout_id": payoutID}, &resp); err != nil {
 		return nil, err
@@ -208,9 +208,9 @@ func (s *Service) DisableFX(ctx context.Context) (*Settings, error) {
 //   - payoutID: Scheduled payout ID to cancel
 //
 // Returns the canceled payout object.
-func (s *Service) Cancel(ctx context.Context, payoutID string) (*Resource, error) {
+func (s *Service) Cancel(ctx context.Context, payoutID string) (*Payout, error) {
 	var resp struct {
-		Payout Resource `json:"payout"`
+		Payout Payout `json:"payout"`
 	}
 	payload := struct {
 		PayoutID string `json:"payout_id"`
@@ -243,10 +243,10 @@ func (s *Service) Cancel(ctx context.Context, payoutID string) (*Resource, error
 //	        payout.ID, payout.Amount.Currency,
 //	        payout.Amount.Value, payout.Status)
 //	}
-func (s *Service) Page(ctx context.Context, params PageParams) ([]Resource, error) {
+func (s *Service) Page(ctx context.Context, params PageParams) ([]Payout, error) {
 	var resp struct {
 		Page struct {
-			Payouts []Resource `json:"payouts"`
+			Payouts []Payout `json:"payouts"`
 		} `json:"page"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payouts/page", params, &resp); err != nil {

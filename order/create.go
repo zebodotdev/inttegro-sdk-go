@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/checkout"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/paymentmethod"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/checkout"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // Create creates a new order.
@@ -65,14 +65,14 @@ import (
 //	}
 //
 // Learn more: https://studio.inttegro.com/create-order
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*Order, error) {
 	return s.createWithPath(ctx, "/orders/create", params)
 }
 
-func (s *Service) createWithPath(ctx context.Context, path string, params CreateParams) (*Resource, error) {
+func (s *Service) createWithPath(ctx context.Context, path string, params CreateParams) (*Order, error) {
 	var resp struct {
-		Order       Resource `json:"order"`
-		RedirectURL *string  `json:"redirect_url,omitempty"`
+		Order       Order   `json:"order"`
+		RedirectURL *string `json:"redirect_url,omitempty"`
 	}
 	if err := s.client.Do(ctx, "POST", path, params, &resp); err != nil {
 		return nil, err

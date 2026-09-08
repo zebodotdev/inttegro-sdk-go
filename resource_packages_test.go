@@ -12,14 +12,14 @@ import (
 	"strings"
 	"testing"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v5"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/payment"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/purchaseintent"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v6"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/payment"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/purchaseintent"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/refund"
 )
 
-const modulePath = "github.com/zebodotdev/inttegro-sdk-go/v5"
+const modulePath = "github.com/zebodotdev/inttegro-sdk-go/v6"
 
 func TestClientUsesResourceOwnedServices(t *testing.T) {
 	client := inttegro.NewClient("sk_test_resource_packages")
@@ -42,12 +42,15 @@ func TestClientUsesResourceOwnedServices(t *testing.T) {
 	}
 }
 
-func TestResourceTypesHaveResourcePackageIdentity(t *testing.T) {
+func TestPrimaryResourceTypesHavePackageIdentity(t *testing.T) {
 	types := []struct {
 		value any
 		pkg   string
 	}{
-		{product.Resource{}, modulePath + "/product"},
+		{product.Product{}, modulePath + "/product"},
+		{payment.Payment{}, modulePath + "/payment"},
+		{purchaseintent.PurchaseIntent{}, modulePath + "/purchaseintent"},
+		{refund.Refund{}, modulePath + "/refund"},
 		{product.Type(""), modulePath + "/product"},
 		{payment.Status(""), modulePath + "/payment"},
 		{purchaseintent.Status(""), modulePath + "/purchaseintent"},
@@ -56,6 +59,70 @@ func TestResourceTypesHaveResourcePackageIdentity(t *testing.T) {
 	for _, item := range types {
 		if got := reflect.TypeOf(item.value).PkgPath(); got != item.pkg {
 			t.Errorf("%T package = %q, want %q", item.value, got, item.pkg)
+		}
+	}
+}
+
+func TestResourcePackagesNamePrimaryTypesAfterPackages(t *testing.T) {
+	expected := map[string]string{
+		"app":                "App",
+		"balance":            "Balance",
+		"balancetransaction": "BalanceTransaction",
+		"broadcast":          "Broadcast",
+		"chime":              "Chime",
+		"customer":           "Customer",
+		"file":               "File",
+		"filelink":           "FileLink",
+		"filereference":      "FileReference",
+		"financialaccount":   "FinancialAccount",
+		"invoice":            "Invoice",
+		"messagetemplate":    "MessageTemplate",
+		"order":              "Order",
+		"payment":            "Payment",
+		"paymentmethod":      "PaymentMethod",
+		"payout":             "Payout",
+		"price":              "Price",
+		"product":            "Product",
+		"purchaseintent":     "PurchaseIntent",
+		"refund":             "Refund",
+		"schedule":           "Schedule",
+		"secretkey":          "SecretKey",
+		"spec":               "Spec",
+		"uploadrequest":      "UploadRequest",
+	}
+
+	for packageName, typeName := range expected {
+		paths, err := filepath.Glob(filepath.Join(packageName, "*.go"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		found := false
+		for _, path := range paths {
+			if strings.HasSuffix(path, "_test.go") {
+				continue
+			}
+			file, err := parser.ParseFile(token.NewFileSet(), path, nil, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, declaration := range file.Decls {
+				general, ok := declaration.(*ast.GenDecl)
+				if !ok || general.Tok != token.TYPE {
+					continue
+				}
+				for _, specification := range general.Specs {
+					declaredName := specification.(*ast.TypeSpec).Name.Name
+					if declaredName == "Resource" {
+						t.Errorf("package %s exports generic type Resource", packageName)
+					}
+					if declaredName == typeName {
+						found = true
+					}
+				}
+			}
+		}
+		if !found {
+			t.Errorf("package %s does not export primary type %s", packageName, typeName)
 		}
 	}
 }

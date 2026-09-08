@@ -3,8 +3,8 @@ package app
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // AppsService manages applications associated with Inttegro API keys.
@@ -13,9 +13,9 @@ type Service struct {
 }
 
 // Create creates an Inttegro child app.
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*App, error) {
 	var resp struct {
-		App Resource `json:"app"`
+		App App `json:"app"`
 	}
 	if err := s.client.Do(ctx, "POST", "/apps/create", params, &resp); err != nil {
 		return nil, err
@@ -24,9 +24,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 }
 
 // Lookup retrieves the application associated with the API key used for the request.
-func (s *Service) Lookup(ctx context.Context) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context) (*App, error) {
 	var resp struct {
-		App Resource `json:"app"`
+		App App `json:"app"`
 	}
 	if err := s.client.Do(ctx, "POST", "/apps/lookup", map[string]any{}, &resp); err != nil {
 		return nil, err
@@ -35,9 +35,9 @@ func (s *Service) Lookup(ctx context.Context) (*Resource, error) {
 }
 
 // Update changes attributes of the application associated with the API key used for the request.
-func (s *Service) Update(ctx context.Context, params UpdateParams, opts ...request.Option) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, params UpdateParams, opts ...request.Option) (*App, error) {
 	var resp struct {
-		App Resource `json:"app"`
+		App App `json:"app"`
 	}
 	if err := s.client.DoJSON(ctx, "/apps/update", params, request.Apply(opts), &resp); err != nil {
 		return nil, err

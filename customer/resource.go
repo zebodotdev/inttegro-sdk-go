@@ -41,7 +41,7 @@ type Data struct {
 }
 
 // Customer represents a customer record.
-type Resource struct {
+type Customer struct {
 	ID          string            `json:"id,omitempty"`
 	Name        string            `json:"name,omitempty"`
 	Title       string            `json:"title,omitempty"`
@@ -57,5 +57,5 @@ type Resource struct {
 type Page struct {
 	Number    int        `json:"number,omitempty"`
 	Size      int        `json:"size,omitempty"`
-	Customers []Resource `json:"customers,omitempty"`
+	Customers []Customer `json:"customers,omitempty"`
 }

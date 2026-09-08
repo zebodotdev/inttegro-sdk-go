@@ -13,7 +13,7 @@ All official Inttegro SDKs expose the same API capabilities. This module adds Go
 ## Install
 
 ```bash
-go get github.com/zebodotdev/inttegro-sdk-go/v5
+go get github.com/zebodotdev/inttegro-sdk-go/v6
 ```
 
 Store your secret key in the server environment:
@@ -38,14 +38,14 @@ import (
 	"log"
 	"os"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v5"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/checkout"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/order"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v6"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/checkout"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 func main() {
@@ -98,10 +98,11 @@ Amounts use integer minor units: `5000` GHS is GHS 50.00. Reuse the same idempot
 ## Resource packages
 
 Import the singular package for each API resource. The package supplies short,
-domain-scoped names such as `product.TypeDigital`,
-`purchaseintent.StatusActive`, `refund.StatusSucceeded`, and
-`order.CreateParams`. Client services remain plural collections, so operations
-continue to read naturally:
+domain-scoped names. Its primary object repeats the package name, such as
+`product.Product`, `payment.Payment`, or `order.Order`; supporting names include
+`product.TypeDigital`, `purchaseintent.StatusActive`, and `order.CreateParams`.
+Client services remain plural collections, so operations continue to read
+naturally:
 
 ```go
 intent, err := client.PurchaseIntents.Lookup(ctx, purchaseIntentID)
@@ -115,7 +116,7 @@ if intent.Status == purchaseintent.StatusExpired {
 
 The root `inttegro` package owns only the client, transport options, errors,
 telemetry, and pointer helpers. Resource packages own their services, request
-parameters, models, and lifecycle values as real named Go types. Version 5 does
+parameters, models, and lifecycle values as real named Go types. Version 6 does
 not expose deprecated root mirrors or compatibility aliases.
 
 ## Refund paid line items

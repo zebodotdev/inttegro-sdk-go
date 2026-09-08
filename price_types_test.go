@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
 )
 
 func TestPriceParamsEmbedsAmountOnTheWire(t *testing.T) {
@@ -21,7 +21,7 @@ func TestPriceParamsEmbedsAmountOnTheWire(t *testing.T) {
 }
 
 func TestCatalogPriceRetainsReferencedProductID(t *testing.T) {
-	var price price.Resource
+	var price price.Price
 	if err := json.Unmarshal([]byte(`{"id":"pr_123","active":true,"nominal":{"currency":"ghs","value":3005},"product_id":"prod_123","created_at":"2026-09-02T12:00:00Z"}`), &price); err != nil {
 		t.Fatal(err)
 	}

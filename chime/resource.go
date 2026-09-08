@@ -1,16 +1,16 @@
 package chime
 
 type Page struct {
-	Number int        `json:"number,omitempty"`
-	Size   int        `json:"size,omitempty"`
-	Chimes []Resource `json:"chimes,omitempty"`
+	Number int     `json:"number,omitempty"`
+	Size   int     `json:"size,omitempty"`
+	Chimes []Chime `json:"chimes,omitempty"`
 }
 
 // Chime represents a notification message.
 //
 // Chimes track delivery status, transmission details, and any errors
 // that occurred during sending.
-type Resource struct {
+type Chime struct {
 	// ID is the unique chime identifier (read-only).
 	// Starts with "chm_". Example: "chm_abc123def456"
 	ID string `json:"id,omitempty"`

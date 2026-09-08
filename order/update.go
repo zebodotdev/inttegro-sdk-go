@@ -5,9 +5,9 @@ import (
 )
 
 // Update modifies mutable fields on an existing order.
-func (s *Service) Update(ctx context.Context, payload any) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, payload any) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/update", payload, &resp); err != nil {
 		return nil, err

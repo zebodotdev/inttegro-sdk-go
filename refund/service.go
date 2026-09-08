@@ -3,7 +3,7 @@ package refund
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // RefundsService creates and manages refunds against paid order line items.
@@ -15,7 +15,7 @@ type Service struct {
 func (s *Service) Create(
 	ctx context.Context,
 	request CreateParams,
-) (*Resource, error) {
+) (*Refund, error) {
 	return createRefund(ctx, s.client, "/refunds/create", request)
 }
 
@@ -23,9 +23,9 @@ func (s *Service) Create(
 func (s *Service) Cancel(
 	ctx context.Context,
 	request CancelParams,
-) (*Resource, error) {
+) (*Refund, error) {
 	var response struct {
-		Refund Resource `json:"refund"`
+		Refund Refund `json:"refund"`
 	}
 	if err := s.client.Do(ctx, "POST", "/refunds/cancel", request, &response); err != nil {
 		return nil, err
@@ -37,9 +37,9 @@ func (s *Service) Cancel(
 func (s *Service) Lookup(
 	ctx context.Context,
 	request LookupParams,
-) (*Resource, error) {
+) (*Refund, error) {
 	var response struct {
-		Refund Resource `json:"refund"`
+		Refund Refund `json:"refund"`
 	}
 	if err := s.client.Do(ctx, "POST", "/refunds/lookup", request, &response); err != nil {
 		return nil, err
@@ -65,9 +65,9 @@ func createRefund(
 	ctx context.Context,
 	client transport.Client, path string,
 	request CreateParams,
-) (*Resource, error) {
+) (*Refund, error) {
 	var response struct {
-		Refund Resource `json:"refund"`
+		Refund Refund `json:"refund"`
 	}
 	if err := client.Do(ctx, "POST", path, request, &response); err != nil {
 		return nil, err

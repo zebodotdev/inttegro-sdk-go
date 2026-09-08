@@ -9,14 +9,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 type Service struct {
 	client transport.Client
 }
 
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*File, error) {
 	file, err := os.Open(params.File)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 	}
 
 	var resp struct {
-		File Resource `json:"file"`
+		File File `json:"file"`
 	}
 	if err := s.client.DoRaw(ctx, "POST", "/files/create", &body, writer.FormDataContentType(), params.IdempotencyKey, true, &resp, ""); err != nil {
 		return nil, err
@@ -62,9 +62,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 	return &resp.File, nil
 }
 
-func (s *Service) Lookup(ctx context.Context, fileID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, fileID string) (*File, error) {
 	var resp struct {
-		File Resource `json:"file"`
+		File File `json:"file"`
 	}
 	if err := s.client.Do(ctx, "POST", "/files/lookup", map[string]string{"file_id": fileID}, &resp); err != nil {
 		return nil, err
@@ -94,9 +94,9 @@ func (s *Service) Contents(ctx context.Context, params ContentsParams) (*Downloa
 	return &Download{ReadCloser: resp.Body}, nil
 }
 
-func (s *Service) Delete(ctx context.Context, fileID string) (*Resource, error) {
+func (s *Service) Delete(ctx context.Context, fileID string) (*File, error) {
 	var resp struct {
-		File Resource `json:"file"`
+		File File `json:"file"`
 	}
 	if err := s.client.Do(ctx, "POST", "/files/delete", map[string]string{"file_id": fileID}, &resp); err != nil {
 		return nil, err

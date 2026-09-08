@@ -6,7 +6,7 @@ import (
 )
 
 // Product represents a catalog product.
-type Resource struct {
+type Product struct {
 	ID               string            `json:"id,omitempty"`
 	ApplicationID    string            `json:"application_id,omitempty"`
 	Type             Type              `json:"type,omitempty"`
@@ -32,8 +32,8 @@ type Resource struct {
 // UnmarshalJSON accepts the current Product response while preserving the
 // legacy exported category, media, and attribute field types used by v4
 // callers. A future major version can expose the canonical shapes directly.
-func (p *Resource) UnmarshalJSON(data []byte) error {
-	type productAlias Resource
+func (p *Product) UnmarshalJSON(data []byte) error {
+	type productAlias Product
 	decoded := struct {
 		Media      json.RawMessage `json:"media"`
 		Attributes json.RawMessage `json:"attributes"`
@@ -120,7 +120,7 @@ func decodeProductAttributes(data json.RawMessage, target *map[string]string) er
 
 // ProductsPage holds a page of products.
 type Page struct {
-	Number   int        `json:"number,omitempty"`
-	Size     int        `json:"size,omitempty"`
-	Products []Resource `json:"products,omitempty"`
+	Number   int       `json:"number,omitempty"`
+	Size     int       `json:"size,omitempty"`
+	Products []Product `json:"products,omitempty"`
 }

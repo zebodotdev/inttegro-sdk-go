@@ -4,7 +4,7 @@ package filereference
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // FileReferencesService manages Inttegro resource file references.
@@ -26,14 +26,14 @@ type ReconcileParams struct {
 	References   []Input `json:"references,omitempty"`
 }
 
-// FileReferenceReconciliation reports whether the reference set was reconciled.
-type Resource struct {
+// FileReference reports whether the reference set was reconciled.
+type FileReference struct {
 	Reconciled bool `json:"reconciled"`
 }
 
 // Reconcile replaces the live file references for a Inttegro resource.
-func (s *Service) Reconcile(ctx context.Context, params ReconcileParams) (*Resource, error) {
-	var resp Resource
+func (s *Service) Reconcile(ctx context.Context, params ReconcileParams) (*FileReference, error) {
+	var resp FileReference
 	if err := s.client.Do(ctx, "POST", "/file_references/reconcile", params, &resp); err != nil {
 		return nil, err
 	}

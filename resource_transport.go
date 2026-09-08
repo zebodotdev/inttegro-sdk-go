@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // Do executes a JSON API request. It is exported for use by resource packages;

@@ -3,7 +3,7 @@ package secretkey
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // KeysService manages secret keys for the authenticated application.
@@ -34,14 +34,14 @@ func (s *Service) Page(ctx context.Context, params PageParams) (*Page, error) {
 }
 
 // Lookup retrieves safe metadata for a secret key by ID.
-func (s *Service) Lookup(ctx context.Context, secretKeyID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, secretKeyID string) (*SecretKey, error) {
 	return s.LookupWithParams(ctx, LookupParams{SecretKeyID: secretKeyID})
 }
 
 // LookupWithParams retrieves safe metadata using the canonical secret key ID field.
-func (s *Service) LookupWithParams(ctx context.Context, params LookupParams) (*Resource, error) {
+func (s *Service) LookupWithParams(ctx context.Context, params LookupParams) (*SecretKey, error) {
 	var resp struct {
-		Key Resource `json:"key"`
+		Key SecretKey `json:"key"`
 	}
 	if err := s.client.Do(ctx, "POST", "/keys/lookup", params, &resp); err != nil {
 		return nil, err
@@ -50,9 +50,9 @@ func (s *Service) LookupWithParams(ctx context.Context, params LookupParams) (*R
 }
 
 // Update changes safe mutable metadata for a secret key.
-func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, params UpdateParams) (*SecretKey, error) {
 	var resp struct {
-		Key Resource `json:"key"`
+		Key SecretKey `json:"key"`
 	}
 	if err := s.client.Do(ctx, "POST", "/keys/update", params, &resp); err != nil {
 		return nil, err
@@ -61,14 +61,14 @@ func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, e
 }
 
 // Destroy revokes a secret key.
-func (s *Service) Destroy(ctx context.Context, secretKeyID string) (*Resource, error) {
+func (s *Service) Destroy(ctx context.Context, secretKeyID string) (*SecretKey, error) {
 	return s.DestroyWithParams(ctx, DestroyParams{SecretKeyID: secretKeyID})
 }
 
 // DestroyWithParams revokes a secret key using the canonical secret key ID field.
-func (s *Service) DestroyWithParams(ctx context.Context, params DestroyParams) (*Resource, error) {
+func (s *Service) DestroyWithParams(ctx context.Context, params DestroyParams) (*SecretKey, error) {
 	var resp struct {
-		Key Resource `json:"key"`
+		Key SecretKey `json:"key"`
 	}
 	if err := s.client.Do(ctx, "POST", "/keys/destroy", params, &resp); err != nil {
 		return nil, err

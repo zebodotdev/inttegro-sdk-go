@@ -1,6 +1,7 @@
 package file
 
-type Resource struct {
+// File represents an uploaded file.
+type File struct {
 	ID         string            `json:"id"`
 	Purpose    string            `json:"purpose"`
 	Status     Status            `json:"status"`
@@ -9,7 +10,7 @@ type Resource struct {
 }
 
 type Page struct {
-	Number int        `json:"number"`
-	Size   int        `json:"size"`
-	Files  []Resource `json:"files"`
+	Number int    `json:"number"`
+	Size   int    `json:"size"`
+	Files  []File `json:"files"`
 }

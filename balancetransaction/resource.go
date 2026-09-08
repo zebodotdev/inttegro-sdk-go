@@ -1,13 +1,13 @@
 package balancetransaction
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/payout"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/payout"
 )
 
 // BalanceTransaction represents a merchant balance entry caused by a payment or
 // refund. Exactly one of PaymentID and RefundID is present, matching Type.
-type Resource struct {
+type BalanceTransaction struct {
 	// ID is the unique balance transaction identifier (read-only).
 	// Starts with "bt_". Example: "bt_abc123def456"
 	ID string `json:"id"`
@@ -54,7 +54,7 @@ type Resource struct {
 
 // SourceID returns the matching strong source reference. It returns false for
 // incomplete or contradictory transaction values.
-func (t Resource) SourceID() (string, bool) {
+func (t BalanceTransaction) SourceID() (string, bool) {
 	switch t.Type {
 	case TypePayment:
 		if t.PaymentID != "" && t.RefundID == "" {

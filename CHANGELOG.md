@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 6.0.0 - 2026-09-09
+
+- Breaking: renamed every resource package's primary object after its domain,
+  such as `payment.Payment`, `product.Product`, and `order.Order`.
+- Breaking: changed the module path to `github.com/zebodotdev/inttegro-sdk-go/v6`.
+- Removed the generic `Resource` type name without compatibility aliases.
+
 ## 5.0.2 - 2026-09-08
 
 - Split large resource package files into focused files for services, request

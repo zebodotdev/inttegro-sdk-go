@@ -8,7 +8,8 @@ type Generated struct {
 	Token     string    `json:"token"`
 }
 
-type Resource struct {
+// SecretKey represents an application secret key.
+type SecretKey struct {
 	ID         string    `json:"id"`
 	Label      string    `json:"label,omitempty"`
 	TokenType  TokenType `json:"token_type"`
@@ -23,10 +24,10 @@ type Resource struct {
 }
 
 type Page struct {
-	Number  int        `json:"number"`
-	Size    int        `json:"size"`
-	Count   int        `json:"count"`
-	Total   int        `json:"total"`
-	HasMore bool       `json:"has_more"`
-	Keys    []Resource `json:"keys"`
+	Number  int         `json:"number"`
+	Size    int         `json:"size"`
+	Count   int         `json:"count"`
+	Total   int         `json:"total"`
+	HasMore bool        `json:"has_more"`
+	Keys    []SecretKey `json:"keys"`
 }

@@ -1,13 +1,13 @@
 package paymentmethod
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/bankaccount"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/bankaccount"
 )
 
 type Page struct {
-	Number         int        `json:"number,omitempty"`
-	Size           int        `json:"size,omitempty"`
-	PaymentMethods []Resource `json:"payment_methods,omitempty"`
+	Number         int             `json:"number,omitempty"`
+	Size           int             `json:"size,omitempty"`
+	PaymentMethods []PaymentMethod `json:"payment_methods,omitempty"`
 }
 
 // PaymentMethod represents a tokenized payment method.
@@ -18,7 +18,7 @@ type Page struct {
 // Payment methods must be verified before use (except when confirms_use
 // is false). Verification sends an OTP to confirm the customer owns the
 // payment instrument.
-type Resource struct {
+type PaymentMethod struct {
 	// ID is the unique payment method identifier.
 	// Starts with "pm_". Example: "pm_abc123def456"
 	ID string `json:"id"`

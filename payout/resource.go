@@ -1,7 +1,7 @@
 package payout
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
 )
 
 // Payout represents a settlement transfer to your bank or mobile money account.
@@ -9,7 +9,7 @@ import (
 // Payouts move funds from your Inttegro balance to your financial accounts.
 // Each payout contains one or more balance transactions that have aged
 // past the dispute window.
-type Resource struct {
+type Payout struct {
 	// ID is the unique payout identifier (read-only).
 	// Starts with "po_". Example: "po_abc123def456"
 	ID string `json:"id,omitempty"`

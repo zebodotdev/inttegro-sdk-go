@@ -8,8 +8,8 @@ type Creation struct {
 	QueuedAt        string `json:"queued_at,omitempty"`
 }
 
-// BroadcastDetail describes a broadcast chime and its execution state.
-type Resource struct {
+// Broadcast describes a broadcast chime and its execution state.
+type Broadcast struct {
 	ID         string   `json:"id,omitempty"`
 	Recipients []string `json:"recipients,omitempty"`
 	Content    string   `json:"content,omitempty"`

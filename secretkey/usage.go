@@ -17,6 +17,6 @@ type UsagePage struct {
 
 // SecretKeyUsage contains key metadata and its recent authentication outcomes.
 type Usage struct {
-	Key   Resource  `json:"key"`
+	Key   SecretKey `json:"key"`
 	Usage UsagePage `json:"usage"`
 }
