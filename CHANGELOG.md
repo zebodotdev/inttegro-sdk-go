@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 5.0.1 - 2026-09-08
+
+- Grouped each resource enum's constants into one idiomatic declaration.
+- Added source-shape checks that reject singleton parenthesized constant blocks
+  and constants of one exported type split across multiple declarations.
+
 ## 5.0.0 - 2026-09-08
 
 - Breaking: moved resource services, request parameters, models, and lifecycle

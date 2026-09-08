@@ -18,36 +18,18 @@ import (
 type Status string
 
 const (
-	StatusPending Status = "pending"
-)
-
-const (
+	StatusPending   Status = "pending"
 	StatusUploading Status = "uploading"
-)
-
-const (
 	StatusFulfilled Status = "fulfilled"
-)
-
-const (
-	StatusExpired Status = "expired"
-)
-
-const (
-	StatusCanceled Status = "canceled"
-)
-
-const (
-	StatusFailed Status = "failed"
+	StatusExpired   Status = "expired"
+	StatusCanceled  Status = "canceled"
+	StatusFailed    Status = "failed"
 )
 
 type ReviewDecision string
 
 const (
 	ReviewDecisionApproved ReviewDecision = "approved"
-)
-
-const (
 	ReviewDecisionRejected ReviewDecision = "rejected"
 )
 
@@ -55,10 +37,7 @@ type ReviewType string
 
 const (
 	ReviewTypeAutomatic ReviewType = "automatic"
-)
-
-const (
-	ReviewTypeManual ReviewType = "manual"
+	ReviewTypeManual    ReviewType = "manual"
 )
 
 type Constraints struct {

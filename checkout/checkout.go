@@ -4,45 +4,21 @@ package checkout
 type OrderStatus string
 
 const (
-	OrderStatusPreparing OrderStatus = "preparing"
-)
-
-const (
+	OrderStatusPreparing       OrderStatus = "preparing"
 	OrderStatusRequiresPayment OrderStatus = "requires_payment"
-)
-
-const (
-	OrderStatusCompleted OrderStatus = "completed"
-)
-
-const (
-	OrderStatusCanceled OrderStatus = "canceled"
-)
-
-const (
-	OrderStatusExpired OrderStatus = "expired"
+	OrderStatusCompleted       OrderStatus = "completed"
+	OrderStatusCanceled        OrderStatus = "canceled"
+	OrderStatusExpired         OrderStatus = "expired"
 )
 
 type PaymentStatus string
 
 const (
 	PaymentStatusRequiresAction PaymentStatus = "requires_action"
-)
-
-const (
-	PaymentStatusProcessing PaymentStatus = "processing"
-)
-
-const (
-	PaymentStatusSucceeded PaymentStatus = "succeeded"
-)
-
-const (
-	PaymentStatusFailed PaymentStatus = "failed"
-)
-
-const (
-	PaymentStatusCancelled PaymentStatus = "cancelled"
+	PaymentStatusProcessing     PaymentStatus = "processing"
+	PaymentStatusSucceeded      PaymentStatus = "succeeded"
+	PaymentStatusFailed         PaymentStatus = "failed"
+	PaymentStatusCancelled      PaymentStatus = "cancelled"
 )
 
 // CheckoutSettings configures checkout page behavior and redirect URLs.

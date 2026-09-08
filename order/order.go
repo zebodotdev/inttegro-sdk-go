@@ -24,45 +24,21 @@ import (
 type LineItemType string
 
 const (
-	LineItemTypeProduct LineItemType = "product"
-)
-
-const (
-	LineItemTypeFee LineItemType = "fee"
-)
-
-const (
+	LineItemTypeProduct  LineItemType = "product"
+	LineItemTypeFee      LineItemType = "fee"
 	LineItemTypeShipping LineItemType = "shipping"
 )
 
 type Status string
 
 const (
-	StatusPreparing Status = "preparing"
-)
-
-const (
+	StatusPreparing       Status = "preparing"
 	StatusRequiresPayment Status = "requires_payment"
-)
-
-const (
-	StatusPaid Status = "paid"
-)
-
-const (
-	StatusCompleted Status = "completed"
-)
-
-const (
-	StatusCanceled Status = "canceled"
-)
-
-const (
-	StatusExpired Status = "expired"
-)
-
-const (
-	StatusUnknown Status = "unknown"
+	StatusPaid            Status = "paid"
+	StatusCompleted       Status = "completed"
+	StatusCanceled        Status = "canceled"
+	StatusExpired         Status = "expired"
+	StatusUnknown         Status = "unknown"
 )
 
 type CreatedFromResourceType string

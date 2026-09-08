@@ -13,18 +13,9 @@ type Type string
 
 const (
 	TypeMobileMoney Type = "mobile_money"
-)
-
-const (
 	TypeBankAccount Type = "bank_account"
-)
-
-const (
-	TypeCard Type = "card"
-)
-
-const (
-	TypeMotito Type = "motito"
+	TypeCard        Type = "card"
+	TypeMotito      Type = "motito"
 )
 
 // PaymentMethodsService manages payment method tokenization, verification, and deletion.

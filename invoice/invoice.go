@@ -5,9 +5,6 @@ type DocumentKind string
 
 const (
 	DocumentKindInvoice DocumentKind = "invoice"
-)
-
-const (
 	DocumentKindReceipt DocumentKind = "receipt"
 )
 
@@ -15,10 +12,7 @@ type DeliveryChannel string
 
 const (
 	DeliveryChannelEmail DeliveryChannel = "email"
-)
-
-const (
-	DeliveryChannelSMS DeliveryChannel = "sms"
+	DeliveryChannelSMS   DeliveryChannel = "sms"
 )
 
 // OrderDocumentDelivery describes a delivered invoice or receipt link.

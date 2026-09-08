@@ -12,30 +12,12 @@ type Status string
 
 const (
 	StatusInitialized Status = "initialized"
-)
-
-const (
-	StatusScheduled Status = "scheduled"
-)
-
-const (
-	StatusProcessing Status = "processing"
-)
-
-const (
-	StatusExecuting Status = "executing"
-)
-
-const (
-	StatusSucceeded Status = "succeeded"
-)
-
-const (
-	StatusInvalid Status = "invalid"
-)
-
-const (
-	StatusCanceled Status = "canceled"
+	StatusScheduled   Status = "scheduled"
+	StatusProcessing  Status = "processing"
+	StatusExecuting   Status = "executing"
+	StatusSucceeded   Status = "succeeded"
+	StatusInvalid     Status = "invalid"
+	StatusCanceled    Status = "canceled"
 )
 
 // PayoutsService manages payout configuration, scheduling, and history.

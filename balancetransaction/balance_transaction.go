@@ -65,10 +65,7 @@ type Type string
 
 const (
 	TypePayment Type = "payment"
-)
-
-const (
-	TypeRefund Type = "refund"
+	TypeRefund  Type = "refund"
 )
 
 // BalanceTransaction represents a merchant balance entry caused by a payment or

@@ -13,41 +13,20 @@ import (
 type Status string
 
 const (
-	StatusActive Status = "active"
-)
-
-const (
-	StatusExpired Status = "expired"
-)
-
-const (
+	StatusActive   Status = "active"
+	StatusExpired  Status = "expired"
 	StatusInactive Status = "inactive"
-)
-
-const (
-	StatusUsed Status = "used"
+	StatusUsed     Status = "used"
 )
 
 type ActivityType string
 
 const (
-	ActivityTypeExpiredViewed ActivityType = "expired_viewed"
-)
-
-const (
-	ActivityTypeOrderCreated ActivityType = "order_created"
-)
-
-const (
-	ActivityTypePaymentFailed ActivityType = "payment_failed"
-)
-
-const (
+	ActivityTypeExpiredViewed  ActivityType = "expired_viewed"
+	ActivityTypeOrderCreated   ActivityType = "order_created"
+	ActivityTypePaymentFailed  ActivityType = "payment_failed"
 	ActivityTypePaymentStarted ActivityType = "payment_started"
-)
-
-const (
-	ActivityTypeViewed ActivityType = "viewed"
+	ActivityTypeViewed         ActivityType = "viewed"
 )
 
 // PurchaseIntentsService manages Buy link purchase intents.
