@@ -6,6 +6,10 @@ import (
 	"io"
 	"net/http"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v5/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/secretkey"
 )
 
 func TestAppsServiceUsesTypedContracts(t *testing.T) {
@@ -48,16 +52,16 @@ func TestAppsServiceUsesTypedContracts(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	created, err := client.Apps.Create(ctx, CreateAppParams{
+	created, err := client.Apps.Create(ctx, app.CreateParams{
 		Name:                         "Acme Production API",
 		Alias:                        "acme-prod-api",
 		Description:                  "Production Inttegro API for Acme Marketplace",
 		LegalEntityType:              "business",
 		PlacementParentApplicationID: "app_parent",
-		RelationshipPolicy: &AppRelationshipPolicy{
+		RelationshipPolicy: &app.RelationshipPolicy{
 			ChildStanding: "controlled",
-			Credentials:   AppCredentialOwnerChild,
-			Management:    AppManagementRoleParent,
+			Credentials:   app.CredentialOwnerChild,
+			Management:    app.ManagementRoleParent,
 		},
 	})
 	if err != nil {
@@ -67,7 +71,7 @@ func TestAppsServiceUsesTypedContracts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Apps.Lookup() error = %v", err)
 	}
-	updated, err := client.Apps.Update(ctx, UpdateAppParams{Alias: String("acme-api")}, WithIdempotencyKey("apps-update-123"))
+	updated, err := client.Apps.Update(ctx, app.UpdateParams{Alias: String("acme-api")}, request.WithIdempotencyKey("apps-update-123"))
 	if err != nil {
 		t.Fatalf("Apps.Update() error = %v", err)
 	}
@@ -112,14 +116,14 @@ func TestAppsServiceUsesTypedContracts(t *testing.T) {
 	if created.ID != "app_child" || created.Name != "Acme Production API" {
 		t.Fatalf("decoded created app = %#v", created)
 	}
-	if created.SecretKey == nil || created.SecretKey.TokenType != SecretKeyTokenTypeBearer || created.SecretKey.Token != "sk_test_child" {
+	if created.SecretKey == nil || created.SecretKey.TokenType != secretkey.TokenTypeBearer || created.SecretKey.Token != "sk_test_child" {
 		t.Fatalf("decoded create secret key = %#v", created.SecretKey)
 	}
 	if created.Relationship == nil ||
-		created.Relationship.Kind != AppRelationshipKindPlacement ||
-		created.Relationship.Status != AppRelationshipStatusActive ||
-		created.Relationship.RelationshipPolicy.Management != AppManagementRoleParent ||
-		created.Relationship.RelationshipPolicy.Credentials != AppCredentialOwnerChild {
+		created.Relationship.Kind != app.RelationshipKindPlacement ||
+		created.Relationship.Status != app.RelationshipStatusActive ||
+		created.Relationship.RelationshipPolicy.Management != app.ManagementRoleParent ||
+		created.Relationship.RelationshipPolicy.Credentials != app.CredentialOwnerChild {
 		t.Fatalf("decoded relationship = %#v", created.Relationship)
 	}
 	if lookedUp.UpdatedAt == "" || lookedUp.ArchivedAt != "" {
@@ -131,7 +135,7 @@ func TestAppsServiceUsesTypedContracts(t *testing.T) {
 }
 
 func TestUpdateAppParamsCanClearOptionalFields(t *testing.T) {
-	raw, err := json.Marshal(UpdateAppParams{
+	raw, err := json.Marshal(app.UpdateParams{
 		Alias:           String(""),
 		Description:     String(""),
 		LegalEntityType: String(""),

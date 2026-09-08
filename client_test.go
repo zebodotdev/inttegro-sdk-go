@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/zebodotdev/inttegro-sdk-go/v5/messagetemplate"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -378,11 +379,11 @@ func TestMessageTemplatesCreateUsesRequestMetaIdempotencyByDefault(t *testing.T)
 	}
 	defer close()
 
-	_, err := client.MessageTemplates.Create(context.Background(), MessageTemplateCreateParams{
+	_, err := client.MessageTemplates.Create(context.Background(), messagetemplate.CreateParams{
 		Name:    "welcome_sms",
 		Channel: "sms",
 		Purpose: "marketing",
-		SMS:     &MessageTemplateSMSContent{MessageTemplate: "Welcome {{name}}"},
+		SMS:     &messagetemplate.SMSContent{MessageTemplate: "Welcome {{name}}"},
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

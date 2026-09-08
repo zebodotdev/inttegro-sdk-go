@@ -1,12 +1,44 @@
-// Package balance provides balance snapshot resources and operations.
+// Package balance provides balance resources and operations.
 package balance
 
-import inttegro "github.com/zebodotdev/inttegro-sdk-go/v4"
+import (
+	"context"
 
-type (
-	Service   = inttegro.BalancesService
-	Amount    = inttegro.BalanceAmount
-	Breakdown = inttegro.BalanceBreakdown
-	Snapshot  = inttegro.BalanceSnapshot
-	Resource  = inttegro.BalanceSnapshot
+	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
 )
+
+// BalancesService retrieves balance snapshots across currencies.
+type Service struct {
+	client transport.Client
+}
+
+// BalanceAmount represents a balance amount in minor units.
+type Amount struct {
+	Amount int64 `json:"amount"`
+}
+
+// BalanceBreakdown is a per-currency breakdown of balances.
+type Breakdown struct {
+	Available                  *Amount `json:"available,omitempty"`
+	Pending                    *Amount `json:"pending,omitempty"`
+	Reserved                   *Amount `json:"reserved,omitempty"`
+	Refund                     *Amount `json:"refund,omitempty"`
+	IncludesTransactionsBefore string  `json:"includes_transactions_before,omitempty"`
+}
+
+// BalanceSnapshot is the current balance breakdown keyed by currency.
+type Resource struct {
+	Balances map[string]Breakdown `json:"balances"`
+}
+
+// Get retrieves the current balances snapshot.
+func (s *Service) Get(ctx context.Context) (*Resource, error) {
+	var resp Resource
+	if err := s.client.Do(ctx, "POST", "/balances", map[string]any{}, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// NewService constructs the resource service used by inttegro.Client.
+func NewService(client transport.Client) *Service { return &Service{client: client} }

@@ -8,7 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
 )
 
 func TestRefundsServiceUsesCanonicalContracts(t *testing.T) {
@@ -44,17 +46,17 @@ func TestRefundsServiceUsesCanonicalContracts(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Refunds.Create() error = %v", err)
 	}
-	canceled, err := client.Refunds.Cancel(ctx, CancelRefundRequest{
-		RefundID: "rf_123", RequestMeta: &RequestMeta{IdempotencyKey: "cancel-refund-123"},
+	canceled, err := client.Refunds.Cancel(ctx, refund.CancelParams{
+		RefundID: "rf_123", RequestMeta: &request.Meta{IdempotencyKey: "cancel-refund-123"},
 	})
 	if err != nil {
 		t.Fatalf("Refunds.Cancel() error = %v", err)
 	}
-	lookedUp, err := client.Refunds.Lookup(ctx, LookupRefundRequest{RefundID: "rf_123"})
+	lookedUp, err := client.Refunds.Lookup(ctx, refund.LookupParams{RefundID: "rf_123"})
 	if err != nil {
 		t.Fatalf("Refunds.Lookup() error = %v", err)
 	}
-	page, err := client.Refunds.Page(ctx, PageRefundsRequest{PageNumber: 2, PageSize: 25})
+	page, err := client.Refunds.Page(ctx, refund.PageParams{PageNumber: 2, PageSize: 25})
 	if err != nil {
 		t.Fatalf("Refunds.Page() error = %v", err)
 	}
@@ -101,10 +103,10 @@ func TestRefundsServiceUsesCanonicalContracts(t *testing.T) {
 }
 
 func TestRefundCreateRequestOmitsOptionalFields(t *testing.T) {
-	raw, err := json.Marshal(CreateRefundRequest{
+	raw, err := json.Marshal(refund.CreateParams{
 		OrderID: "or_123",
-		Reason:  RefundReasonItemReturned,
-		LineItems: []CreateRefundLineItem{{
+		Reason:  refund.ReasonItemReturned,
+		LineItems: []refund.CreateLineItem{{
 			OrderLineItemID: "oli_123",
 			RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 100},
 		}},
@@ -130,13 +132,13 @@ func TestRefundCreateRequestOmitsOptionalFields(t *testing.T) {
 }
 
 func TestRefundOmitsOptionalResponseFields(t *testing.T) {
-	raw, err := json.Marshal(Refund{
+	raw, err := json.Marshal(refund.Resource{
 		ID:        "rf_123",
 		OrderID:   "or_123",
-		Status:    RefundStatusPending,
+		Status:    refund.StatusPending,
 		Total:     money.Amount{Currency: money.GHS, Value: 100},
-		LineItems: []RefundLineItem{},
-		Reason:    RefundReasonItemReturned,
+		LineItems: []refund.LineItem{},
+		Reason:    refund.ReasonItemReturned,
 		CreatedAt: "2026-09-02T10:00:00Z",
 	})
 	if err != nil {
@@ -161,7 +163,7 @@ func TestRefundOmitsOptionalResponseFields(t *testing.T) {
 	}
 }
 
-func TestOrdersRefundMatchesCanonicalCreateContract(t *testing.T) {
+func TestRefundCreateUsesCanonicalRoute(t *testing.T) {
 	var paths []string
 	var bodies []map[string]any
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -184,18 +186,14 @@ func TestOrdersRefundMatchesCanonicalCreateContract(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Refunds.Create() error = %v", err)
 	}
-	compatibility, err := client.Orders.Refund(context.Background(), request)
-	if err != nil {
-		t.Fatalf("Orders.Refund() error = %v", err)
-	}
-	if !reflect.DeepEqual(paths, []string{"/refunds/create", "/orders/refund"}) {
+	if !reflect.DeepEqual(paths, []string{"/refunds/create"}) {
 		t.Fatalf("paths = %#v", paths)
 	}
-	if len(bodies) != 2 || !reflect.DeepEqual(bodies[0], bodies[1]) {
-		t.Fatalf("canonical and compatibility bodies differ: %#v", bodies)
+	if len(bodies) != 1 {
+		t.Fatalf("request bodies = %#v", bodies)
 	}
-	if !reflect.DeepEqual(canonical, compatibility) {
-		t.Fatalf("canonical and compatibility responses differ: %#v %#v", canonical, compatibility)
+	if canonical == nil {
+		t.Fatal("Refunds.Create() returned nil refund")
 	}
 }
 
@@ -220,7 +218,7 @@ func TestRefundMutationsGenerateRequestMeta(t *testing.T) {
 	if _, err := client.Refunds.Create(context.Background(), request); err != nil {
 		t.Fatalf("Refunds.Create() error = %v", err)
 	}
-	if _, err := client.Refunds.Cancel(context.Background(), CancelRefundRequest{RefundID: "rf_123"}); err != nil {
+	if _, err := client.Refunds.Cancel(context.Background(), refund.CancelParams{RefundID: "rf_123"}); err != nil {
 		t.Fatalf("Refunds.Cancel() error = %v", err)
 	}
 
@@ -239,12 +237,12 @@ func TestRefundMutationsGenerateRequestMeta(t *testing.T) {
 	}
 }
 
-func fullCreateRefundRequest() CreateRefundRequest {
-	lineReason := RefundReasonItemDamaged
-	return CreateRefundRequest{
+func fullCreateRefundRequest() refund.CreateParams {
+	lineReason := refund.ReasonItemDamaged
+	return refund.CreateParams{
 		OrderID: "or_123",
-		Reason:  RefundReasonRequestedByCustomer,
-		LineItems: []CreateRefundLineItem{{
+		Reason:  refund.ReasonRequestedByCustomer,
+		LineItems: []refund.CreateLineItem{{
 			OrderLineItemID: "oli_123",
 			RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 2500},
 			Reason:          &lineReason,
@@ -253,29 +251,29 @@ func fullCreateRefundRequest() CreateRefundRequest {
 		ReasonDetails: "customer returned the item",
 		Reference:     "RETURN-123",
 		CustomData:    map[string]string{"warehouse": "accra"},
-		RequestMeta:   &RequestMeta{IdempotencyKey: "create-refund-123"},
+		RequestMeta:   &request.Meta{IdempotencyKey: "create-refund-123"},
 	}
 }
 
-func assertDecodedRefund(t *testing.T, refund Refund) {
+func assertDecodedRefund(t *testing.T, got refund.Resource) {
 	t.Helper()
-	if refund.ID != "rf_123" || refund.OrderID != "or_123" ||
-		refund.Status != RefundStatusProcessing || refund.Total.Currency != "ghs" ||
-		refund.Total.Value != 2500 || refund.Reason != RefundReasonRequestedByCustomer ||
-		refund.Reference != "RETURN-123" || refund.CustomData["warehouse"] != "accra" {
-		t.Fatalf("decoded refund = %#v", refund)
+	if got.ID != "rf_123" || got.OrderID != "or_123" ||
+		got.Status != refund.StatusProcessing || got.Total.Currency != "ghs" ||
+		got.Total.Value != 2500 || got.Reason != refund.ReasonRequestedByCustomer ||
+		got.Reference != "RETURN-123" || got.CustomData["warehouse"] != "accra" {
+		t.Fatalf("decoded refund = %#v", got)
 	}
-	if refund.ProcessingAt == nil || *refund.ProcessingAt != "2026-09-02T10:01:00Z" ||
-		refund.SucceededAt != nil || refund.FailedAt != nil || refund.CanceledAt != nil {
-		t.Fatalf("decoded lifecycle timestamps = %#v", refund)
+	if got.ProcessingAt == nil || *got.ProcessingAt != "2026-09-02T10:01:00Z" ||
+		got.SucceededAt != nil || got.FailedAt != nil || got.CanceledAt != nil {
+		t.Fatalf("decoded lifecycle timestamps = %#v", got)
 	}
-	if len(refund.LineItems) != 1 || refund.LineItems[0].ID != "rli_123" ||
-		refund.LineItems[0].OrderLineItemID != "oli_123" ||
-		refund.LineItems[0].OriginalAmountPaid.Value != 5000 ||
-		refund.LineItems[0].RefundAmount.Value != 2500 ||
-		refund.LineItems[0].Reason == nil ||
-		*refund.LineItems[0].Reason != RefundReasonItemDamaged {
-		t.Fatalf("decoded refund lines = %#v", refund.LineItems)
+	if len(got.LineItems) != 1 || got.LineItems[0].ID != "rli_123" ||
+		got.LineItems[0].OrderLineItemID != "oli_123" ||
+		got.LineItems[0].OriginalAmountPaid.Value != 5000 ||
+		got.LineItems[0].RefundAmount.Value != 2500 ||
+		got.LineItems[0].Reason == nil ||
+		*got.LineItems[0].Reason != refund.ReasonItemDamaged {
+		t.Fatalf("decoded refund lines = %#v", got.LineItems)
 	}
 }
 

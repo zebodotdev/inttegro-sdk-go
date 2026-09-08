@@ -3,32 +3,35 @@ package inttegro
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v5/balancetransaction"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/payment"
 )
 
 func TestBalanceTransactionDeserializesSemanticSources(t *testing.T) {
 	tests := []struct {
 		name       string
 		body       string
-		wantType   BalanceTransactionType
+		wantType   balancetransaction.Type
 		wantSource string
 	}{
 		{
 			name:       "payment",
 			body:       `{"id":"bt_payment","type":"payment","payment_id":"py_123","order_id":"or_123","amount":{"currency":"GHS","value":2500},"created_at":"2026-08-31T12:00:00Z"}`,
-			wantType:   BalanceTransactionTypePayment,
+			wantType:   balancetransaction.TypePayment,
 			wantSource: "py_123",
 		},
 		{
 			name:       "refund",
 			body:       `{"id":"bt_refund","type":"refund","refund_id":"rf_123","order_id":"or_123","amount":{"currency":"GHS","value":500},"created_at":"2026-08-31T12:01:00Z"}`,
-			wantType:   BalanceTransactionTypeRefund,
+			wantType:   balancetransaction.TypeRefund,
 			wantSource: "rf_123",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var txn BalanceTransaction
+			var txn balancetransaction.Resource
 			if err := json.Unmarshal([]byte(tt.body), &txn); err != nil {
 				t.Fatalf("unmarshal balance transaction: %v", err)
 			}
@@ -46,8 +49,8 @@ func TestBalanceTransactionDeserializesSemanticSources(t *testing.T) {
 }
 
 func TestBalanceTransactionSourceIDRejectsContradictoryReferences(t *testing.T) {
-	txn := BalanceTransaction{
-		Type:      BalanceTransactionTypeRefund,
+	txn := balancetransaction.Resource{
+		Type:      balancetransaction.TypeRefund,
 		PaymentID: "py_123",
 		RefundID:  "rf_123",
 	}
@@ -57,7 +60,7 @@ func TestBalanceTransactionSourceIDRejectsContradictoryReferences(t *testing.T) 
 }
 
 func TestPaymentDeserializesCanonicalEmbeddedBalanceTransaction(t *testing.T) {
-	var payment Payment
+	var payment payment.Resource
 	body := `{"id":"py_123","balance_transaction":{"id":"bt_payment","type":"payment","payment_id":"py_123","order_id":"or_123","amount":{"currency":"GHS","value":2500},"created_at":"2026-08-31T12:00:00Z"}}`
 	if err := json.Unmarshal([]byte(body), &payment); err != nil {
 		t.Fatalf("unmarshal payment: %v", err)

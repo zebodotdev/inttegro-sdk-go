@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 5.0.0 - 2026-09-08
+
+- Breaking: moved resource services, request parameters, models, and lifecycle
+  values into their singular resource packages as real named Go definitions.
+- Breaking: removed all root resource mirrors, deprecated compatibility aliases,
+  and the plural `bankaccounts`, `paymentmethods`, and `wallets` packages.
+- Breaking: changed the module path to `github.com/zebodotdev/inttegro-sdk-go/v5`.
+- Added `request.Meta` and `request.WithIdempotencyKey` for cross-resource
+  request controls.
+
 ## 4.5.0 - 2026-09-08
 
 - Added singular resource packages with short domain-scoped names such as

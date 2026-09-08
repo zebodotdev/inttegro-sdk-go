@@ -6,7 +6,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
 )
 
 func TestProductsEndpointsMatchSpec(t *testing.T) {
@@ -26,23 +29,23 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 	defer close()
 
 	ctx := context.Background()
-	if _, err := client.Products.Create(ctx, CreateProductParams{Type: "physical", Name: "T-Shirt"}); err != nil {
+	if _, err := client.Products.Create(ctx, product.CreateParams{Type: "physical", Name: "T-Shirt"}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Products.AddPrice(ctx, AddProductPriceParams{
+	if _, err := client.Prices.AddToProduct(ctx, price.AddToProductParams{
 		ProductID:    "prod_123",
 		Amount:       money.AmountParams{Currency: money.GHS, Value: 5000},
 		SetAsDefault: true,
 	}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Products.SetDefaultUnitPrice(ctx, SetDefaultUnitPriceParams{ProductID: "prod_123", PriceID: "pr_123"}); err != nil {
+	if _, err := client.Products.SetDefaultUnitPrice(ctx, product.SetDefaultUnitPriceParams{ProductID: "prod_123", PriceID: "pr_123"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := client.Products.Lookup(ctx, "prod_123"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Products.Update(ctx, UpdateProductParams{ProductID: "prod_123", Name: "Updated"}); err != nil {
+	if _, err := client.Products.Update(ctx, product.UpdateParams{ProductID: "prod_123", Name: "Updated"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := client.Products.Publish(ctx, "prod_123"); err != nil {
@@ -54,7 +57,7 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 	if _, err := client.Products.Archive(ctx, "prod_123"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Products.Page(ctx, PageProductsParams{PageNumber: 1, PageSize: 20}); err != nil {
+	if _, err := client.Products.Page(ctx, product.PageParams{PageNumber: 1, PageSize: 20}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -80,7 +83,7 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 }
 
 func TestProductDecodesCanonicalMetadata(t *testing.T) {
-	var product Product
+	var product product.Resource
 	raw := []byte(`{
 		"id":"prod_123",
 		"type":"service",
@@ -121,13 +124,13 @@ func TestAppsEndpointsMatchSpec(t *testing.T) {
 	defer close()
 
 	ctx := context.Background()
-	if _, err := client.Apps.Create(ctx, CreateAppParams{Name: "App"}); err != nil {
+	if _, err := client.Apps.Create(ctx, app.CreateParams{Name: "App"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := client.Apps.Lookup(ctx); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Apps.Update(ctx, UpdateAppParams{Alias: String("app")}); err != nil {
+	if _, err := client.Apps.Update(ctx, app.UpdateParams{Alias: String("app")}); err != nil {
 		t.Fatal(err)
 	}
 

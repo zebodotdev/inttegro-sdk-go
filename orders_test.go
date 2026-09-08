@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/order"
 )
 
 func TestOrderDocumentDeliveryEndpointsMatchSpec(t *testing.T) {
@@ -27,14 +30,14 @@ func TestOrderDocumentDeliveryEndpointsMatchSpec(t *testing.T) {
 	defer close()
 
 	ctx := context.Background()
-	invoice, err := client.Orders.SendInvoice(ctx, OrderSendInvoiceParams{OrderID: "or_123"})
+	invoice, err := client.Orders.SendInvoice(ctx, order.SendInvoiceParams{OrderID: "or_123"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if invoice.Delivery.DocumentURL == "" {
 		t.Fatalf("expected invoice delivery document URL")
 	}
-	if _, err := client.Orders.SendReceipt(ctx, OrderSendReceiptParams{OrderID: "or_123"}); err != nil {
+	if _, err := client.Orders.SendReceipt(ctx, order.SendReceiptParams{OrderID: "or_123"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -71,7 +74,7 @@ func TestOrdersPayReturnsOrder(t *testing.T) {
 	}
 	defer close()
 
-	order, err := client.Orders.Pay(context.Background(), OrderPayParams{OrderID: "or_123"})
+	order, err := client.Orders.Pay(context.Background(), order.PayParams{OrderID: "or_123"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,9 +87,9 @@ func TestOrdersPayReturnsOrder(t *testing.T) {
 }
 
 func TestOrderCreateParamsOmitZeroBillingDetails(t *testing.T) {
-	params := OrderCreateParams{
-		CustomerData: &CustomerData{Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605"},
-		LineItems:    []OrderLineItemParams{{Type: LineItemTypeProduct}},
+	params := order.CreateParams{
+		CustomerData: &customer.Data{Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605"},
+		LineItems:    []order.LineItemParams{{Type: order.LineItemTypeProduct}},
 	}
 	if err := params.Validate(); err != nil {
 		t.Fatalf("zero billing details should be optional: %v", err)
@@ -103,7 +106,7 @@ func TestOrderCreateParamsOmitZeroBillingDetails(t *testing.T) {
 		t.Fatalf("zero billing details must be omitted: %s", payload)
 	}
 
-	params.BillingDetails = BillingDetails{Name: "Akua Mensah"}
+	params.BillingDetails = order.BillingDetails{Name: "Akua Mensah"}
 	if err := params.Validate(); err == nil {
 		t.Fatal("partially supplied billing details must be rejected")
 	}
