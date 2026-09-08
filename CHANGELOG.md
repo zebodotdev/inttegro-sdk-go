@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 5.0.2 - 2026-09-08
+
+- Split large resource package files into focused files for services, request
+  parameters, resources, enums, and domain-specific supporting types.
+- Added source-organization checks that reject monolithic package files while
+  preserving the complete v5 public API and wire behavior.
+
 ## 5.0.1 - 2026-09-08
 
 - Grouped each resource enum's constants into one idiomatic declaration.
