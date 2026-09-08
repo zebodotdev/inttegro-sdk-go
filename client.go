@@ -4,6 +4,17 @@
 // tokenize payment methods, and send notifications across multiple payment
 // rails including mobile money, bank accounts, and cards.
 //
+// # Resource packages
+//
+// Import the singular package for each API resource. These packages keep names
+// short and domain-scoped: product.TypeDigital, purchaseintent.StatusActive,
+// refund.CreateParams, and order.Resource. Client services remain plural
+// collections, such as Client.Products and Client.PurchaseIntents.
+//
+// The root inttegro package owns the client, transport options, API errors,
+// telemetry, and cross-cutting request controls. Resource-prefixed root names
+// remain available throughout v4 for source compatibility.
+//
 // # Getting Started
 //
 // Create a client with your API key:
@@ -39,7 +50,7 @@
 // pass RequestMeta.IdempotencyKey to safely retry requests without duplicating resources.
 // The same idempotency key can be reused if the original request failed.
 //
-//	params := inttegro.OrderCreateParams{
+//	params := order.CreateParams{
 //	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_customer_123"},
 //	    // ... other fields
 //	}

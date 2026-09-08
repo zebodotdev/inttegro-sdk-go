@@ -14,13 +14,13 @@ import "context"
 //
 // Example:
 //
-//	account, err := client.FinancialAccounts.Create(ctx, inttegro.FinancialAccountCreateParams{
+//	account, err := client.FinancialAccounts.Create(ctx, financialaccount.CreateParams{
 //	    Label:    "Primary Payout Account",
-//	    Type:     inttegro.FinancialAccountTypeWallet,
+//	    Type:     financialaccount.TypeWallet,
 //	    Reference: "main_wallet",
 //	    Currency: "ghs",
-//	    PushConfiguration: &inttegro.PullPushConfig{Enabled: inttegro.Bool(true)},
-//	    Wallet: &wallets.Config{...},
+//	    PushConfiguration: &financialaccount.PullPushConfig{Enabled: inttegro.Bool(true)},
+//	    Wallet: &wallet.Config{...},
 //	})
 //
 // Learn more: https://studio.inttegro.com/set-up-financial-account

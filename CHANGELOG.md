@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 4.5.0 - 2026-09-08
+
+- Added singular resource packages with short domain-scoped names such as
+  `product.TypeDigital`, `purchaseintent.StatusActive`,
+  `refund.CreateParams`, and `order.Resource`.
+- Kept the existing root resource names and client service fields source
+  compatible for the remainder of v4.
+
 ## 4.4.1 - 2026-09-06
 
 - Omit zero billing details from Order creation and validate contact fields only when billing details are supplied, matching the optional public API field.

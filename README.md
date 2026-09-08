@@ -39,34 +39,38 @@ import (
 	"os"
 
 	inttegro "github.com/zebodotdev/inttegro-sdk-go/v4"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/customer"
 	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v4/product"
 )
 
 func main() {
 	client := inttegro.NewClient(os.Getenv("INTTEGRO_API_KEY"))
 
-	order, err := client.Orders.Create(context.Background(), inttegro.OrderCreateParams{
+	createdOrder, err := client.Orders.Create(context.Background(), order.CreateParams{
 		RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "checkout-cart-123"},
-		CustomerData: &inttegro.CustomerData{
+		CustomerData: &customer.Data{
 			Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605",
 		},
 		Finalize: inttegro.Bool(true),
-		CheckoutSettings: &inttegro.CheckoutSettings{
+		CheckoutSettings: &order.CheckoutSettings{
 			RedirectURL: "https://example.com/orders/complete",
 			CancelURL:   "https://example.com/cart",
 		},
-		LineItems: []inttegro.OrderLineItemParams{{
-            Type: inttegro.LineItemTypeProduct,
-            Product: &inttegro.ProductLineItemParams{
-                Type: inttegro.ProductTypeDigital, Name: "Monthly subscription", Quantity: 1,
-                Price: inttegro.PriceParams{AmountParams: money.AmountParams{
-                    Currency: money.GHS, Value: 5000,
-                }},
+		LineItems: []order.LineItemParams{{
+			Type: order.LineItemTypeProduct,
+			Product: &order.ProductLineItemParams{
+				Type: product.TypeDigital, Name: "Monthly subscription", Quantity: 1,
+				Price: price.InlineParams{AmountParams: money.AmountParams{
+					Currency: money.GHS, Value: 5000,
+				}},
 			},
 		}},
-		BillingDetails: inttegro.BillingDetails{
+		BillingDetails: order.BillingDetails{
 			Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605",
-			Address: inttegro.Address{
+			Address: order.Address{
 				Name: "Akua Mensah", PhoneNumber: "+233544998605",
 				Line1: "23 High Street", Town: "Accra", Country: "GH",
 			},
@@ -80,14 +84,39 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if order.Invoice == nil || order.Invoice.Format == nil || order.Invoice.Format.Web == nil {
+	if createdOrder.Invoice == nil || createdOrder.Invoice.Format == nil || createdOrder.Invoice.Format.Web == nil {
 		log.Fatal("order did not include a checkout URL")
 	}
-	fmt.Println(order.ID, order.Invoice.Format.Web.URL)
+	fmt.Println(createdOrder.ID, createdOrder.Invoice.Format.Web.URL)
 }
 ```
 
 Amounts use integer minor units: `5000` GHS is GHS 50.00. Reuse the same idempotency key when retrying the same logical write. If you omit one, the SDK generates a UUIDv7 key for mutating calls.
+
+## Resource packages
+
+Import the singular package for each API resource. The package supplies short,
+domain-scoped names such as `product.TypeDigital`,
+`purchaseintent.StatusActive`, `refund.StatusSucceeded`, and
+`order.CreateParams`. Client services remain plural collections, so operations
+continue to read naturally:
+
+```go
+intent, err := client.PurchaseIntents.Lookup(ctx, purchaseIntentID)
+if err != nil {
+	return err
+}
+if intent.Status == purchaseintent.StatusExpired {
+	// Replace the expired Buy link.
+}
+```
+
+The root `inttegro` package owns the client, transport options, errors,
+telemetry, and cross-cutting request controls. Its existing resource-prefixed
+names remain available throughout v4 for source compatibility, but new code and
+documentation should use the resource packages. The v4 resource names are exact
+type aliases, so old and new code interoperate without conversions or changes
+to reflected type identity.
 
 ## Refund paid line items
 
@@ -95,11 +124,11 @@ Create a partial or full refund by selecting the paid order line items and the
 amount to return from each one:
 
 ```go
-lineReason := inttegro.RefundReasonItemDamaged
-refund, err := client.Refunds.Create(context.Background(), inttegro.CreateRefundRequest{
+lineReason := refund.ReasonItemDamaged
+createdRefund, err := client.Refunds.Create(context.Background(), refund.CreateParams{
 	OrderID: "or_0123456789abcdefghijklmnopqrstuvwxyzABCD",
-	Reason:  inttegro.RefundReasonRequestedByCustomer,
-	LineItems: []inttegro.CreateRefundLineItem{{
+	Reason:  refund.ReasonRequestedByCustomer,
+	LineItems: []refund.CreateLineItem{{
 		OrderLineItemID: "oli_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN",
 		RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 2500},
 		Reason:          &lineReason,
@@ -110,7 +139,7 @@ refund, err := client.Refunds.Create(context.Background(), inttegro.CreateRefund
 if err != nil {
 	log.Fatal(err)
 }
-fmt.Println(refund.ID, refund.Status)
+fmt.Println(createdRefund.ID, createdRefund.Status)
 ```
 
 Refunds return funds to the original payment method and are processed
@@ -153,7 +182,7 @@ The SDK covers orders and checkout, customers, products and prices, purchase int
 
 Go-specific features:
 
-- Typed request and domain structs with exported constants for public enum values.
+- Singular resource packages with short, domain-scoped request, model, page, and enum names.
 - `context.Context` on every operation for deadlines and cancellation.
 - Safe sharing across goroutines.
 - Standard-library HTTP with the lightweight OpenTelemetry API for application-owned tracing.
@@ -168,7 +197,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-4.3.1.tar.gz \
+gh attestation verify inttegro-sdk-go-4.5.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

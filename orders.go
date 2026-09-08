@@ -19,27 +19,27 @@ import (
 // Example:
 //
 //	// Create and charge an order
-//	order, err := client.Orders.Create(ctx, inttegro.OrderCreateParams{
-//	    CustomerData: &inttegro.CustomerData{
+//	order, err := client.Orders.Create(ctx, order.CreateParams{
+//	    CustomerData: &customer.Data{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    LineItems: []inttegro.OrderLineItemParams{
+//	    LineItems: []order.LineItemParams{
 //	        {
-//	            Type: inttegro.LineItemTypeProduct,
-//	            Product: &inttegro.ProductLineItemParams{
+//	            Type: order.LineItemTypeProduct,
+//	            Product: &order.ProductLineItemParams{
 //	                Type:     "digital",
 //	                Name:     "Premium Plan",
 //	                Quantity: 1,
-//	                Price: inttegro.PriceParams{AmountParams: money.AmountParams{
+//	                Price: price.InlineParams{AmountParams: money.AmountParams{
 //	                    Currency: money.USD,
 //	                    Value:    999,
 //	                }},
 //	            },
 //	        },
 //	    },
-//	    BillingDetails: inttegro.BillingDetails{...},
+//	    BillingDetails: order.BillingDetails{...},
 //	    ExecutePayment: inttegro.Bool(true),
 //	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_jane_001"},
 //	})
@@ -73,21 +73,21 @@ type OrdersService struct {
 //
 // Example (immediate charge with inline payment method):
 //
-//	order, err := client.Orders.Create(ctx, inttegro.OrderCreateParams{
-//	    CustomerData: &inttegro.CustomerData{
+//	order, err := client.Orders.Create(ctx, order.CreateParams{
+//	    CustomerData: &customer.Data{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    PaymentMethodData: &inttegro.PaymentMethodData{
-//	        Type: inttegro.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &inttegro.MobileMoneyParams{
+//	    PaymentMethodData: &paymentmethod.Data{
+//	        Type: paymentmethod.TypeMobileMoney,
+//	        MobileMoney: &paymentmethod.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    LineItems: []inttegro.OrderLineItemParams{...},
-//	    BillingDetails: inttegro.BillingDetails{...},
+//	    LineItems: []order.LineItemParams{...},
+//	    BillingDetails: order.BillingDetails{...},
 //	    ExecutePayment: inttegro.Bool(true),
 //	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_001"},
 //	})
@@ -192,7 +192,7 @@ func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error)
 //
 // Example (charging with saved payment method):
 //
-//	order, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
+//	order, err := client.Orders.Pay(ctx, order.PayParams{
 //	    OrderID:         "or_abc123",
 //	    PaymentMethodID: "pm_def456",
 //	})
@@ -205,11 +205,11 @@ func (s *OrdersService) Update(ctx context.Context, payload any) (*Order, error)
 //
 // Example (charging with inline payment method):
 //
-//	order, err := client.Orders.Pay(ctx, inttegro.OrderPayParams{
+//	order, err := client.Orders.Pay(ctx, order.PayParams{
 //	    OrderID: "or_abc123",
-//	    PaymentMethodData: &inttegro.PaymentMethodData{
-//	        Type: inttegro.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &inttegro.MobileMoneyParams{
+//	    PaymentMethodData: &paymentmethod.Data{
+//	        Type: paymentmethod.TypeMobileMoney,
+//	        MobileMoney: &paymentmethod.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
@@ -241,7 +241,7 @@ func (s *OrdersService) Pay(ctx context.Context, params OrderPayParams) (*Order,
 // Example:
 //
 //	// Customer enters OTP: "123456"
-//	order, err := client.Orders.ConfirmPayment(ctx, inttegro.OrderConfirmParams{
+//	order, err := client.Orders.ConfirmPayment(ctx, order.ConfirmParams{
 //	    OrderID: "or_abc123",
 //	    Token:   "123456",
 //	})
@@ -378,7 +378,7 @@ func (s *OrdersService) SendReceipt(ctx context.Context, params OrderSendReceipt
 //
 // Example:
 //
-//	order, err := client.Orders.Complete(ctx, inttegro.OrderCompleteParams{
+//	order, err := client.Orders.Complete(ctx, order.CompleteParams{
 //	    OrderID: "or_abc123",
 //	})
 func (s *OrdersService) Complete(ctx context.Context, params OrderCompleteParams) (*Order, error) {
@@ -453,7 +453,7 @@ func stableOrderRequestMeta(action, orderID string) *RequestMeta {
 //
 // Example:
 //
-//	orders, err := client.Orders.Page(ctx, inttegro.OrderPageParams{
+//	orders, err := client.Orders.Page(ctx, order.PageParams{
 //	    PageNumber: 1,
 //	    PageSize:   50,
 //	})

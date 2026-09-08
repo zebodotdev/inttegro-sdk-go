@@ -12,13 +12,13 @@ import "context"
 //
 // Example:
 //
-//	chime, err := client.Chimes.Send(ctx, inttegro.SendChimeParams{
-//	    Recipient: inttegro.ChimeRecipient{
-//	        Type: inttegro.ChimeRecipientTypePhone,
+//	chime, err := client.Chimes.Send(ctx, chime.SendParams{
+//	    Recipient: chime.Recipient{
+//	        Type: chime.RecipientTypePhone,
 //	        Phone: &struct{Number string}{Number: "+233244123456"},
 //	    },
 //	    FullMessage: "Your order #12345 has shipped!",
-//	    Transport:   inttegro.ChimeTransportSMS,
+//	    Transport:   chime.TransportSMS,
 //	    IdempotencyKey: "chime_order_12345_shipped",
 //	})
 type ChimesService struct {

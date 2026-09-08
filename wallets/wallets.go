@@ -1,4 +1,6 @@
 // Package wallets defines wallet variants used by financial accounts.
+//
+// Deprecated: use the singular wallet package for new code.
 package wallets
 
 import "github.com/zebodotdev/inttegro-sdk-go/v4/paymentmethods"

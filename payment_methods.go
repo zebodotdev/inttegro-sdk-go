@@ -16,11 +16,11 @@ import "context"
 // Example:
 //
 //	// Tokenize and verify a mobile money wallet
-//	pm, err := client.PaymentMethods.Tokenize(ctx, inttegro.TokenizePaymentMethodParams{
+//	pm, err := client.PaymentMethods.Tokenize(ctx, paymentmethod.TokenizeParams{
 //	    CustomerID: "cu_abc123",
-//	    PaymentMethodData: inttegro.PaymentMethodData{
-//	        Type: inttegro.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &inttegro.MobileMoneyParams{
+//	    PaymentMethodData: paymentmethod.Data{
+//	        Type: paymentmethod.TypeMobileMoney,
+//	        MobileMoney: &paymentmethod.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
