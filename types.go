@@ -51,9 +51,9 @@ type MobileMoneyParams struct {
 //
 // Example (mobile money):
 //
-//	paymentData := &inttegro.PaymentMethodData{
-//	    Type: inttegro.PaymentMethodTypeMobileMoney,
-//	    MobileMoney: &inttegro.MobileMoneyParams{
+//	paymentData := &paymentmethod.Data{
+//	    Type: paymentmethod.TypeMobileMoney,
+//	    MobileMoney: &paymentmethod.MobileMoneyParams{
 //	        Network: "mtn",
 //	        AccountNumber: "+233244123456",
 //	    },
@@ -79,7 +79,7 @@ type PaymentMethodData struct {
 //
 // Example:
 //
-//	customerData := &inttegro.CustomerData{
+//	customerData := &customer.Data{
 //	    Name:        "Jane Doe",
 //	    Email:       "jane@example.com",
 //	    PhoneNumber: "+233244123456",
@@ -558,12 +558,12 @@ type Shipping struct {
 //
 // Example:
 //
-//	item := &inttegro.ProductLineItemParams{
+//	item := &order.ProductLineItemParams{
 //	    Type:     "physical",
 //	    Name:     "Wireless Headphones",
 //	    About:    "Bluetooth 5.0, 30-hour battery",
 //	    Quantity: 2,
-//	    Price:    inttegro.PriceParams{AmountParams: money.AmountParams{Currency: money.USD, Value: 7999}}, // $79.99 each
+//	    Price:    price.InlineParams{AmountParams: money.AmountParams{Currency: money.USD, Value: 7999}}, // $79.99 each
 //	    Reference: "SKU-12345",
 //	}
 type ProductLineItemParams struct {
@@ -628,7 +628,7 @@ type ProductLineItem struct {
 //
 // Example:
 //
-//	fee := &inttegro.FeeLineItemParams{
+//	fee := &order.FeeLineItemParams{
 //	    Label:       "Service Fee",
 //	    Description: "Platform usage fee",
 //	    Amount:      money.AmountParams{Currency: money.USD, Value: 299}, // $2.99
@@ -675,7 +675,7 @@ type FeeLineItem struct {
 //
 // Example:
 //
-//	shipping := &inttegro.ShippingLineItemParams{
+//	shipping := &order.ShippingLineItemParams{
 //	    Fee: money.AmountParams{Currency: money.USD, Value: 500}, // $5.00
 //	}
 type ShippingLineItemParams struct {
@@ -709,21 +709,21 @@ type ShippingLineItem struct {
 //
 // Example (product):
 //
-//	lineItem := inttegro.OrderLineItemParams{
-//	    Type: inttegro.LineItemTypeProduct,
-//	    Product: &inttegro.ProductLineItemParams{
+//	lineItem := order.LineItemParams{
+//	    Type: order.LineItemTypeProduct,
+//	    Product: &order.ProductLineItemParams{
 //	        Type:     "digital",
 //	        Name:     "Premium Subscription",
 //	        Quantity: 1,
-//	        Price:    inttegro.PriceParams{AmountParams: money.AmountParams{Currency: money.USD, Value: 999}},
+//	        Price:    price.InlineParams{AmountParams: money.AmountParams{Currency: money.USD, Value: 999}},
 //	    },
 //	}
 //
 // Example (fee):
 //
-//	lineItem := inttegro.OrderLineItemParams{
-//	    Type: inttegro.LineItemTypeFee,
-//	    Fee: &inttegro.FeeLineItemParams{
+//	lineItem := order.LineItemParams{
+//	    Type: order.LineItemTypeFee,
+//	    Fee: &order.FeeLineItemParams{
 //	        Label:  "Platform Fee",
 //	        Amount: money.AmountParams{Currency: money.USD, Value: 299},
 //	    },
@@ -824,35 +824,35 @@ type OrderPayoutFinancialAccount struct {
 //
 // Example (new customer, immediate payment):
 //
-//	params := inttegro.OrderCreateParams{
-//	    CustomerData: &inttegro.CustomerData{
+//	params := order.CreateParams{
+//	    CustomerData: &customer.Data{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
 //	    },
-//	    PaymentMethodData: &inttegro.PaymentMethodData{
-//	        Type: inttegro.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &inttegro.MobileMoneyParams{
+//	    PaymentMethodData: &paymentmethod.Data{
+//	        Type: paymentmethod.TypeMobileMoney,
+//	        MobileMoney: &paymentmethod.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },
 //	    },
-//	    LineItems: []inttegro.OrderLineItemParams{
+//	    LineItems: []order.LineItemParams{
 //	        {
-//	            Type: inttegro.LineItemTypeProduct,
-//	            Product: &inttegro.ProductLineItemParams{
+//	            Type: order.LineItemTypeProduct,
+//	            Product: &order.ProductLineItemParams{
 //	                Type:     "digital",
 //	                Name:     "Premium Plan",
 //	                Quantity: 1,
-//	                Price:    inttegro.PriceParams{AmountParams: money.AmountParams{Currency: money.GHS, Value: 10000}},
+//	                Price:    price.InlineParams{AmountParams: money.AmountParams{Currency: money.GHS, Value: 10000}},
 //	            },
 //	        },
 //	    },
-//	    BillingDetails: inttegro.BillingDetails{
+//	    BillingDetails: order.BillingDetails{
 //	        Name:        "Jane Doe",
 //	        Email:       "jane@example.com",
 //	        PhoneNumber: "+233244123456",
-//	        Address: inttegro.Address{
+//	        Address: order.Address{
 //	            Name:        "Jane Doe",
 //	            PhoneNumber: "+233244123456",
 //	            Line1:       "123 Main St",
@@ -973,8 +973,8 @@ type OrderLookupParams struct {
 //
 // Example (with saved payment method):
 //
-//	params := inttegro.OrderPayParams{
-//	    OrderID:         order.ID,
+//	params := order.PayParams{
+//	    OrderID:         createdOrder.ID,
 //	    PaymentMethodID: "pm_abc123",
 //	}
 //	response, err := client.Orders.Pay(ctx, params)
@@ -1010,8 +1010,8 @@ type OrderPayParams struct {
 //
 // Example:
 //
-//	params := inttegro.OrderConfirmParams{
-//	    OrderID: order.ID,
+//	params := order.ConfirmParams{
+//	    OrderID: createdOrder.ID,
 //	    Token:   "123456", // OTP from customer
 //	}
 //	order, err := client.Orders.ConfirmPayment(ctx, params)
@@ -1115,7 +1115,7 @@ type OrderCancelParams struct {
 //
 // Example:
 //
-//	params := inttegro.OrderPageParams{
+//	params := order.PageParams{
 //	    PageNumber: 1,
 //	    PageSize:   50,
 //	}
@@ -1608,8 +1608,8 @@ type RefundPage struct {
 //
 // Example (SMS):
 //
-//	recipient := inttegro.ChimeRecipient{
-//	    Type: inttegro.ChimeRecipientTypePhone,
+//	recipient := chime.Recipient{
+//	    Type: chime.RecipientTypePhone,
 //	    Name: "Jane Doe",
 //	    Phone: &struct{Number string `json:"number"`}{Number: "+233244123456"},
 //	}
@@ -1642,13 +1642,13 @@ type ChimeRecipient struct {
 //
 // Example (SMS notification):
 //
-//	params := inttegro.SendChimeParams{
-//	    Recipient: inttegro.ChimeRecipient{
-//	        Type: inttegro.ChimeRecipientTypePhone,
+//	params := chime.SendParams{
+//	    Recipient: chime.Recipient{
+//	        Type: chime.RecipientTypePhone,
 //	        Phone: &struct{Number string}{Number: "+233244123456"},
 //	    },
 //	    FullMessage: "Your order #12345 has shipped!",
-//	    Transport:   inttegro.ChimeTransportSMS,
+//	    Transport:   chime.TransportSMS,
 //	    Purpose:     "order_shipped",
 //	    IdempotencyKey: "chime_order_12345_shipped",
 //	}
@@ -1696,7 +1696,7 @@ type SendChimeParams struct {
 //
 // Example:
 //
-//	params := inttegro.ScheduleChimeParams{
+//	params := chime.ScheduleParams{
 //	    Recipients:  []string{"+233244123456", "user@example.com"},
 //	    FullMessage: "Your subscription renews tomorrow.",
 //	    SendAfter:   "2024-01-15T09:00:00Z",
@@ -1889,16 +1889,16 @@ type PullPushConfig struct {
 //
 // Example (mobile money):
 //
-//	params := inttegro.FinancialAccountCreateParams{
+//	params := financialaccount.CreateParams{
 //	    Label:       "Primary Payout Account",
-//	    Type:        inttegro.FinancialAccountTypeWallet,
+//	    Type:        financialaccount.TypeWallet,
 //	    Reference:   "main_wallet",
 //	    Currency:    "ghs",
 //	    Description: "Main MTN wallet for receiving payouts",
-//	    PushConfiguration: &inttegro.PullPushConfig{
+//	    PushConfiguration: &financialaccount.PullPushConfig{
 //	        Enabled: inttegro.Bool(true),
 //	    },
-//	    Wallet: &wallets.Config{
+//	    Wallet: &wallet.Config{
 //	        Type: wallets.TypeMobileMoney,
 //	        MobileMoney: &wallets.MobileMoney{
 //	            AccountNumber: "+233244123456",
@@ -2321,11 +2321,11 @@ type PayoutDestination struct {
 //
 // Example:
 //
-//	params := inttegro.TokenizePaymentMethodParams{
+//	params := paymentmethod.TokenizeParams{
 //	    CustomerID: "cu_abc123",
-//	    PaymentMethodData: inttegro.PaymentMethodData{
-//	        Type: inttegro.PaymentMethodTypeMobileMoney,
-//	        MobileMoney: &inttegro.MobileMoneyParams{
+//	    PaymentMethodData: paymentmethod.Data{
+//	        Type: paymentmethod.TypeMobileMoney,
+//	        MobileMoney: &paymentmethod.MobileMoneyParams{
 //	            Network: "mtn",
 //	            AccountNumber: "+233244123456",
 //	        },

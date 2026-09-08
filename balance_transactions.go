@@ -15,7 +15,7 @@ import "context"
 //
 // Example:
 //
-//	transactions, err := client.BalanceTransactions.Page(ctx, inttegro.BalanceTransactionPageParams{
+//	transactions, err := client.BalanceTransactions.Page(ctx, balancetransaction.PageParams{
 //	    PageSize: 100,
 //	})
 //	for _, tx := range transactions {

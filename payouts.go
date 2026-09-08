@@ -237,7 +237,7 @@ func (s *PayoutsService) Cancel(ctx context.Context, payoutID string) (*Payout, 
 //
 // Example:
 //
-//	payouts, err := client.Payouts.Page(ctx, inttegro.PayoutPageParams{
+//	payouts, err := client.Payouts.Page(ctx, payout.PageParams{
 //	    PageNumber: 1,
 //	    PageSize:   50,
 //	})

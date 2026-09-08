@@ -1,4 +1,6 @@
 // Package bankaccounts defines bank-account variants used by financial accounts.
+//
+// Deprecated: use the singular bankaccount package for new code.
 package bankaccounts
 
 // Type identifies a bank-account implementation.
