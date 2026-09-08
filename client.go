@@ -12,8 +12,8 @@
 // collections, such as Client.Products and Client.PurchaseIntents.
 //
 // The root inttegro package owns the client, transport options, API errors,
-// telemetry, and cross-cutting request controls. Resource-prefixed root names
-// remain available throughout v4 for source compatibility.
+// and telemetry. Resource models, lifecycle values, request parameters, and
+// services are defined by their resource packages.
 //
 // # Getting Started
 //
@@ -47,11 +47,11 @@
 // # Idempotency
 //
 // For write operations (creating orders, tokenizing payment methods, sending chimes),
-// pass RequestMeta.IdempotencyKey to safely retry requests without duplicating resources.
+// pass request.Meta.IdempotencyKey to safely retry requests without duplicating resources.
 // The same idempotency key can be reused if the original request failed.
 //
 //	params := order.CreateParams{
-//	    RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "order_20231215_customer_123"},
+//	    RequestMeta: &request.Meta{IdempotencyKey: "order_20231215_customer_123"},
 //	    // ... other fields
 //	}
 //
@@ -91,6 +91,29 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zebodotdev/inttegro-sdk-go/v5/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/balance"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/balancetransaction"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/broadcast"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/chime"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
+	resourcefile "github.com/zebodotdev/inttegro-sdk-go/v5/file"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/filelink"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/filereference"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/financialaccount"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/messagetemplate"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/otp"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/payout"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/purchaseintent"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/schedule"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/secretkey"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/spec"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/uploadrequest"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
@@ -134,81 +157,81 @@ type Client struct {
 	errorReportingPolicy ErrorReportingPolicy
 
 	// Orders provides access to order creation, payment, and lifecycle management.
-	// See OrdersService for available operations.
-	Orders *OrdersService
+	// See order.Service for available operations.
+	Orders *order.Service
 
 	// Refunds provides refund creation, lookup, cancellation, and paging.
-	Refunds *RefundsService
+	Refunds *refund.Service
 
 	// Chimes provides access to notification sending and scheduling.
 	// Send SMS or email notifications to customers.
-	Chimes *ChimesService
+	Chimes *chime.Service
 
 	// Schedules provides access to scheduled chime lookups and cancellations.
-	Schedules *SchedulesService
+	Schedules *schedule.Service
 
 	// Broadcasts provides access to broadcast lookups and cancellations.
-	Broadcasts *BroadcastsService
+	Broadcasts *broadcast.Service
 
 	// MessageTemplates provides access to reusable SMS and email templates.
-	MessageTemplates *MessageTemplatesService
+	MessageTemplates *messagetemplate.Service
 
 	// Otp provides access to one-time password initialization and verification.
 	// Used for custom authentication flows.
-	Otp *OtpService
+	Otp *otp.Service
 
 	// PaymentMethods provides payment method tokenization, verification, and management.
 	// Save payment methods for repeat customers and verify ownership.
-	PaymentMethods *PaymentMethodsService
+	PaymentMethods *paymentmethod.Service
 
 	// Payouts provides payout configuration, scheduling, and listing.
 	// Configure automatic or manual payout schedules and destination accounts.
-	Payouts *PayoutsService
+	Payouts *payout.Service
 
 	// Balances provides access to balance snapshots across currencies.
-	Balances *BalancesService
+	Balances *balance.Service
 
 	// BalanceTransactions provides access to balance transaction history.
 	// View available and pending funds from completed payments.
-	BalanceTransactions *BalanceTransactionsService
+	BalanceTransactions *balancetransaction.Service
 
 	// FinancialAccounts provides financial account connection and management.
 	// Connect mobile money, bank, or Dosh accounts for receiving payouts.
-	FinancialAccounts *FinancialAccountsService
+	FinancialAccounts *financialaccount.Service
 
 	// Files provides file upload, lookup, download, paging, and deletion.
-	Files *FilesService
+	Files *resourcefile.Service
 
 	// FileLinks provides revocable public links for linkable files.
-	FileLinks *FileLinksService
+	FileLinks *filelink.Service
 
 	// UploadRequests provides delegated public file upload requests.
-	UploadRequests *UploadRequestsService
+	UploadRequests *uploadrequest.Service
 
 	// Customers provides access to customer records.
-	Customers *CustomersService
+	Customers *customer.Service
 
 	// Products provides access to catalog products.
-	Products *ProductsService
+	Products *product.Service
 
 	// Prices provides access to catalog prices.
-	Prices *PricesService
+	Prices *price.Service
 
 	// Spec provides access to country specifications and supported features.
 	// Query supported currencies, payment methods, and payout schedules by country.
-	Spec *SpecService
+	Spec *spec.Service
 
 	// Apps provides access to application creation, lookup, and updates.
-	Apps *AppsService
+	Apps *app.Service
 
 	// Keys provides access to secret key management.
-	Keys *KeysService
+	Keys *secretkey.Service
 
 	// PurchaseIntents provides access to Buy link purchase intent management.
-	PurchaseIntents *PurchaseIntentsService
+	PurchaseIntents *purchaseintent.Service
 
 	// FileReferences provides access to file reference reconciliation.
-	FileReferences *FileReferencesService
+	FileReferences *filereference.Service
 }
 
 // ClientOption allows customizing the client during construction.
@@ -330,29 +353,29 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	}
 	c.tracer = c.tracerProvider.Tracer("inttegro", trace.WithInstrumentationVersion(Version))
 
-	c.Orders = &OrdersService{client: c}
-	c.Refunds = &RefundsService{client: c}
-	c.Chimes = &ChimesService{client: c}
-	c.Schedules = &SchedulesService{client: c}
-	c.Broadcasts = &BroadcastsService{client: c}
-	c.MessageTemplates = &MessageTemplatesService{client: c}
-	c.Otp = &OtpService{client: c}
-	c.PaymentMethods = &PaymentMethodsService{client: c}
-	c.Payouts = &PayoutsService{client: c}
-	c.Balances = &BalancesService{client: c}
-	c.BalanceTransactions = &BalanceTransactionsService{client: c}
-	c.FinancialAccounts = &FinancialAccountsService{client: c}
-	c.Files = &FilesService{client: c}
-	c.FileLinks = &FileLinksService{client: c}
-	c.UploadRequests = &UploadRequestsService{client: c}
-	c.Customers = &CustomersService{client: c}
-	c.Products = &ProductsService{client: c}
-	c.Prices = &PricesService{client: c}
-	c.Spec = &SpecService{client: c}
-	c.Apps = &AppsService{client: c}
-	c.Keys = &KeysService{client: c}
-	c.PurchaseIntents = &PurchaseIntentsService{client: c}
-	c.FileReferences = &FileReferencesService{client: c}
+	c.Orders = order.NewService(c)
+	c.Refunds = refund.NewService(c)
+	c.Chimes = chime.NewService(c)
+	c.Schedules = schedule.NewService(c)
+	c.Broadcasts = broadcast.NewService(c)
+	c.MessageTemplates = messagetemplate.NewService(c)
+	c.Otp = otp.NewService(c)
+	c.PaymentMethods = paymentmethod.NewService(c)
+	c.Payouts = payout.NewService(c)
+	c.Balances = balance.NewService(c)
+	c.BalanceTransactions = balancetransaction.NewService(c)
+	c.FinancialAccounts = financialaccount.NewService(c)
+	c.Files = resourcefile.NewService(c)
+	c.FileLinks = filelink.NewService(c)
+	c.UploadRequests = uploadrequest.NewService(c)
+	c.Customers = customer.NewService(c)
+	c.Products = product.NewService(c)
+	c.Prices = price.NewService(c)
+	c.Spec = spec.NewService(c)
+	c.Apps = app.NewService(c)
+	c.Keys = secretkey.NewService(c)
+	c.PurchaseIntents = purchaseintent.NewService(c)
+	c.FileReferences = filereference.NewService(c)
 
 	return c
 }

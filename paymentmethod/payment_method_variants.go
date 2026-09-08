@@ -1,7 +1,5 @@
-// Package paymentmethods defines payment-method-specific value types.
-//
-// Deprecated: use the singular paymentmethod package for new code.
-package paymentmethods
+// Package paymentmethod provides paymentmethod values.
+package paymentmethod
 
 // MobileMoneyNetwork identifies a supported mobile money network.
 type MobileMoneyNetwork string

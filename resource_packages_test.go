@@ -8,248 +8,142 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"sort"
 	"strings"
 	"testing"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v4"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/app"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/balance"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/balancetransaction"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/broadcast"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/chime"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/customer"
-	sdkfile "github.com/zebodotdev/inttegro-sdk-go/v4/file"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/filelink"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/filereference"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/financialaccount"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/messagetemplate"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/order"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/otp"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/paymentmethod"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/payout"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/product"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/purchaseintent"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/refund"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/schedule"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/secretkey"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/spec"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/uploadrequest"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v5"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/payment"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/purchaseintent"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
 )
 
-func TestResourcePackageServicesMatchClient(t *testing.T) {
+const modulePath = "github.com/zebodotdev/inttegro-sdk-go/v5"
+
+func TestClientUsesResourceOwnedServices(t *testing.T) {
 	client := inttegro.NewClient("sk_test_resource_packages")
-	services := []struct {
-		name    string
-		service any
-	}{
-		{"app", (*app.Service)(client.Apps)},
-		{"balance", (*balance.Service)(client.Balances)},
-		{"balance transaction", (*balancetransaction.Service)(client.BalanceTransactions)},
-		{"broadcast", (*broadcast.Service)(client.Broadcasts)},
-		{"chime", (*chime.Service)(client.Chimes)},
-		{"customer", (*customer.Service)(client.Customers)},
-		{"file", (*sdkfile.Service)(client.Files)},
-		{"file link", (*filelink.Service)(client.FileLinks)},
-		{"file reference", (*filereference.Service)(client.FileReferences)},
-		{"financial account", (*financialaccount.Service)(client.FinancialAccounts)},
-		{"message template", (*messagetemplate.Service)(client.MessageTemplates)},
-		{"order", (*order.Service)(client.Orders)},
-		{"otp", (*otp.Service)(client.Otp)},
-		{"payment method", (*paymentmethod.Service)(client.PaymentMethods)},
-		{"payout", (*payout.Service)(client.Payouts)},
-		{"price", (*price.Service)(client.Prices)},
-		{"product", (*product.Service)(client.Products)},
-		{"purchase intent", (*purchaseintent.Service)(client.PurchaseIntents)},
-		{"refund", (*refund.Service)(client.Refunds)},
-		{"schedule", (*schedule.Service)(client.Schedules)},
-		{"secret key", (*secretkey.Service)(client.Keys)},
-		{"spec", (*spec.Service)(client.Spec)},
-		{"upload request", (*uploadrequest.Service)(client.UploadRequests)},
+	services := []any{
+		client.Apps, client.Balances, client.BalanceTransactions,
+		client.Broadcasts, client.Chimes, client.Customers, client.Files,
+		client.FileLinks, client.FileReferences, client.FinancialAccounts,
+		client.MessageTemplates, client.Orders, client.Otp,
+		client.PaymentMethods, client.Payouts, client.Prices, client.Products,
+		client.PurchaseIntents, client.Refunds, client.Schedules, client.Keys,
+		client.Spec, client.UploadRequests,
 	}
-	for _, service := range services {
-		if service.service == nil {
-			t.Errorf("%s service is nil", service.name)
+	for index, service := range services {
+		if service == nil {
+			t.Fatalf("service %d is nil", index)
+		}
+		if reflect.TypeOf(service).Elem().PkgPath() == modulePath {
+			t.Fatalf("service %T is still owned by the root package", service)
 		}
 	}
 }
 
-func TestResourcePackageNamesPreserveWireValues(t *testing.T) {
+func TestResourceTypesHaveResourcePackageIdentity(t *testing.T) {
+	types := []struct {
+		value any
+		pkg   string
+	}{
+		{product.Resource{}, modulePath + "/product"},
+		{product.Type(""), modulePath + "/product"},
+		{payment.Status(""), modulePath + "/payment"},
+		{purchaseintent.Status(""), modulePath + "/purchaseintent"},
+		{refund.Status(""), modulePath + "/refund"},
+	}
+	for _, item := range types {
+		if got := reflect.TypeOf(item.value).PkgPath(); got != item.pkg {
+			t.Errorf("%T package = %q, want %q", item.value, got, item.pkg)
+		}
+	}
+}
+
+func TestResourceValuesPreserveWireValues(t *testing.T) {
 	value := struct {
 		ProductType          product.Type          `json:"product_type"`
+		PaymentStatus        payment.Status        `json:"payment_status"`
 		PurchaseIntentStatus purchaseintent.Status `json:"purchase_intent_status"`
 		RefundStatus         refund.Status         `json:"refund_status"`
-		OrderStatus          order.Status          `json:"order_status"`
 	}{
 		ProductType:          product.TypeDigital,
+		PaymentStatus:        payment.StatusPaid,
 		PurchaseIntentStatus: purchaseintent.StatusActive,
 		RefundStatus:         refund.StatusSucceeded,
-		OrderStatus:          order.StatusCompleted,
 	}
-	got, err := json.Marshal(value)
+	encoded, err := json.Marshal(value)
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := `{"product_type":"digital","purchase_intent_status":"active","refund_status":"succeeded","order_status":"completed"}`
-	if string(got) != want {
-		t.Fatalf("resource package wire values = %s, want %s", got, want)
+	want := `{"product_type":"digital","payment_status":"paid","purchase_intent_status":"active","refund_status":"succeeded"}`
+	if string(encoded) != want {
+		t.Fatalf("wire values = %s, want %s", encoded, want)
 	}
 }
 
-func TestResourcePackagesPreserveV4TypeIdentity(t *testing.T) {
-	pairs := []struct {
-		name   string
-		root   reflect.Type
-		scoped reflect.Type
-	}{
-		{"product", reflect.TypeOf(inttegro.Product{}), reflect.TypeOf(product.Resource{})},
-		{"purchase intent", reflect.TypeOf(inttegro.PurchaseIntent{}), reflect.TypeOf(purchaseintent.Resource{})},
-		{"refund", reflect.TypeOf(inttegro.Refund{}), reflect.TypeOf(refund.Resource{})},
-		{"order", reflect.TypeOf(inttegro.Order{}), reflect.TypeOf(order.Resource{})},
-	}
-	for _, pair := range pairs {
-		if pair.root != pair.scoped {
-			t.Errorf("%s package introduced a distinct v4 type", pair.name)
+func TestProductionPackagesContainNoTypeAliases(t *testing.T) {
+	err := filepath.WalkDir(".", func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
 		}
-	}
-}
-
-func TestEveryRootResourceTypeHasPackageScopedName(t *testing.T) {
-	rootTypes := exportedTypeNames(t, ".")
-	packageAliases := rootSelectorsInResourcePackages(t)
-	crossCutting := map[string]bool{
-		"APIError": true, "APIErrorReportContext": true,
-		"BankAccountConfig": true, "BankAccountOwner": true,
-		"BankAccountOwnerAddress": true, "BankAccountType": true,
-		"Client": true, "ClientOption": true,
-		"ErrorReport": true, "ErrorReporter": true, "ErrorReportingPolicy": true,
-		"GhanaBankAccount": true, "HTTPReportContext": true,
-		"RequestMeta": true, "RequestOption": true,
-		"SDKReportContext": true, "TraceReportContext": true,
-		"WalletConfig": true, "WalletMobileMoney": true, "WalletType": true,
-	}
-	var missing []string
-	for name := range rootTypes {
-		if !crossCutting[name] && !packageAliases[name] {
-			missing = append(missing, name)
+		if entry.IsDir() {
+			if strings.HasPrefix(entry.Name(), ".") || entry.Name() == "_tools" {
+				return filepath.SkipDir
+			}
+			return nil
 		}
-	}
-	sort.Strings(missing)
-	if len(missing) != 0 {
-		t.Fatalf("root resource types missing package-scoped names: %s", strings.Join(missing, ", "))
-	}
-}
-
-func TestEveryRootEnumConstantHasPackageScopedName(t *testing.T) {
-	enumConstants := exportedConstNames(t, "enums.go")
-	packageAliases := rootSelectorsInResourcePackages(t)
-	var missing []string
-	for name := range enumConstants {
-		if !packageAliases[name] {
-			missing = append(missing, name)
+		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
+			return nil
 		}
-	}
-	sort.Strings(missing)
-	if len(missing) != 0 {
-		t.Fatalf("root enum constants missing package-scoped names: %s", strings.Join(missing, ", "))
-	}
-}
-
-func exportedTypeNames(t *testing.T, dir string) map[string]bool {
-	t.Helper()
-	names := make(map[string]bool)
-	for _, file := range goFiles(t, dir) {
-		parsed, err := parser.ParseFile(token.NewFileSet(), file, nil, 0)
+		file, err := parser.ParseFile(token.NewFileSet(), path, nil, 0)
 		if err != nil {
-			t.Fatal(err)
+			return err
 		}
-		for _, declaration := range parsed.Decls {
+		for _, declaration := range file.Decls {
 			general, ok := declaration.(*ast.GenDecl)
 			if !ok || general.Tok != token.TYPE {
 				continue
 			}
 			for _, specification := range general.Specs {
 				typeSpec := specification.(*ast.TypeSpec)
-				if typeSpec.Name.IsExported() {
-					names[typeSpec.Name.Name] = true
+				if typeSpec.Assign.IsValid() {
+					t.Errorf("production type alias %s found in %s", typeSpec.Name.Name, path)
 				}
 			}
 		}
-	}
-	return names
-}
-
-func exportedConstNames(t *testing.T, file string) map[string]bool {
-	t.Helper()
-	parsed, err := parser.ParseFile(token.NewFileSet(), file, nil, 0)
+		return nil
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	names := make(map[string]bool)
-	for _, declaration := range parsed.Decls {
-		general, ok := declaration.(*ast.GenDecl)
-		if !ok || general.Tok != token.CONST {
-			continue
-		}
-		for _, specification := range general.Specs {
-			valueSpec := specification.(*ast.ValueSpec)
-			for _, name := range valueSpec.Names {
-				if name.IsExported() {
-					names[name.Name] = true
-				}
-			}
-		}
-	}
-	return names
 }
 
-func rootSelectorsInResourcePackages(t *testing.T) map[string]bool {
-	t.Helper()
-	selectors := make(map[string]bool)
-	resourcePackages := []string{
-		"app", "balance", "balancetransaction", "bankaccount", "broadcast",
-		"checkout", "chime", "customer", "file", "filelink", "filereference",
-		"financialaccount", "invoice", "messagetemplate", "order", "otp",
-		"payment", "paymentmethod", "payout", "price", "product",
-		"purchaseintent", "refund", "schedule", "secretkey", "spec",
-		"uploadrequest", "wallet",
+func TestResourcePackagesDoNotImportRoot(t *testing.T) {
+	entries, err := os.ReadDir(".")
+	if err != nil {
+		t.Fatal(err)
 	}
-	for _, resourcePackage := range resourcePackages {
-		for _, file := range goFiles(t, resourcePackage) {
-			parsed, err := parser.ParseFile(token.NewFileSet(), file, nil, 0)
+	for _, entry := range entries {
+		if !entry.IsDir() || strings.HasPrefix(entry.Name(), ".") || entry.Name() == "internal" {
+			continue
+		}
+		files, err := filepath.Glob(filepath.Join(entry.Name(), "*.go"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, path := range files {
+			if strings.HasSuffix(path, "_test.go") {
+				continue
+			}
+			file, err := parser.ParseFile(token.NewFileSet(), path, nil, parser.ImportsOnly)
 			if err != nil {
 				t.Fatal(err)
 			}
-			ast.Inspect(parsed, func(node ast.Node) bool {
-				selector, ok := node.(*ast.SelectorExpr)
-				if !ok {
-					return true
+			for _, importSpec := range file.Imports {
+				if strings.Trim(importSpec.Path.Value, `"`) == modulePath {
+					t.Errorf("%s imports the root package", path)
 				}
-				packageName, ok := selector.X.(*ast.Ident)
-				if ok && packageName.Name == "inttegro" {
-					selectors[selector.Sel.Name] = true
-				}
-				return true
-			})
+			}
 		}
 	}
-	return selectors
-}
-
-func goFiles(t *testing.T, dir string) []string {
-	t.Helper()
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var files []string
-	for _, entry := range entries {
-		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".go") ||
-			strings.HasSuffix(entry.Name(), "_test.go") {
-			continue
-		}
-		files = append(files, filepath.Join(dir, entry.Name()))
-	}
-	return files
 }

@@ -4,17 +4,21 @@ import (
 	"encoding/json"
 	"strings"
 	"testing"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/uploadrequest"
 )
 
 func TestEnumConstantsSerializeAsWireValues(t *testing.T) {
 	payload := struct {
-		Product ProductType         `json:"product"`
-		Refund  RefundReason        `json:"refund"`
-		Status  UploadRequestStatus `json:"status"`
+		Product product.Type         `json:"product"`
+		Refund  refund.Reason        `json:"refund"`
+		Status  uploadrequest.Status `json:"status"`
 	}{
-		Product: ProductTypeDigital,
-		Refund:  RefundReasonRequestedByCustomer,
-		Status:  UploadRequestStatusPending,
+		Product: product.TypeDigital,
+		Refund:  refund.ReasonRequestedByCustomer,
+		Status:  uploadrequest.StatusPending,
 	}
 
 	encoded, err := json.Marshal(payload)

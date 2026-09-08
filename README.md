@@ -13,7 +13,7 @@ All official Inttegro SDKs expose the same API capabilities. This module adds Go
 ## Install
 
 ```bash
-go get github.com/zebodotdev/inttegro-sdk-go/v4
+go get github.com/zebodotdev/inttegro-sdk-go/v5
 ```
 
 Store your secret key in the server environment:
@@ -38,24 +38,26 @@ import (
 	"log"
 	"os"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v4"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/order"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v4/product"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v5"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/checkout"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
 )
 
 func main() {
 	client := inttegro.NewClient(os.Getenv("INTTEGRO_API_KEY"))
 
 	createdOrder, err := client.Orders.Create(context.Background(), order.CreateParams{
-		RequestMeta: &inttegro.RequestMeta{IdempotencyKey: "checkout-cart-123"},
+		RequestMeta: &request.Meta{IdempotencyKey: "checkout-cart-123"},
 		CustomerData: &customer.Data{
 			Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605",
 		},
 		Finalize: inttegro.Bool(true),
-		CheckoutSettings: &order.CheckoutSettings{
+		CheckoutSettings: &checkout.Settings{
 			RedirectURL: "https://example.com/orders/complete",
 			CancelURL:   "https://example.com/cart",
 		},
@@ -70,7 +72,7 @@ func main() {
 		}},
 		BillingDetails: order.BillingDetails{
 			Name: "Akua Mensah", Email: "akua@example.com", PhoneNumber: "+233544998605",
-			Address: order.Address{
+			Address: customer.Address{
 				Name: "Akua Mensah", PhoneNumber: "+233544998605",
 				Line1: "23 High Street", Town: "Accra", Country: "GH",
 			},
@@ -111,12 +113,10 @@ if intent.Status == purchaseintent.StatusExpired {
 }
 ```
 
-The root `inttegro` package owns the client, transport options, errors,
-telemetry, and cross-cutting request controls. Its existing resource-prefixed
-names remain available throughout v4 for source compatibility, but new code and
-documentation should use the resource packages. The v4 resource names are exact
-type aliases, so old and new code interoperate without conversions or changes
-to reflected type identity.
+The root `inttegro` package owns only the client, transport options, errors,
+telemetry, and pointer helpers. Resource packages own their services, request
+parameters, models, and lifecycle values as real named Go types. Version 5 does
+not expose deprecated root mirrors or compatibility aliases.
 
 ## Refund paid line items
 
@@ -197,7 +197,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 
 ```bash
 sha256sum --check SHA256SUMS
-gh attestation verify inttegro-sdk-go-4.5.0.tar.gz \
+gh attestation verify inttegro-sdk-go-5.0.0.tar.gz \
   --repo zebodotdev/inttegro-sdk-go
 ```
 

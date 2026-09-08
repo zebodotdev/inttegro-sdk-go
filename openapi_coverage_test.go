@@ -13,11 +13,31 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v4/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/balancetransaction"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/broadcast"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/chime"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/file"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/filelink"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/filereference"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/financialaccount"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/messagetemplate"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/payout"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/purchaseintent"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/secretkey"
+	"github.com/zebodotdev/inttegro-sdk-go/v5/uploadrequest"
 )
 
 var openAPICapabilityURLPaths = map[string]bool{
 	"/file_links/open":        true,
+	"/orders/refund":          true, // superseded by the canonical /refunds/create resource operation
 	"/upload_requests/upload": true,
 }
 
@@ -126,7 +146,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 			t.Fatal(err)
 		}
 	}
-	closeDownload := func(download *FileDownload, err error) {
+	closeDownload := func(download *file.Download, err error) {
 		t.Helper()
 		check(err)
 		_, _ = io.Copy(io.Discard, download)
@@ -142,15 +162,15 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	_, err = client.Otp.Cancel(ctx, map[string]any{"transaction_id": "otp_1"})
 	check(err)
 
-	_, err = client.Chimes.Send(ctx, SendChimeParams{FullMessage: "hello"})
+	_, err = client.Chimes.Send(ctx, chime.SendParams{FullMessage: "hello"})
 	check(err)
 	_, err = client.Chimes.Lookup(ctx, "ch_1")
 	check(err)
-	_, err = client.Chimes.Page(ctx, ChimePageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Chimes.Page(ctx, chime.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
-	_, err = client.Chimes.Schedule(ctx, ScheduleChimeParams{FullMessage: "later"})
+	_, err = client.Chimes.Schedule(ctx, chime.ScheduleParams{FullMessage: "later"})
 	check(err)
-	_, err = client.Chimes.Broadcast(ctx, BroadcastChimeParams{MessageTemplate: "hello"})
+	_, err = client.Chimes.Broadcast(ctx, broadcast.CreateParams{MessageTemplate: "hello"})
 	check(err)
 	_, err = client.Schedules.Lookup(ctx, "sch_1")
 	check(err)
@@ -161,14 +181,14 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	_, err = client.Broadcasts.Cancel(ctx, "brc_1")
 	check(err)
 
-	_, err = client.MessageTemplates.Create(ctx, MessageTemplateCreateParams{
+	_, err = client.MessageTemplates.Create(ctx, messagetemplate.CreateParams{
 		Name:    "welcome_sms",
 		Channel: "sms",
 		Purpose: "marketing",
-		SMS:     &MessageTemplateSMSContent{MessageTemplate: "Welcome {{name}}"},
+		SMS:     &messagetemplate.SMSContent{MessageTemplate: "Welcome {{name}}"},
 	})
 	check(err)
-	_, err = client.MessageTemplates.Update(ctx, MessageTemplateUpdateParams{ID: "mtpl_1", Name: "welcome_sms"})
+	_, err = client.MessageTemplates.Update(ctx, messagetemplate.UpdateParams{ID: "mtpl_1", Name: "welcome_sms"})
 	check(err)
 	_, err = client.MessageTemplates.Publish(ctx, "mtpl_1")
 	check(err)
@@ -176,33 +196,31 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.MessageTemplates.Lookup(ctx, "mtpl_1")
 	check(err)
-	_, err = client.MessageTemplates.Page(ctx, MessageTemplatePageParams{Page: 1, Size: 20})
+	_, err = client.MessageTemplates.Page(ctx, messagetemplate.PageParams{Page: 1, Size: 20})
 	check(err)
-	_, err = client.MessageTemplates.RenderPreview(ctx, MessageTemplateRenderPreviewParams{
-		MessageTemplate: MessageTemplateReference{TemplateID: "mtpl_1"},
+	_, err = client.MessageTemplates.RenderPreview(ctx, messagetemplate.RenderPreviewParams{
+		MessageTemplate: messagetemplate.Reference{TemplateID: "mtpl_1"},
 	})
 	check(err)
 
-	_, err = client.Customers.Create(ctx, CreateCustomerParams{Name: "Jane Doe"})
+	_, err = client.Customers.Create(ctx, customer.CreateParams{Name: "Jane Doe"})
 	check(err)
-	_, err = client.Customers.Update(ctx, UpdateCustomerParams{CustomerID: "cu_1", Name: "Jane Doe"})
+	_, err = client.Customers.Update(ctx, customer.UpdateParams{CustomerID: "cu_1", Name: "Jane Doe"})
 	check(err)
 	_, err = client.Customers.Lookup(ctx, "cu_1")
 	check(err)
-	_, err = client.Customers.Page(ctx, PageCustomersParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Customers.Page(ctx, customer.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 
-	_, err = client.Orders.Create(ctx, OrderCreateParams{Number: "ORDER-1"})
-	check(err)
-	_, err = client.Orders.New(ctx, OrderCreateParams{Number: "ORDER-2"})
+	_, err = client.Orders.Create(ctx, order.CreateParams{Number: "ORDER-1"})
 	check(err)
 	_, err = client.Orders.Lookup(ctx, "or_1")
 	check(err)
 	_, err = client.Orders.Update(ctx, map[string]any{"order_id": "or_1", "number": "ORDER-1A"})
 	check(err)
-	_, err = client.Orders.Pay(ctx, OrderPayParams{OrderID: "or_1"})
+	_, err = client.Orders.Pay(ctx, order.PayParams{OrderID: "or_1"})
 	check(err)
-	_, err = client.Orders.ConfirmPayment(ctx, OrderConfirmParams{OrderID: "or_1", Token: "123456"})
+	_, err = client.Orders.ConfirmPayment(ctx, order.ConfirmParams{OrderID: "or_1", Token: "123456"})
 	check(err)
 	_, err = client.Orders.RequestConfirmation(ctx, "or_1")
 	check(err)
@@ -210,63 +228,61 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Orders.Finalize(ctx, "or_1")
 	check(err)
-	_, err = client.Orders.Complete(ctx, OrderCompleteParams{OrderID: "or_1"})
+	_, err = client.Orders.Complete(ctx, order.CompleteParams{OrderID: "or_1"})
 	check(err)
-	_, err = client.Orders.SendInvoice(ctx, OrderSendInvoiceParams{OrderID: "or_1"})
+	_, err = client.Orders.SendInvoice(ctx, order.SendInvoiceParams{OrderID: "or_1"})
 	check(err)
-	_, err = client.Orders.SendReceipt(ctx, OrderSendReceiptParams{OrderID: "or_1"})
+	_, err = client.Orders.SendReceipt(ctx, order.SendReceiptParams{OrderID: "or_1"})
 	check(err)
-	_, err = client.Orders.Page(ctx, OrderPageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Orders.Page(ctx, order.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
-	refundRequest := CreateRefundRequest{
+	refundRequest := refund.CreateParams{
 		OrderID: "or_1",
-		Reason:  RefundReasonRequestedByCustomer,
-		LineItems: []CreateRefundLineItem{{
+		Reason:  refund.ReasonRequestedByCustomer,
+		LineItems: []refund.CreateLineItem{{
 			OrderLineItemID: "oli_1",
 			RefundAmount:    money.AmountParams{Currency: money.GHS, Value: 100},
 		}},
 	}
 	_, err = client.Refunds.Create(ctx, refundRequest)
 	check(err)
-	_, err = client.Orders.Refund(ctx, refundRequest)
+	_, err = client.Refunds.Cancel(ctx, refund.CancelParams{RefundID: "rf_1"})
 	check(err)
-	_, err = client.Refunds.Cancel(ctx, CancelRefundRequest{RefundID: "rf_1"})
+	_, err = client.Refunds.Lookup(ctx, refund.LookupParams{RefundID: "rf_1"})
 	check(err)
-	_, err = client.Refunds.Lookup(ctx, LookupRefundRequest{RefundID: "rf_1"})
-	check(err)
-	_, err = client.Refunds.Page(ctx, PageRefundsRequest{PageNumber: 1, PageSize: 20})
+	_, err = client.Refunds.Page(ctx, refund.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 
-	_, err = client.Apps.Create(ctx, CreateAppParams{Name: "App"})
+	_, err = client.Apps.Create(ctx, app.CreateParams{Name: "App"})
 	check(err)
 	_, err = client.Apps.Lookup(ctx)
 	check(err)
-	_, err = client.Apps.Update(ctx, UpdateAppParams{Alias: String("app")})
+	_, err = client.Apps.Update(ctx, app.UpdateParams{Alias: String("app")})
 	check(err)
-	_, err = client.Keys.Generate(ctx, GenerateSecretKeyParams{Label: "Integration"})
+	_, err = client.Keys.Generate(ctx, secretkey.GenerateParams{Label: "Integration"})
 	check(err)
-	_, err = client.Keys.Page(ctx, PageSecretKeysParams{Page: 1, Size: 20})
+	_, err = client.Keys.Page(ctx, secretkey.PageParams{Page: 1, Size: 20})
 	check(err)
 	_, err = client.Keys.Lookup(ctx, "sk_1")
 	check(err)
-	_, err = client.Keys.Update(ctx, UpdateSecretKeyParams{SecretKeyID: "sk_1", Label: "Renamed"})
+	_, err = client.Keys.Update(ctx, secretkey.UpdateParams{SecretKeyID: "sk_1", Label: "Renamed"})
 	check(err)
 	_, err = client.Keys.Destroy(ctx, "sk_1")
 	check(err)
-	_, err = client.Keys.Usage(ctx, SecretKeyUsageParams{SecretKeyID: "sk_1", Page: 1, Size: 20})
+	_, err = client.Keys.Usage(ctx, secretkey.UsageParams{SecretKeyID: "sk_1", Page: 1, Size: 20})
 	check(err)
 
-	_, err = client.FinancialAccounts.Create(ctx, FinancialAccountCreateParams{Label: "Primary"})
+	_, err = client.FinancialAccounts.Create(ctx, financialaccount.CreateParams{Label: "Primary"})
 	check(err)
 	_, err = client.FinancialAccounts.Lookup(ctx, "fa_1")
 	check(err)
 	_, err = client.FinancialAccounts.Archive(ctx, map[string]any{"account_id": "fa_1"})
 	check(err)
-	_, err = client.FinancialAccounts.Page(ctx, PageFinancialAccountsParams{PageNumber: 1, PageSize: 20})
+	_, err = client.FinancialAccounts.Page(ctx, financialaccount.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 	_, err = client.FinancialAccounts.Verify(ctx, map[string]any{"account_id": "fa_1"})
 	check(err)
-	_, err = client.FinancialAccounts.Connect(ctx, FinancialAccountCreateParams{Label: "Primary"})
+	_, err = client.FinancialAccounts.Connect(ctx, financialaccount.CreateParams{Label: "Primary"})
 	check(err)
 	_, err = client.FinancialAccounts.Update(ctx, map[string]any{"account_id": "fa_1", "label": "Updated"})
 	check(err)
@@ -274,7 +290,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.FinancialAccounts.DisablePush(ctx, "fa_1")
 	check(err)
-	_, err = client.FinancialAccounts.Disconnect(ctx, FinancialAccountDisconnectParams{AccountID: "fa_1"})
+	_, err = client.FinancialAccounts.Disconnect(ctx, financialaccount.DisconnectParams{AccountID: "fa_1"})
 	check(err)
 	_, err = client.FinancialAccounts.Reconnect(ctx, "fa_1")
 	check(err)
@@ -287,10 +303,10 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.BalanceTransactions.Lookup(ctx, "bt_1")
 	check(err)
-	_, err = client.BalanceTransactions.Page(ctx, BalanceTransactionPageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.BalanceTransactions.Page(ctx, balancetransaction.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 
-	_, err = client.Payouts.Schedule(ctx, SchedulePayoutParams{DestinationID: "fa_1", MaxAmount: 100, Reference: "PAYOUT-1"})
+	_, err = client.Payouts.Schedule(ctx, payout.ScheduleParams{DestinationID: "fa_1", MaxAmount: 100, Reference: "PAYOUT-1"})
 	check(err)
 	_, err = client.Payouts.Lookup(ctx, "po_1")
 	check(err)
@@ -306,48 +322,48 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Payouts.DisableFX(ctx)
 	check(err)
-	_, err = client.Payouts.Page(ctx, PayoutPageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Payouts.Page(ctx, payout.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 	_, err = client.Payouts.Cancel(ctx, "po_1")
 	check(err)
 
-	_, err = client.Files.Create(ctx, FileCreateParams{File: tempFile, Purpose: "identity"})
+	_, err = client.Files.Create(ctx, file.CreateParams{File: tempFile, Purpose: "identity"})
 	check(err)
 	_, err = client.Files.Lookup(ctx, "file_1")
 	check(err)
-	_, err = client.Files.Page(ctx, FilePageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Files.Page(ctx, file.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
-	closeDownload(client.Files.Contents(ctx, FileContentsParams{FileID: "file_1"}))
+	closeDownload(client.Files.Contents(ctx, file.ContentsParams{FileID: "file_1"}))
 	_, err = client.Files.Delete(ctx, "file_1")
 	check(err)
-	_, _, err = client.FileLinks.Create(ctx, FileLinkCreateParams{FileID: "file_1"})
+	_, _, err = client.FileLinks.Create(ctx, filelink.CreateParams{FileID: "file_1"})
 	check(err)
 	_, err = client.FileLinks.Lookup(ctx, "fl_1")
 	check(err)
-	_, err = client.FileLinks.Page(ctx, FileLinkPageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.FileLinks.Page(ctx, filelink.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
-	_, err = client.FileLinks.Revoke(ctx, FileLinkRevokeParams{ID: "fl_1"})
+	_, err = client.FileLinks.Revoke(ctx, filelink.RevokeParams{ID: "fl_1"})
 	check(err)
-	_, err = client.UploadRequests.Create(ctx, UploadRequestCreateParams{Purpose: "identity"})
+	_, err = client.UploadRequests.Create(ctx, uploadrequest.CreateParams{Purpose: "identity"})
 	check(err)
 	_, err = client.UploadRequests.Lookup(ctx, "ur_1")
 	check(err)
-	_, err = client.UploadRequests.Page(ctx, UploadRequestPageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.UploadRequests.Page(ctx, uploadrequest.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
-	_, err = client.UploadRequests.Cancel(ctx, UploadRequestCancelParams{ID: "ur_1"})
+	_, err = client.UploadRequests.Cancel(ctx, uploadrequest.CancelParams{ID: "ur_1"})
 	check(err)
-	_, err = client.UploadRequests.Review(ctx, UploadRequestReviewParams{ID: "ur_1", AttemptID: "ura_1", Decision: "approved"})
+	_, err = client.UploadRequests.Review(ctx, uploadrequest.ReviewParams{ID: "ur_1", AttemptID: "ura_1", Decision: "approved"})
 	check(err)
-	_, err = client.FileReferences.Reconcile(ctx, FileReferenceReconcileParams{ResourceType: "product", ResourceID: "prod_1"})
+	_, err = client.FileReferences.Reconcile(ctx, filereference.ReconcileParams{ResourceType: "product", ResourceID: "prod_1"})
 	check(err)
 
-	_, err = client.PaymentMethods.Tokenize(ctx, TokenizePaymentMethodParams{CustomerID: "cu_1"})
+	_, err = client.PaymentMethods.Tokenize(ctx, paymentmethod.TokenizeParams{CustomerID: "cu_1"})
 	check(err)
 	_, err = client.PaymentMethods.Verify(ctx, "pm_1")
 	check(err)
 	_, err = client.PaymentMethods.Lookup(ctx, "pm_1")
 	check(err)
-	_, err = client.PaymentMethods.Page(ctx, PaymentMethodPageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.PaymentMethods.Page(ctx, paymentmethod.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 	_, err = client.PaymentMethods.Update(ctx, map[string]any{"payment_method_id": "pm_1", "active": true})
 	check(err)
@@ -364,16 +380,16 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	_, err = client.PaymentMethods.Settings(ctx)
 	check(err)
 
-	_, err = client.Products.Create(ctx, CreateProductParams{Type: "physical", Name: "Product"})
+	_, err = client.Products.Create(ctx, product.CreateParams{Type: "physical", Name: "Product"})
 	check(err)
-	_, err = client.Products.AddPrice(ctx, AddProductPriceParams{
+	_, err = client.Prices.AddToProduct(ctx, price.AddToProductParams{
 		ProductID: "prod_1",
 		Amount:    money.AmountParams{Currency: money.GHS, Value: 100},
 	})
 	check(err)
 	_, err = client.Products.Lookup(ctx, "prod_1")
 	check(err)
-	_, err = client.Products.Update(ctx, UpdateProductParams{ProductID: "prod_1", Name: "Updated"})
+	_, err = client.Products.Update(ctx, product.UpdateParams{ProductID: "prod_1", Name: "Updated"})
 	check(err)
 	_, err = client.Products.Publish(ctx, "prod_1")
 	check(err)
@@ -381,34 +397,34 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Products.Archive(ctx, "prod_1")
 	check(err)
-	_, err = client.Products.Page(ctx, PageProductsParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Products.Page(ctx, product.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 
-	_, err = client.PurchaseIntents.Create(ctx, CreatePurchaseIntentParams{
+	_, err = client.PurchaseIntents.Create(ctx, purchaseintent.CreateParams{
 		ProductID: "prod_1",
 		PriceID:   "pr_1",
-		Quantity:  PurchaseIntentQuantity{Min: 1},
+		Quantity:  purchaseintent.Quantity{Min: 1},
 	})
 	check(err)
-	_, err = client.PurchaseIntents.Update(ctx, UpdatePurchaseIntentParams{
+	_, err = client.PurchaseIntents.Update(ctx, purchaseintent.UpdateParams{
 		ID:       "sale_1",
-		Quantity: &PurchaseIntentQuantity{Min: 1},
+		Quantity: &purchaseintent.Quantity{Min: 1},
 	})
 	check(err)
 	_, err = client.PurchaseIntents.Cancel(ctx, "sale_1")
 	check(err)
 	_, err = client.PurchaseIntents.Lookup(ctx, "sale_1")
 	check(err)
-	_, err = client.PurchaseIntents.Page(ctx, PagePurchaseIntentsParams{PageNumber: 1, PageSize: 20})
+	_, err = client.PurchaseIntents.Page(ctx, purchaseintent.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
 
-	_, err = client.Prices.Create(ctx, CatalogPriceParams{Amount: money.AmountParams{Currency: money.GHS, Value: 100}})
+	_, err = client.Prices.Create(ctx, price.CreateParams{Amount: money.AmountParams{Currency: money.GHS, Value: 100}})
 	check(err)
 	_, err = client.Prices.Lookup(ctx, "pr_1")
 	check(err)
-	_, err = client.Prices.Page(ctx, PricePageParams{PageNumber: 1, PageSize: 20})
+	_, err = client.Prices.Page(ctx, price.PageParams{PageNumber: 1, PageSize: 20})
 	check(err)
-	_, err = client.Prices.Update(ctx, UpdatePriceParams{PriceID: "pr_1", Label: "Updated"})
+	_, err = client.Prices.Update(ctx, price.UpdateParams{PriceID: "pr_1", Label: "Updated"})
 	check(err)
 	_, err = client.Prices.Activate(ctx, "pr_1")
 	check(err)
