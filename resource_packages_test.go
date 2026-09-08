@@ -1,6 +1,7 @@
 package inttegro_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"go/ast"
 	"go/parser"
@@ -176,6 +177,45 @@ func TestProductionEnumConstantsAreGroupedByType(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestProductionPackagesAvoidMonolithicSourceFiles(t *testing.T) {
+	entries, err := os.ReadDir(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() || strings.HasPrefix(entry.Name(), ".") || entry.Name() == "internal" {
+			continue
+		}
+		paths, err := filepath.Glob(filepath.Join(entry.Name(), "*.go"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		fileCount := 0
+		totalLines := 0
+		for _, path := range paths {
+			if strings.HasSuffix(path, "_test.go") {
+				continue
+			}
+			contents, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			lines := bytes.Count(contents, []byte{'\n'})
+			fileCount++
+			totalLines += lines
+			if lines > 300 {
+				t.Errorf("%s has %d lines; split files that exceed 300 lines by concern", path, lines)
+			}
+		}
+		if totalLines >= 100 && fileCount < 2 {
+			t.Errorf(
+				"package %s has %d production lines in one file; split it by concern",
+				entry.Name(), totalLines,
+			)
+		}
 	}
 }
 
