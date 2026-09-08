@@ -1,7 +1,7 @@
 package schedule
 
-// ScheduleDetail describes a scheduled chime and its execution state.
-type Resource struct {
+// Schedule describes a scheduled chime and its execution state.
+type Schedule struct {
 	ID         string   `json:"id,omitempty"`
 	Recipients []string `json:"recipients,omitempty"`
 	Content    string   `json:"content,omitempty"`

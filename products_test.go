@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/app"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
 )
 
 func TestProductsEndpointsMatchSpec(t *testing.T) {
@@ -83,7 +83,7 @@ func TestProductsEndpointsMatchSpec(t *testing.T) {
 }
 
 func TestProductDecodesCanonicalMetadata(t *testing.T) {
-	var product product.Resource
+	var product product.Product
 	raw := []byte(`{
 		"id":"prod_123",
 		"type":"service",

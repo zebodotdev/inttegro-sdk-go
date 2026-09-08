@@ -3,7 +3,7 @@ package order
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // Finalize seals an order and generates hosted checkout page and invoice.
@@ -29,16 +29,16 @@ import (
 //	}
 //	// Redirect customer to order.Invoice.Format.Web.URL
 //	checkoutURL := order.Invoice.Format.Web.URL
-func (s *Service) Finalize(ctx context.Context, orderID string) (*Resource, error) {
+func (s *Service) Finalize(ctx context.Context, orderID string) (*Order, error) {
 	return s.FinalizeWithParams(ctx, FinalizeParams{
 		OrderID:     orderID,
 		RequestMeta: stableOrderRequestMeta("finalize", orderID),
 	})
 }
 
-func (s *Service) FinalizeWithParams(ctx context.Context, params FinalizeParams) (*Resource, error) {
+func (s *Service) FinalizeWithParams(ctx context.Context, params FinalizeParams) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/finalize", params, &resp); err != nil {
 		return nil, err

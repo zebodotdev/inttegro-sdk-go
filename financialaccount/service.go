@@ -3,7 +3,7 @@ package financialaccount
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // FinancialAccountsService manages payout destination accounts.
@@ -35,9 +35,9 @@ type Service struct {
 // Create connects a new financial account for receiving payouts.
 //
 // Returns the created account with verification requirements (if any).
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*FinancialAccount, error) {
 	var resp struct {
-		Account Resource `json:"account"`
+		Account FinancialAccount `json:"account"`
 	}
 	if err := s.client.Do(ctx, "POST", "/financial_accounts/create", params, &resp); err != nil {
 		return nil, err
@@ -46,9 +46,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 }
 
 // Lookup retrieves financial account details and verification status by ID.
-func (s *Service) Lookup(ctx context.Context, accountID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, accountID string) (*FinancialAccount, error) {
 	var resp struct {
-		Account Resource `json:"account"`
+		Account FinancialAccount `json:"account"`
 	}
 	if err := s.client.Do(ctx, "POST", "/financial_accounts/lookup", map[string]string{"account_id": accountID}, &resp); err != nil {
 		return nil, err
@@ -57,9 +57,9 @@ func (s *Service) Lookup(ctx context.Context, accountID string) (*Resource, erro
 }
 
 // Connect is an alias for Create. Both methods do the same thing.
-func (s *Service) Connect(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Connect(ctx context.Context, params CreateParams) (*FinancialAccount, error) {
 	var resp struct {
-		Account Resource `json:"account"`
+		Account FinancialAccount `json:"account"`
 	}
 	if err := s.client.Do(ctx, "POST", "/financial_accounts/connect", params, &resp); err != nil {
 		return nil, err
@@ -68,9 +68,9 @@ func (s *Service) Connect(ctx context.Context, params CreateParams) (*Resource, 
 }
 
 // Update modifies a financial account (PATCH semantics).
-func (s *Service) Update(ctx context.Context, payload map[string]any) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, payload map[string]any) (*FinancialAccount, error) {
 	var resp struct {
-		Account Resource `json:"account"`
+		Account FinancialAccount `json:"account"`
 	}
 	if err := s.client.Do(ctx, "POST", "/financial_accounts/update", payload, &resp); err != nil {
 		return nil, err
@@ -124,9 +124,9 @@ func (s *Service) DisablePull(ctx context.Context, accountID string) (map[string
 }
 
 // Disconnect permanently disconnects a financial account.
-func (s *Service) Disconnect(ctx context.Context, params DisconnectParams) (*Resource, error) {
+func (s *Service) Disconnect(ctx context.Context, params DisconnectParams) (*FinancialAccount, error) {
 	var resp struct {
-		Account Resource `json:"account"`
+		Account FinancialAccount `json:"account"`
 	}
 	if err := s.client.Do(ctx, "POST", "/financial_accounts/disconnect", params, &resp); err != nil {
 		return nil, err
@@ -135,9 +135,9 @@ func (s *Service) Disconnect(ctx context.Context, params DisconnectParams) (*Res
 }
 
 // Reconnect clears local disconnected state for a previously disconnected financial account.
-func (s *Service) Reconnect(ctx context.Context, accountID string) (*Resource, error) {
+func (s *Service) Reconnect(ctx context.Context, accountID string) (*FinancialAccount, error) {
 	var resp struct {
-		Account Resource `json:"account"`
+		Account FinancialAccount `json:"account"`
 	}
 	if err := s.client.Do(ctx, "POST", "/financial_accounts/reconnect", map[string]string{"account_id": accountID}, &resp); err != nil {
 		return nil, err

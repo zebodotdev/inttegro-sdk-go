@@ -24,10 +24,10 @@ import (
 //	for _, order := range orders {
 //	    fmt.Printf("Order %s: %s\n", order.ID, order.Status)
 //	}
-func (s *Service) Page(ctx context.Context, params PageParams) ([]Resource, error) {
+func (s *Service) Page(ctx context.Context, params PageParams) ([]Order, error) {
 	var resp struct {
 		Page struct {
-			Orders []Resource `json:"orders"`
+			Orders []Order `json:"orders"`
 		} `json:"page"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/page", params, &resp); err != nil {

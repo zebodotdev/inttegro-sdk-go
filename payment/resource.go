@@ -1,17 +1,17 @@
 package payment
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/balancetransaction"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/paymentmethod"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/payout"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/balancetransaction"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/payout"
 )
 
 // Payment represents payment details and status for an order.
 //
 // Every paid order has an associated payment object tracking the charge
 // lifecycle, attempts, and any required customer actions.
-type Resource struct {
+type Payment struct {
 	// ID is the unique payment identifier.
 	// Starts with "py_". Example: "py_abc123def456"
 	ID string `json:"id,omitempty"`
@@ -28,7 +28,7 @@ type Resource struct {
 	Amount *money.Amount `json:"amount,omitempty"`
 
 	// PaymentMethod is the charged payment method details.
-	PaymentMethod *paymentmethod.Resource `json:"payment_method,omitempty"`
+	PaymentMethod *paymentmethod.PaymentMethod `json:"payment_method,omitempty"`
 
 	// LatestAttempt is the most recent payment attempt.
 	// Nil if no attempts yet.
@@ -40,7 +40,7 @@ type Resource struct {
 
 	// BalanceTransaction is the resulting balance entry when payment succeeds.
 	// Used for tracking payouts and available balance.
-	BalanceTransaction *balancetransaction.Resource `json:"balance_transaction,omitempty"`
+	BalanceTransaction *balancetransaction.BalanceTransaction `json:"balance_transaction,omitempty"`
 
 	// PayoutConfiguration is the payout setup used for this payment (if applicable).
 	PayoutConfiguration *payout.Configuration `json:"payout_configuration,omitempty"`

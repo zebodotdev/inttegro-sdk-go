@@ -3,8 +3,8 @@ package product_test
 import (
 	"context"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v5"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/product"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v6"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
 )
 
 func ExampleService_Create() {

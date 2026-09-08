@@ -3,7 +3,7 @@ package broadcast
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // BroadcastsService manages broadcast chime operations.
@@ -12,9 +12,9 @@ type Service struct {
 }
 
 // Lookup retrieves broadcast details by broadcast ID.
-func (s *Service) Lookup(ctx context.Context, broadcastID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, broadcastID string) (*Broadcast, error) {
 	var resp struct {
-		Broadcast Resource `json:"broadcast"`
+		Broadcast Broadcast `json:"broadcast"`
 	}
 	if err := s.client.Do(ctx, "POST", "/broadcasts/lookup", LookupParams{BroadcastID: broadcastID}, &resp); err != nil {
 		return nil, err
@@ -23,9 +23,9 @@ func (s *Service) Lookup(ctx context.Context, broadcastID string) (*Resource, er
 }
 
 // Cancel cancels a broadcast by broadcast ID.
-func (s *Service) Cancel(ctx context.Context, broadcastID string) (*Resource, error) {
+func (s *Service) Cancel(ctx context.Context, broadcastID string) (*Broadcast, error) {
 	var resp struct {
-		Broadcast Resource `json:"broadcast"`
+		Broadcast Broadcast `json:"broadcast"`
 	}
 	if err := s.client.Do(ctx, "POST", "/broadcasts/cancel", CancelParams{BroadcastID: broadcastID}, &resp); err != nil {
 		return nil, err

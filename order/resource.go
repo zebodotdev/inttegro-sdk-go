@@ -1,11 +1,11 @@
 package order
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/checkout"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/invoice"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/payment"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/checkout"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/invoice"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/payment"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/refund"
 )
 
 // Order represents a complete order object.
@@ -19,7 +19,7 @@ import (
 // 4. completed: Fulfilled and settled
 // 5. canceled: Permanently canceled
 // 6. expired: Payment window elapsed
-type Resource struct {
+type Order struct {
 	// ID is the unique order identifier (read-only).
 	// Starts with "or_". Example: "or_abc123def456"
 	ID string `json:"id"`
@@ -56,7 +56,7 @@ type Resource struct {
 
 	// Payment contains payment details and status.
 	// Nil if order hasn't been charged yet.
-	Payment *payment.Resource `json:"payment,omitempty"`
+	Payment *payment.Payment `json:"payment,omitempty"`
 
 	// PaymentStatus is a summary of payment state (read-only).
 	// Values: "unpaid", "requires_action", "processing", "paid", "failed"
@@ -103,9 +103,9 @@ type Resource struct {
 
 	// Invoice contains invoice document links and delivery status.
 	// Nil if order not finalized.
-	Invoice *invoice.Resource `json:"invoice,omitempty"`
+	Invoice *invoice.Invoice `json:"invoice,omitempty"`
 
 	// Refunds contains every refund issued for this order, newest first.
 	// It is omitted when no refunds exist.
-	Refunds []refund.Resource `json:"refunds,omitempty"`
+	Refunds []refund.Refund `json:"refunds,omitempty"`
 }

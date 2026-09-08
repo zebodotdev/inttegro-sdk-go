@@ -3,7 +3,7 @@ package purchaseintent
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // PurchaseIntentsService manages Buy link purchase intents.
@@ -12,9 +12,9 @@ type Service struct {
 }
 
 // Create creates a Buy link purchase intent.
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*PurchaseIntent, error) {
 	var resp struct {
-		PurchaseIntent Resource `json:"purchase_intent"`
+		PurchaseIntent PurchaseIntent `json:"purchase_intent"`
 	}
 	if err := s.client.Do(ctx, "POST", "/purchase_intents/create", params, &resp); err != nil {
 		return nil, err
@@ -23,9 +23,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 }
 
 // Update modifies mutable Buy link purchase intent fields.
-func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, params UpdateParams) (*PurchaseIntent, error) {
 	var resp struct {
-		PurchaseIntent Resource `json:"purchase_intent"`
+		PurchaseIntent PurchaseIntent `json:"purchase_intent"`
 	}
 	if err := s.client.Do(ctx, "POST", "/purchase_intents/update", params, &resp); err != nil {
 		return nil, err
@@ -34,9 +34,9 @@ func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, e
 }
 
 // Cancel cancels a Buy link purchase intent.
-func (s *Service) Cancel(ctx context.Context, id string) (*Resource, error) {
+func (s *Service) Cancel(ctx context.Context, id string) (*PurchaseIntent, error) {
 	var resp struct {
-		PurchaseIntent Resource `json:"purchase_intent"`
+		PurchaseIntent PurchaseIntent `json:"purchase_intent"`
 	}
 	if err := s.client.Do(ctx, "POST", "/purchase_intents/cancel", map[string]string{"id": id}, &resp); err != nil {
 		return nil, err
@@ -45,9 +45,9 @@ func (s *Service) Cancel(ctx context.Context, id string) (*Resource, error) {
 }
 
 // Lookup retrieves a Buy link purchase intent by ID.
-func (s *Service) Lookup(ctx context.Context, id string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, id string) (*PurchaseIntent, error) {
 	var resp struct {
-		PurchaseIntent Resource `json:"purchase_intent"`
+		PurchaseIntent PurchaseIntent `json:"purchase_intent"`
 	}
 	if err := s.client.Do(ctx, "POST", "/purchase_intents/lookup", map[string]string{"id": id}, &resp); err != nil {
 		return nil, err

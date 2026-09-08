@@ -1,6 +1,7 @@
 package filelink
 
-type Resource struct {
+// FileLink represents a shareable link to an uploaded file.
+type FileLink struct {
 	ID         string            `json:"id"`
 	FileID     string            `json:"file_id"`
 	Status     Status            `json:"status"`
@@ -11,5 +12,5 @@ type Resource struct {
 type Page struct {
 	Number    int        `json:"number"`
 	Size      int        `json:"size"`
-	FileLinks []Resource `json:"file_links"`
+	FileLinks []FileLink `json:"file_links"`
 }

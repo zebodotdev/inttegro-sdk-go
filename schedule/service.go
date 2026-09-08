@@ -3,7 +3,7 @@ package schedule
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // SchedulesService manages scheduled chimes.
@@ -12,9 +12,9 @@ type Service struct {
 }
 
 // Lookup retrieves scheduled chime details by schedule ID.
-func (s *Service) Lookup(ctx context.Context, scheduleID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, scheduleID string) (*Schedule, error) {
 	var resp struct {
-		ScheduledChime Resource `json:"scheduled_chime"`
+		ScheduledChime Schedule `json:"scheduled_chime"`
 	}
 	if err := s.client.Do(ctx, "POST", "/schedules/lookup", LookupParams{ScheduleID: scheduleID}, &resp); err != nil {
 		return nil, err
@@ -23,9 +23,9 @@ func (s *Service) Lookup(ctx context.Context, scheduleID string) (*Resource, err
 }
 
 // Cancel cancels a scheduled chime by schedule ID.
-func (s *Service) Cancel(ctx context.Context, scheduleID string) (*Resource, error) {
+func (s *Service) Cancel(ctx context.Context, scheduleID string) (*Schedule, error) {
 	var resp struct {
-		ScheduledChime Resource `json:"scheduled_chime"`
+		ScheduledChime Schedule `json:"scheduled_chime"`
 	}
 	if err := s.client.Do(ctx, "POST", "/schedules/cancel", CancelParams{ScheduleID: scheduleID}, &resp); err != nil {
 		return nil, err

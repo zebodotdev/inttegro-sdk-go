@@ -1,7 +1,7 @@
 package customer
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // CreateCustomerParams creates a customer record.

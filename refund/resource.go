@@ -1,7 +1,7 @@
 package refund
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
 )
 
 // RefundLineItem is one immutable order-line allocation in a refund.
@@ -15,7 +15,7 @@ type LineItem struct {
 }
 
 // Refund is the canonical refund object embedded in order responses.
-type Resource struct {
+type Refund struct {
 	ID            string            `json:"id"`
 	OrderID       string            `json:"order_id"`
 	Status        Status            `json:"status"`
@@ -34,7 +34,7 @@ type Resource struct {
 
 // RefundPage contains one page of refunds.
 type Page struct {
-	Number  int        `json:"number"`
-	Refunds []Resource `json:"refunds"`
-	Size    int        `json:"size"`
+	Number  int      `json:"number"`
+	Refunds []Refund `json:"refunds"`
+	Size    int      `json:"size"`
 }

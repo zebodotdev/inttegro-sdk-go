@@ -3,9 +3,9 @@ package chime
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/broadcast"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/schedule"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/broadcast"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/schedule"
 )
 
 // ChimesService sends and manages notification messages (SMS and email).
@@ -35,9 +35,9 @@ type Service struct {
 //
 // Sends SMS or email to a customer. Returns immediately with chime ID—
 // delivery happens asynchronously.
-func (s *Service) Send(ctx context.Context, params SendParams) (*Resource, error) {
+func (s *Service) Send(ctx context.Context, params SendParams) (*Chime, error) {
 	var resp struct {
-		Chime Resource `json:"chime"`
+		Chime Chime `json:"chime"`
 	}
 	if err := s.client.Do(ctx, "POST", "/chimes/send", params, &resp); err != nil {
 		return nil, err
@@ -46,9 +46,9 @@ func (s *Service) Send(ctx context.Context, params SendParams) (*Resource, error
 }
 
 // Lookup retrieves chime details and delivery status by ID.
-func (s *Service) Lookup(ctx context.Context, chimeID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, chimeID string) (*Chime, error) {
 	var resp struct {
-		Chime Resource `json:"chime"`
+		Chime Chime `json:"chime"`
 	}
 	if err := s.client.Do(ctx, "POST", "/chimes/lookup", LookupParams{ChimeID: chimeID}, &resp); err != nil {
 		return nil, err

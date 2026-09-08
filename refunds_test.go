@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/refund"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 func TestRefundsServiceUsesCanonicalContracts(t *testing.T) {
@@ -132,7 +132,7 @@ func TestRefundCreateRequestOmitsOptionalFields(t *testing.T) {
 }
 
 func TestRefundOmitsOptionalResponseFields(t *testing.T) {
-	raw, err := json.Marshal(refund.Resource{
+	raw, err := json.Marshal(refund.Refund{
 		ID:        "rf_123",
 		OrderID:   "or_123",
 		Status:    refund.StatusPending,
@@ -255,7 +255,7 @@ func fullCreateRefundRequest() refund.CreateParams {
 	}
 }
 
-func assertDecodedRefund(t *testing.T, got refund.Resource) {
+func assertDecodedRefund(t *testing.T, got refund.Refund) {
 	t.Helper()
 	if got.ID != "rf_123" || got.OrderID != "or_123" ||
 		got.Status != refund.StatusProcessing || got.Total.Currency != "ghs" ||

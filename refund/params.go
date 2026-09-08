@@ -1,8 +1,8 @@
 package refund
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // CreateRefundLineItem requests a refund allocation against one paid order

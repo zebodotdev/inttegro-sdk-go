@@ -52,7 +52,7 @@ type Format struct {
 //
 // Invoices are generated when orders are finalized. They provide
 // customer-facing links for viewing and paying orders.
-type Resource struct {
+type Invoice struct {
 	// ID is the unique invoice identifier.
 	// Starts with "inv_". Example: "inv_abc123def456"
 	ID string `json:"id,omitempty"`

@@ -3,8 +3,8 @@ package order
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/paymentmethod"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // Pay initiates payment for an existing order.
@@ -48,9 +48,9 @@ import (
 //	})
 //
 // Learn more: https://studio.inttegro.com/orders#pay-for-an-order
-func (s *Service) Pay(ctx context.Context, params PayParams) (*Resource, error) {
+func (s *Service) Pay(ctx context.Context, params PayParams) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/pay", params, &resp); err != nil {
 		return nil, err
@@ -83,9 +83,9 @@ func (s *Service) Pay(ctx context.Context, params PayParams) (*Resource, error) 
 //	// Payment confirmed, check order.Payment.Status
 //
 // Learn more: https://studio.inttegro.com/confirm-payment
-func (s *Service) ConfirmPayment(ctx context.Context, params ConfirmParams) (*Resource, error) {
+func (s *Service) ConfirmPayment(ctx context.Context, params ConfirmParams) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/confirm_payment", params, &resp); err != nil {
 		return nil, err
@@ -111,16 +111,16 @@ func (s *Service) ConfirmPayment(ctx context.Context, params ConfirmParams) (*Re
 //	    return err
 //	}
 //	// New OTP sent, prompt customer again
-func (s *Service) RequestConfirmation(ctx context.Context, orderID string) (*Resource, error) {
+func (s *Service) RequestConfirmation(ctx context.Context, orderID string) (*Order, error) {
 	return s.RequestConfirmationWithParams(ctx, RequestConfirmationParams{
 		OrderID:     orderID,
 		RequestMeta: stableOrderRequestMeta("request_confirmation", orderID),
 	})
 }
 
-func (s *Service) RequestConfirmationWithParams(ctx context.Context, params RequestConfirmationParams) (*Resource, error) {
+func (s *Service) RequestConfirmationWithParams(ctx context.Context, params RequestConfirmationParams) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/request_confirmation", params, &resp); err != nil {
 		return nil, err

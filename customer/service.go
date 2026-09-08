@@ -3,8 +3,8 @@ package customer
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // CustomersService manages customer records.
@@ -13,9 +13,9 @@ type Service struct {
 }
 
 // Create creates a customer record.
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*Customer, error) {
 	var resp struct {
-		Customer Resource `json:"customer"`
+		Customer Customer `json:"customer"`
 	}
 	if err := s.client.Do(ctx, "POST", "/customers/create", params, &resp); err != nil {
 		return nil, err
@@ -24,9 +24,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 }
 
 // Update replaces the supplied fields on a customer record.
-func (s *Service) Update(ctx context.Context, params UpdateParams, opts ...request.Option) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, params UpdateParams, opts ...request.Option) (*Customer, error) {
 	var resp struct {
-		Customer Resource `json:"customer"`
+		Customer Customer `json:"customer"`
 	}
 	if err := s.client.DoJSON(ctx, "/customers/update", params, request.Apply(opts), &resp); err != nil {
 		return nil, err
@@ -35,9 +35,9 @@ func (s *Service) Update(ctx context.Context, params UpdateParams, opts ...reque
 }
 
 // Lookup retrieves a customer by ID.
-func (s *Service) Lookup(ctx context.Context, customerID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, customerID string) (*Customer, error) {
 	var resp struct {
-		Customer Resource `json:"customer"`
+		Customer Customer `json:"customer"`
 	}
 	if err := s.client.Do(ctx, "POST", "/customers/lookup", LookupParams{CustomerID: customerID}, &resp); err != nil {
 		return nil, err

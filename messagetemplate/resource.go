@@ -1,6 +1,7 @@
 package messagetemplate
 
-type Resource struct {
+// MessageTemplate represents a reusable chime message template.
+type MessageTemplate struct {
 	ID                    string        `json:"id"`
 	About                 string        `json:"about,omitempty"`
 	ArchivedAt            string        `json:"archived_at,omitempty"`
@@ -23,9 +24,9 @@ type Resource struct {
 }
 
 type Page struct {
-	Number           int        `json:"number"`
-	Size             int        `json:"size"`
-	MessageTemplates []Resource `json:"message_templates"`
+	Number           int               `json:"number"`
+	Size             int               `json:"size"`
+	MessageTemplates []MessageTemplate `json:"message_templates"`
 }
 
 type Reference struct {
@@ -34,6 +35,6 @@ type Reference struct {
 }
 
 type RenderPreviewOutput struct {
-	MessageTemplate *Resource        `json:"message_template,omitempty"`
+	MessageTemplate *MessageTemplate `json:"message_template,omitempty"`
 	Rendered        *RenderedContent `json:"rendered,omitempty"`
 }

@@ -1,15 +1,15 @@
 package financialaccount
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/bankaccount"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/wallet"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/bankaccount"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/wallet"
 )
 
 // FinancialAccount represents a connected payout destination account.
 //
 // Financial accounts must be verified before use. Some account types
 // require document verification or test deposits.
-type Resource struct {
+type FinancialAccount struct {
 	// ID is the unique financial account identifier (read-only).
 	// Starts with "fa_". Example: "fa_abc123def456"
 	ID string `json:"id,omitempty"`
@@ -70,7 +70,7 @@ type Resource struct {
 
 // FinancialAccountsPage holds paginated account data.
 type Page struct {
-	Number   int        `json:"number,omitempty"`
-	Size     int        `json:"size,omitempty"`
-	Accounts []Resource `json:"accounts,omitempty"`
+	Number   int                `json:"number,omitempty"`
+	Size     int                `json:"size,omitempty"`
+	Accounts []FinancialAccount `json:"accounts,omitempty"`
 }

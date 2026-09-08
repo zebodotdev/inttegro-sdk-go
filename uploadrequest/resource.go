@@ -34,7 +34,8 @@ type ReviewReason struct {
 	Param   string `json:"param,omitempty"`
 }
 
-type Resource struct {
+// UploadRequest represents a request for a user to upload a file.
+type UploadRequest struct {
 	ID         string            `json:"id"`
 	Purpose    string            `json:"purpose"`
 	Status     Status            `json:"status"`
@@ -44,7 +45,7 @@ type Resource struct {
 }
 
 type Page struct {
-	Number         int        `json:"number"`
-	Size           int        `json:"size"`
-	UploadRequests []Resource `json:"upload_requests"`
+	Number         int             `json:"number"`
+	Size           int             `json:"size"`
+	UploadRequests []UploadRequest `json:"upload_requests"`
 }

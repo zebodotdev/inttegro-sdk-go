@@ -3,18 +3,18 @@ package filelink
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/file"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/file"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 type Service struct {
 	client transport.Client
 }
 
-func (s *Service) Create(ctx context.Context, params CreateParams, opts ...request.Option) (*Resource, string, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams, opts ...request.Option) (*FileLink, string, error) {
 	var resp struct {
-		FileLink Resource `json:"file_link"`
+		FileLink FileLink `json:"file_link"`
 		URL      string   `json:"url"`
 	}
 	if err := s.client.DoJSON(ctx, "/file_links/create", params, request.Apply(opts), &resp); err != nil {
@@ -23,9 +23,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams, opts ...reque
 	return &resp.FileLink, resp.URL, nil
 }
 
-func (s *Service) Lookup(ctx context.Context, id string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, id string) (*FileLink, error) {
 	var resp struct {
-		FileLink Resource `json:"file_link"`
+		FileLink FileLink `json:"file_link"`
 	}
 	if err := s.client.Do(ctx, "POST", "/file_links/lookup", map[string]string{"id": id}, &resp); err != nil {
 		return nil, err
@@ -43,9 +43,9 @@ func (s *Service) Page(ctx context.Context, params PageParams) (*Page, error) {
 	return &resp.Page, nil
 }
 
-func (s *Service) Revoke(ctx context.Context, params RevokeParams, opts ...request.Option) (*Resource, error) {
+func (s *Service) Revoke(ctx context.Context, params RevokeParams, opts ...request.Option) (*FileLink, error) {
 	var resp struct {
-		FileLink Resource `json:"file_link"`
+		FileLink FileLink `json:"file_link"`
 	}
 	if err := s.client.DoJSON(ctx, "/file_links/revoke", params, request.Apply(opts), &resp); err != nil {
 		return nil, err

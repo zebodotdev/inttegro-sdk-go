@@ -3,7 +3,7 @@ package product
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // ProductsService manages catalog products.
@@ -12,9 +12,9 @@ type Service struct {
 }
 
 // Create creates a product.
-func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, error) {
+func (s *Service) Create(ctx context.Context, params CreateParams) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/create", params, &resp); err != nil {
 		return nil, err
@@ -23,9 +23,9 @@ func (s *Service) Create(ctx context.Context, params CreateParams) (*Resource, e
 }
 
 // SetDefaultUnitPrice sets an existing product price as the product's default unit price.
-func (s *Service) SetDefaultUnitPrice(ctx context.Context, params SetDefaultUnitPriceParams) (*Resource, error) {
+func (s *Service) SetDefaultUnitPrice(ctx context.Context, params SetDefaultUnitPriceParams) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/set_default_unit_price", params, &resp); err != nil {
 		return nil, err
@@ -34,9 +34,9 @@ func (s *Service) SetDefaultUnitPrice(ctx context.Context, params SetDefaultUnit
 }
 
 // Lookup retrieves a product by ID.
-func (s *Service) Lookup(ctx context.Context, productID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, productID string) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/lookup", LookupParams{ProductID: productID}, &resp); err != nil {
 		return nil, err
@@ -56,9 +56,9 @@ func (s *Service) Page(ctx context.Context, params PageParams) (*Page, error) {
 }
 
 // Update updates a product.
-func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, params UpdateParams) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/update", params, &resp); err != nil {
 		return nil, err
@@ -67,9 +67,9 @@ func (s *Service) Update(ctx context.Context, params UpdateParams) (*Resource, e
 }
 
 // Publish publishes a product.
-func (s *Service) Publish(ctx context.Context, productID string) (*Resource, error) {
+func (s *Service) Publish(ctx context.Context, productID string) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/publish", ActionParams{ProductID: productID}, &resp); err != nil {
 		return nil, err
@@ -78,9 +78,9 @@ func (s *Service) Publish(ctx context.Context, productID string) (*Resource, err
 }
 
 // Unpublish unpublishes a product.
-func (s *Service) Unpublish(ctx context.Context, productID string) (*Resource, error) {
+func (s *Service) Unpublish(ctx context.Context, productID string) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/unpublish", ActionParams{ProductID: productID}, &resp); err != nil {
 		return nil, err
@@ -89,9 +89,9 @@ func (s *Service) Unpublish(ctx context.Context, productID string) (*Resource, e
 }
 
 // Archive archives a product.
-func (s *Service) Archive(ctx context.Context, productID string) (*Resource, error) {
+func (s *Service) Archive(ctx context.Context, productID string) (*Product, error) {
 	var resp struct {
-		Product Resource `json:"product"`
+		Product Product `json:"product"`
 	}
 	if err := s.client.Do(ctx, "POST", "/products/archive", ActionParams{ProductID: productID}, &resp); err != nil {
 		return nil, err

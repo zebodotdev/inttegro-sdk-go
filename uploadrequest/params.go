@@ -1,7 +1,7 @@
 package uploadrequest
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/filelink"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/filelink"
 )
 
 type CreateParams struct {

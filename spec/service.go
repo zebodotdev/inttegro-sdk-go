@@ -3,7 +3,7 @@ package spec
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
 )
 
 // SpecService provides access to Inttegro platform specifications.
@@ -32,9 +32,9 @@ type Service struct {
 // Returns a map of country code to specification. Use this to discover
 // supported currencies, payment methods, and payout options before building
 // your integration.
-func (s *Service) Countries(ctx context.Context) (map[string]Resource, error) {
+func (s *Service) Countries(ctx context.Context) (map[string]Spec, error) {
 	var resp struct {
-		Countries map[string]Resource `json:"countries"`
+		Countries map[string]Spec `json:"countries"`
 	}
 	if err := s.client.Do(ctx, "POST", "/spec/countries", map[string]any{}, &resp); err != nil {
 		return nil, err

@@ -37,9 +37,9 @@ import (
 //   - Syncing order state with your system
 //
 // Learn more: https://studio.inttegro.com/retrieve-order
-func (s *Service) Lookup(ctx context.Context, orderID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, orderID string) (*Order, error) {
 	var resp struct {
-		Order Resource `json:"order"`
+		Order Order `json:"order"`
 	}
 	if err := s.client.Do(ctx, "POST", "/orders/lookup", LookupParams{OrderID: orderID}, &resp); err != nil {
 		return nil, err

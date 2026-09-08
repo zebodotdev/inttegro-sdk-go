@@ -1,12 +1,12 @@
 package spec
 
-// CountrySpecification describes supported Inttegro features for a country.
+// Spec describes supported Inttegro features for a country.
 //
 // Use this to discover supported currencies, payment methods, payout schedules,
 // and other country-specific capabilities before integrating.
 //
 // Query with Spec.Countries() to get all country specifications.
-type Resource struct {
+type Spec struct {
 	// CountryCode is the two-letter ISO 3166-1 alpha-2 code (read-only).
 	// Example: "GH", "KE", "UG", "US"
 	CountryCode string `json:"country_code,omitempty"`

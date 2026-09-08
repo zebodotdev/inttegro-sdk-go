@@ -3,8 +3,8 @@ package paymentmethod
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v5/internal/transport"
-	"github.com/zebodotdev/inttegro-sdk-go/v5/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
 )
 
 // PaymentMethodsService manages payment method tokenization, verification, and deletion.
@@ -44,9 +44,9 @@ type Service struct {
 // The customer owns the payment method—only they can delete it.
 //
 // Learn more: https://studio.inttegro.com/tokenize-payment-methods
-func (s *Service) Tokenize(ctx context.Context, params TokenizeParams) (*Resource, error) {
+func (s *Service) Tokenize(ctx context.Context, params TokenizeParams) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod Resource `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payment_methods/tokenize", params, &resp); err != nil {
 		return nil, err
@@ -79,9 +79,9 @@ func (s *Service) VerifyWithParams(ctx context.Context, params VerifyParams) (*V
 //
 // Call this after Verify() once the customer provides their OTP.
 // Returns the verified payment method.
-func (s *Service) ConfirmVerification(ctx context.Context, params ConfirmVerificationParams) (*Resource, error) {
+func (s *Service) ConfirmVerification(ctx context.Context, params ConfirmVerificationParams) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod Resource `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payment_methods/confirm_verification", params, &resp); err != nil {
 		return nil, err
@@ -92,9 +92,9 @@ func (s *Service) ConfirmVerification(ctx context.Context, params ConfirmVerific
 // Lookup retrieves payment method details by ID.
 //
 // Returns masked payment details, verification status, and enabled state.
-func (s *Service) Lookup(ctx context.Context, paymentMethodID string) (*Resource, error) {
+func (s *Service) Lookup(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod Resource `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payment_methods/lookup", LookupParams{PaymentMethodID: paymentMethodID}, &resp); err != nil {
 		return nil, err
@@ -114,9 +114,9 @@ func (s *Service) Page(ctx context.Context, params PageParams) (*Page, error) {
 }
 
 // Update modifies mutable payment method fields.
-func (s *Service) Update(ctx context.Context, payload any) (*Resource, error) {
+func (s *Service) Update(ctx context.Context, payload any) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod Resource `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.Do(ctx, "POST", "/payment_methods/update", payload, &resp); err != nil {
 		return nil, err
@@ -125,33 +125,33 @@ func (s *Service) Update(ctx context.Context, payload any) (*Resource, error) {
 }
 
 // Activate marks a payment method active.
-func (s *Service) Activate(ctx context.Context, paymentMethodID string) (*Resource, error) {
+func (s *Service) Activate(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/activate", paymentMethodID)
 }
 
 // Disactivate marks a payment method inactive.
-func (s *Service) Disactivate(ctx context.Context, paymentMethodID string) (*Resource, error) {
+func (s *Service) Disactivate(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/disactivate", paymentMethodID)
 }
 
 // Deactivate is an alias for Disactivate.
-func (s *Service) Deactivate(ctx context.Context, paymentMethodID string) (*Resource, error) {
+func (s *Service) Deactivate(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.Disactivate(ctx, paymentMethodID)
 }
 
 // Archive archives a payment method.
-func (s *Service) Archive(ctx context.Context, paymentMethodID string) (*Resource, error) {
+func (s *Service) Archive(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/archive", paymentMethodID)
 }
 
 // Unarchive unarchives a payment method.
-func (s *Service) Unarchive(ctx context.Context, paymentMethodID string) (*Resource, error) {
+func (s *Service) Unarchive(ctx context.Context, paymentMethodID string) (*PaymentMethod, error) {
 	return s.paymentMethodAction(ctx, "/payment_methods/unarchive", paymentMethodID)
 }
 
-func (s *Service) paymentMethodAction(ctx context.Context, path, paymentMethodID string) (*Resource, error) {
+func (s *Service) paymentMethodAction(ctx context.Context, path, paymentMethodID string) (*PaymentMethod, error) {
 	var resp struct {
-		PaymentMethod Resource `json:"payment_method"`
+		PaymentMethod PaymentMethod `json:"payment_method"`
 	}
 	if err := s.client.Do(ctx, "POST", path, ActionParams{PaymentMethodID: paymentMethodID}, &resp); err != nil {
 		return nil, err

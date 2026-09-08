@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v5/secretkey"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/secretkey"
 )
 
 // AppSecretKey is the initial secret key returned when an app is created.
@@ -14,7 +14,7 @@ type SecretKey struct {
 }
 
 // App represents an Inttegro account.
-type Resource struct {
+type App struct {
 	ID           string        `json:"id"`
 	Name         string        `json:"name"`
 	Alias        string        `json:"alias,omitempty"`
