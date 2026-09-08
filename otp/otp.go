@@ -10,54 +10,27 @@ import (
 type AlphabetType string
 
 const (
-	AlphabetTypeNumeric AlphabetType = "numeric"
-)
-
-const (
-	AlphabetTypeAlpha AlphabetType = "alpha"
-)
-
-const (
+	AlphabetTypeNumeric      AlphabetType = "numeric"
+	AlphabetTypeAlpha        AlphabetType = "alpha"
 	AlphabetTypeAlphanumeric AlphabetType = "alphanumeric"
 )
 
 type Status string
 
 const (
-	StatusCanceled Status = "canceled"
-)
-
-const (
-	StatusExpired Status = "expired"
-)
-
-const (
-	StatusPending Status = "pending"
-)
-
-const (
-	StatusPendingDelivery Status = "pending_delivery"
-)
-
-const (
+	StatusCanceled            Status = "canceled"
+	StatusExpired             Status = "expired"
+	StatusPending             Status = "pending"
+	StatusPendingDelivery     Status = "pending_delivery"
 	StatusPendingVerification Status = "pending_verification"
-)
-
-const (
-	StatusVerified Status = "verified"
+	StatusVerified            Status = "verified"
 )
 
 type TransmissionStatus string
 
 const (
 	TransmissionStatusDelivered TransmissionStatus = "delivered"
-)
-
-const (
-	TransmissionStatusFailed TransmissionStatus = "failed"
-)
-
-const (
+	TransmissionStatusFailed    TransmissionStatus = "failed"
 	TransmissionStatusSubmitted TransmissionStatus = "submitted"
 )
 
@@ -65,9 +38,6 @@ type VerificationVerdict string
 
 const (
 	VerificationVerdictFail VerificationVerdict = "fail"
-)
-
-const (
 	VerificationVerdictPass VerificationVerdict = "pass"
 )
 

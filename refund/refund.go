@@ -13,60 +13,24 @@ type Reason string
 
 const (
 	ReasonRequestedByCustomer Reason = "requested_by_customer"
-)
-
-const (
-	ReasonDuplicate Reason = "duplicate"
-)
-
-const (
-	ReasonFraudulent Reason = "fraudulent"
-)
-
-const (
-	ReasonOrderCanceled Reason = "order_canceled"
-)
-
-const (
-	ReasonItemReturned Reason = "item_returned"
-)
-
-const (
-	ReasonItemDamaged Reason = "item_damaged"
-)
-
-const (
-	ReasonItemNotReceived Reason = "item_not_received"
-)
-
-const (
-	ReasonItemNotAsDescribed Reason = "item_not_as_described"
-)
-
-const (
-	ReasonCustom Reason = "custom"
+	ReasonDuplicate           Reason = "duplicate"
+	ReasonFraudulent          Reason = "fraudulent"
+	ReasonOrderCanceled       Reason = "order_canceled"
+	ReasonItemReturned        Reason = "item_returned"
+	ReasonItemDamaged         Reason = "item_damaged"
+	ReasonItemNotReceived     Reason = "item_not_received"
+	ReasonItemNotAsDescribed  Reason = "item_not_as_described"
+	ReasonCustom              Reason = "custom"
 )
 
 type Status string
 
 const (
-	StatusCanceled Status = "canceled"
-)
-
-const (
-	StatusFailed Status = "failed"
-)
-
-const (
-	StatusPending Status = "pending"
-)
-
-const (
+	StatusCanceled   Status = "canceled"
+	StatusFailed     Status = "failed"
+	StatusPending    Status = "pending"
 	StatusProcessing Status = "processing"
-)
-
-const (
-	StatusSucceeded Status = "succeeded"
+	StatusSucceeded  Status = "succeeded"
 )
 
 // RefundsService creates and manages refunds against paid order line items.

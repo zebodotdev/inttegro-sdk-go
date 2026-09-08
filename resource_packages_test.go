@@ -118,6 +118,67 @@ func TestProductionPackagesContainNoTypeAliases(t *testing.T) {
 	}
 }
 
+func TestProductionEnumConstantsAreGroupedByType(t *testing.T) {
+	type declarationLocation struct {
+		path string
+		line int
+	}
+
+	declarations := make(map[string]declarationLocation)
+	err := filepath.WalkDir(".", func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.IsDir() {
+			if strings.HasPrefix(entry.Name(), ".") || entry.Name() == "_tools" {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
+			return nil
+		}
+
+		fileSet := token.NewFileSet()
+		file, err := parser.ParseFile(fileSet, path, nil, 0)
+		if err != nil {
+			return err
+		}
+		for _, declaration := range file.Decls {
+			general, ok := declaration.(*ast.GenDecl)
+			if !ok || general.Tok != token.CONST {
+				continue
+			}
+			if general.Lparen.IsValid() && len(general.Specs) == 1 {
+				position := fileSet.Position(general.Pos())
+				t.Errorf("singleton parenthesized const block in %s:%d", path, position.Line)
+			}
+
+			location := declarationLocation{path: path, line: fileSet.Position(general.Pos()).Line}
+			for _, specification := range general.Specs {
+				valueSpec := specification.(*ast.ValueSpec)
+				typeName, ok := valueSpec.Type.(*ast.Ident)
+				if !ok || !ast.IsExported(typeName.Name) {
+					continue
+				}
+				key := filepath.Dir(path) + ":" + typeName.Name
+				if previous, found := declarations[key]; found && previous != location {
+					t.Errorf(
+						"constants of type %s are split between %s:%d and %s:%d",
+						typeName.Name, previous.path, previous.line, path, location.line,
+					)
+					continue
+				}
+				declarations[key] = location
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestResourcePackagesDoNotImportRoot(t *testing.T) {
 	entries, err := os.ReadDir(".")
 	if err != nil {

@@ -16,42 +16,24 @@ import (
 type Status string
 
 const (
-	StatusUploading Status = "uploading"
-)
-
-const (
+	StatusUploading  Status = "uploading"
 	StatusProcessing Status = "processing"
-)
-
-const (
-	StatusAvailable Status = "available"
-)
-
-const (
-	StatusFailed Status = "failed"
-)
-
-const (
-	StatusDeleted Status = "deleted"
+	StatusAvailable  Status = "available"
+	StatusFailed     Status = "failed"
+	StatusDeleted    Status = "deleted"
 )
 
 type Disposition string
 
 const (
 	DispositionAttachment Disposition = "attachment"
-)
-
-const (
-	DispositionInline Disposition = "inline"
+	DispositionInline     Disposition = "inline"
 )
 
 type Delivery string
 
 const (
-	DeliveryStream Delivery = "stream"
-)
-
-const (
+	DeliveryStream   Delivery = "stream"
 	DeliveryRedirect Delivery = "redirect"
 )
 
@@ -59,42 +41,24 @@ type ScanStatus string
 
 const (
 	ScanStatusPending ScanStatus = "pending"
-)
-
-const (
-	ScanStatusPassed ScanStatus = "passed"
-)
-
-const (
-	ScanStatusFailed ScanStatus = "failed"
-)
-
-const (
+	ScanStatusPassed  ScanStatus = "passed"
+	ScanStatusFailed  ScanStatus = "failed"
 	ScanStatusSkipped ScanStatus = "skipped"
 )
 
 type SourceType string
 
 const (
-	SourceTypeDirect SourceType = "direct"
-)
-
-const (
+	SourceTypeDirect        SourceType = "direct"
 	SourceTypeUploadRequest SourceType = "upload_request"
-)
-
-const (
-	SourceTypeService SourceType = "service"
+	SourceTypeService       SourceType = "service"
 )
 
 type StorageEncoding string
 
 const (
 	StorageEncodingIdentity StorageEncoding = "identity"
-)
-
-const (
-	StorageEncodingBrotli StorageEncoding = "br"
+	StorageEncodingBrotli   StorageEncoding = "br"
 )
 
 type CreateParams struct {

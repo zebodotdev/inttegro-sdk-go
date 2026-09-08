@@ -12,18 +12,9 @@ import (
 type Status string
 
 const (
-	StatusActive Status = "active"
-)
-
-const (
-	StatusRevoked Status = "revoked"
-)
-
-const (
-	StatusExpired Status = "expired"
-)
-
-const (
+	StatusActive   Status = "active"
+	StatusRevoked  Status = "revoked"
+	StatusExpired  Status = "expired"
 	StatusDisabled Status = "disabled"
 )
 
@@ -35,14 +26,8 @@ type DeliveryMode string
 
 const (
 	DeliveryModeRedirect DeliveryMode = "redirect"
-)
-
-const (
 	DeliveryModeDownload DeliveryMode = "download"
-)
-
-const (
-	DeliveryModeInline DeliveryMode = "inline"
+	DeliveryModeInline   DeliveryMode = "inline"
 )
 
 type Actor struct {

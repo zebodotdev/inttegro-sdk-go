@@ -12,126 +12,54 @@ type NextActionType string
 
 const (
 	NextActionTypeConfirmPayment NextActionType = "confirm_payment"
-)
-
-const (
-	NextActionTypeExecute NextActionType = "execute"
-)
-
-const (
-	NextActionTypeRedirect NextActionType = "redirect"
-)
-
-const (
-	NextActionTypeAuthorize NextActionType = "authorize"
-)
-
-const (
-	NextActionTypeNone NextActionType = "none"
+	NextActionTypeExecute        NextActionType = "execute"
+	NextActionTypeRedirect       NextActionType = "redirect"
+	NextActionTypeAuthorize      NextActionType = "authorize"
+	NextActionTypeNone           NextActionType = "none"
 )
 
 type ConfirmationChannel string
 
 const (
-	ConfirmationChannelSMS ConfirmationChannel = "sms"
-)
-
-const (
+	ConfirmationChannelSMS   ConfirmationChannel = "sms"
 	ConfirmationChannelEmail ConfirmationChannel = "email"
-)
-
-const (
-	ConfirmationChannelPush ConfirmationChannel = "push"
+	ConfirmationChannelPush  ConfirmationChannel = "push"
 )
 
 type Status string
 
 const (
-	StatusInitiated Status = "initiated"
-)
-
-const (
+	StatusInitiated      Status = "initiated"
 	StatusRequiresAction Status = "requires_action"
-)
-
-const (
-	StatusOverdue Status = "overdue"
-)
-
-const (
-	StatusExecuted Status = "executed"
-)
-
-const (
-	StatusPaid Status = "paid"
-)
-
-const (
-	StatusCanceled Status = "canceled"
-)
-
-const (
-	StatusExpired Status = "expired"
-)
-
-const (
-	StatusFailed Status = "failed"
-)
-
-const (
-	StatusUnknown Status = "unknown"
+	StatusOverdue        Status = "overdue"
+	StatusExecuted       Status = "executed"
+	StatusPaid           Status = "paid"
+	StatusCanceled       Status = "canceled"
+	StatusExpired        Status = "expired"
+	StatusFailed         Status = "failed"
+	StatusUnknown        Status = "unknown"
 )
 
 type AttemptStatus string
 
 const (
 	AttemptStatusInitiated AttemptStatus = "initiated"
-)
-
-const (
-	AttemptStatusExecuted AttemptStatus = "executed"
-)
-
-const (
+	AttemptStatusExecuted  AttemptStatus = "executed"
 	AttemptStatusSucceeded AttemptStatus = "succeeded"
-)
-
-const (
-	AttemptStatusCanceled AttemptStatus = "canceled"
-)
-
-const (
-	AttemptStatusExpired AttemptStatus = "expired"
-)
-
-const (
-	AttemptStatusFailed AttemptStatus = "failed"
-)
-
-const (
-	AttemptStatusUnknown AttemptStatus = "unknown"
+	AttemptStatusCanceled  AttemptStatus = "canceled"
+	AttemptStatusExpired   AttemptStatus = "expired"
+	AttemptStatusFailed    AttemptStatus = "failed"
+	AttemptStatusUnknown   AttemptStatus = "unknown"
 )
 
 type ResultStatus string
 
 const (
-	ResultStatusPending ResultStatus = "pending"
-)
-
-const (
+	ResultStatusPending              ResultStatus = "pending"
 	ResultStatusRequiresConfirmation ResultStatus = "requires_confirmation"
-)
-
-const (
-	ResultStatusProcessing ResultStatus = "processing"
-)
-
-const (
-	ResultStatusSucceeded ResultStatus = "succeeded"
-)
-
-const (
-	ResultStatusFailed ResultStatus = "failed"
+	ResultStatusProcessing           ResultStatus = "processing"
+	ResultStatusSucceeded            ResultStatus = "succeeded"
+	ResultStatusFailed               ResultStatus = "failed"
 )
 
 // PaymentAttempt captures details of a single payment attempt.

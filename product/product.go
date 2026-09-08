@@ -14,66 +14,30 @@ type Type string
 
 const (
 	TypePhysical Type = "physical"
-)
-
-const (
-	TypeDigital Type = "digital"
-)
-
-const (
-	TypeService Type = "service"
-)
-
-const (
-	TypeVoucher Type = "voucher"
-)
-
-const (
-	TypeCustom Type = "custom"
-)
-
-const (
-	TypeCause Type = "cause"
+	TypeDigital  Type = "digital"
+	TypeService  Type = "service"
+	TypeVoucher  Type = "voucher"
+	TypeCustom   Type = "custom"
+	TypeCause    Type = "cause"
 )
 
 type ShipmentType string
 
 const (
 	ShipmentTypeDelivery ShipmentType = "delivery"
-)
-
-const (
 	ShipmentTypeDownload ShipmentType = "download"
-)
-
-const (
-	ShipmentTypeRender ShipmentType = "render"
-)
-
-const (
-	ShipmentTypeService ShipmentType = "service"
-)
-
-const (
-	ShipmentTypeStream ShipmentType = "stream"
+	ShipmentTypeRender   ShipmentType = "render"
+	ShipmentTypeService  ShipmentType = "service"
+	ShipmentTypeStream   ShipmentType = "stream"
 )
 
 type ShipmentInputType string
 
 const (
 	ShipmentInputTypeDelivery ShipmentInputType = "delivery"
-)
-
-const (
 	ShipmentInputTypeDownload ShipmentInputType = "download"
-)
-
-const (
-	ShipmentInputTypeRender ShipmentInputType = "render"
-)
-
-const (
-	ShipmentInputTypeStream ShipmentInputType = "stream"
+	ShipmentInputTypeRender   ShipmentInputType = "render"
+	ShipmentInputTypeStream   ShipmentInputType = "stream"
 )
 
 // ProductsService manages catalog products.

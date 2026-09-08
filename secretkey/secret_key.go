@@ -14,14 +14,8 @@ const TokenTypeBearer TokenType = "bearer"
 type Status string
 
 const (
-	StatusActive Status = "active"
-)
-
-const (
+	StatusActive  Status = "active"
 	StatusRevoked Status = "revoked"
-)
-
-const (
 	StatusExpired Status = "expired"
 )
 
@@ -29,10 +23,7 @@ type AuthResult string
 
 const (
 	AuthResultSucceeded AuthResult = "succeeded"
-)
-
-const (
-	AuthResultFailed AuthResult = "failed"
+	AuthResultFailed    AuthResult = "failed"
 )
 
 // KeysService manages secret keys for the authenticated application.

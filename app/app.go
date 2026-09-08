@@ -138,19 +138,13 @@ type ManagementRole string
 
 const (
 	ManagementRoleParent ManagementRole = "parent"
-)
-
-const (
-	ManagementRoleChild ManagementRole = "child"
+	ManagementRoleChild  ManagementRole = "child"
 )
 
 type CredentialOwner string
 
 const (
-	CredentialOwnerChild CredentialOwner = "child"
-)
-
-const (
+	CredentialOwnerChild  CredentialOwner = "child"
 	CredentialOwnerParent CredentialOwner = "parent"
 )
 
@@ -161,19 +155,10 @@ const RelationshipKindPlacement RelationshipKind = "placement"
 type RelationshipStatus string
 
 const (
-	RelationshipStatusActive RelationshipStatus = "active"
-)
-
-const (
-	RelationshipStatusInactive RelationshipStatus = "inactive"
-)
-
-const (
+	RelationshipStatusActive    RelationshipStatus = "active"
+	RelationshipStatusInactive  RelationshipStatus = "inactive"
 	RelationshipStatusSuspended RelationshipStatus = "suspended"
-)
-
-const (
-	RelationshipStatusRevoked RelationshipStatus = "revoked"
+	RelationshipStatusRevoked   RelationshipStatus = "revoked"
 )
 
 // NewService constructs the resource service used by inttegro.Client.

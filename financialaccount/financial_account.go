@@ -13,14 +13,8 @@ type Type string
 
 const (
 	TypeWallet Type = "wallet"
-)
-
-const (
-	TypeBank Type = "bank_account"
-)
-
-const (
-	TypeDosh Type = "dosh_account"
+	TypeBank   Type = "bank_account"
+	TypeDosh   Type = "dosh_account"
 )
 
 // FinancialAccountsService manages payout destination accounts.
