@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/app"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/secretkey"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/secretkey"
 )
 
 func TestAppsServiceUsesTypedContracts(t *testing.T) {

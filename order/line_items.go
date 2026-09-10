@@ -1,9 +1,9 @@
 package order
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/product"
 )
 
 // ProductLineItemParams represents a product supplied in an order request.

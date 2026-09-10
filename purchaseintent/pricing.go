@@ -1,7 +1,7 @@
 package purchaseintent
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
 )
 
 type OriginalPrice struct {

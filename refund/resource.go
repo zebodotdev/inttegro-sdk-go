@@ -3,7 +3,7 @@ package refund
 import (
 	"time"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
 )
 
 // RefundLineItem is one immutable order-line allocation in a refund.

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 7.0.0 - 2026-09-10
+
+- Breaking: replaced generic maps with named resource types for balances,
+  purchase intents, products, payment methods, payments, and orders.
+- Breaking: exposed API timestamps as `time.Time` values and accepted
+  `time.Time` values for timestamp request fields.
+- Breaking: changed the module path to `github.com/zebodotdev/inttegro-sdk-go/v7`.
+
 ## 6.0.0 - 2026-09-09
 
 - Breaking: renamed every resource package's primary object after its domain,

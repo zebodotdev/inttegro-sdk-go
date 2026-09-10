@@ -3,7 +3,7 @@ package refund
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/internal/transport"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/internal/transport"
 )
 
 // RefundsService creates and manages refunds against paid order line items.

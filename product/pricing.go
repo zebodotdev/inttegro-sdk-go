@@ -1,7 +1,7 @@
 package product
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
 )
 
 // ProductPriceSummary represents a product price listed with a product response.

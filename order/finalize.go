@@ -3,7 +3,7 @@ package order
 import (
 	"context"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
 )
 
 // Finalize seals an order and generates hosted checkout page and invoice.

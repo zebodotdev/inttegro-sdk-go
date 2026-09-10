@@ -1,4 +1,4 @@
-module github.com/zebodotdev/inttegro-sdk-go/v6
+module github.com/zebodotdev/inttegro-sdk-go/v7
 
 go 1.25.0
 
