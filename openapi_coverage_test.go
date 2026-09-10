@@ -25,6 +25,7 @@ import (
 	"github.com/zebodotdev/inttegro-sdk-go/v6/messagetemplate"
 	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
 	"github.com/zebodotdev/inttegro-sdk-go/v6/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v6/otp"
 	"github.com/zebodotdev/inttegro-sdk-go/v6/paymentmethod"
 	"github.com/zebodotdev/inttegro-sdk-go/v6/payout"
 	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
@@ -153,13 +154,13 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 		check(download.Close())
 	}
 
-	_, err := client.Otp.Initiate(ctx, map[string]any{"recipient": "+233"})
+	_, err := client.Otp.Initiate(ctx, otp.InitiateParams{Recipient: "+233", ServiceName: "Inttegro", TokenSize: 6})
 	check(err)
-	_, err = client.Otp.Verify(ctx, map[string]any{"transaction_id": "otp_1", "token": "123456"})
+	_, err = client.Otp.Verify(ctx, otp.VerifyParams{Recipient: "+233", TransactionID: "ot_1", Token: "123456"})
 	check(err)
-	_, err = client.Otp.Lookup(ctx, map[string]any{"transaction_id": "otp_1"})
+	_, err = client.Otp.Lookup(ctx, otp.LookupParams{TransactionID: "ot_1"})
 	check(err)
-	_, err = client.Otp.Cancel(ctx, map[string]any{"transaction_id": "otp_1"})
+	_, err = client.Otp.Cancel(ctx, otp.CancelParams{TransactionID: "ot_1"})
 	check(err)
 
 	_, err = client.Chimes.Send(ctx, chime.SendParams{FullMessage: "hello"})
