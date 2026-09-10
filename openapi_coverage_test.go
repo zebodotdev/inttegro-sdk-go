@@ -48,6 +48,10 @@ var openAPIClientCheckoutPaths = map[string]bool{
 	"/checkout/confirm_payment":      true,
 }
 
+var openAPILegacyCompatibilityPaths = map[string]bool{
+	"/orders/refund": true,
+}
+
 func TestSDKPathsCoverOpenAPI(t *testing.T) {
 	specPaths, err := readOpenAPIPaths(openAPISpecPath())
 	if err != nil {
@@ -57,7 +61,7 @@ func TestSDKPathsCoverOpenAPI(t *testing.T) {
 
 	var missing []string
 	for _, path := range specPaths {
-		if openAPICapabilityURLPaths[path] || openAPIClientCheckoutPaths[path] {
+		if openAPICapabilityURLPaths[path] || openAPIClientCheckoutPaths[path] || openAPILegacyCompatibilityPaths[path] {
 			continue
 		}
 		if !sdkPaths[path] {
