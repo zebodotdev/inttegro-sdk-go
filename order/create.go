@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/checkout"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/paymentmethod"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/checkout"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
 )
 
 // Create creates a new order.
@@ -157,7 +157,6 @@ func (p CreateParams) Validate() error {
 //	}
 type CreateParams struct {
 	// RequestMeta carries per-request controls such as idempotency.
-	// Prefer RequestMeta.IdempotencyKey over the legacy top-level IdempotencyKey.
 	RequestMeta *request.Meta `json:"request_meta,omitempty"`
 
 	// CustomerData provides inline customer information for new customers (optional).

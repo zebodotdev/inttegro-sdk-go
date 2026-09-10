@@ -1,8 +1,10 @@
 package financialaccount
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/bankaccount"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/wallet"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/bankaccount"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/wallet"
 )
 
 // FinancialAccount represents a connected payout destination account.
@@ -58,14 +60,14 @@ type FinancialAccount struct {
 	// ArchivedAt is when the account was archived (ISO 8601, read-only).
 	// Archived accounts cannot receive new payouts.
 	// Nil if not archived.
-	ArchivedAt *string `json:"archived_at,omitempty"`
+	ArchivedAt *time.Time `json:"archived_at,omitempty"`
 
 	// DisconnectedAt is when the account was disconnected (ISO 8601, read-only).
 	// Nil if the account is still active.
-	DisconnectedAt *string `json:"disconnected_at,omitempty"`
+	DisconnectedAt *time.Time `json:"disconnected_at,omitempty"`
 
 	// CreatedAt is when the account was created (ISO 8601, read-only).
-	CreatedAt *string `json:"created_at,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
 }
 
 // FinancialAccountsPage holds paginated account data.

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/app"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/product"
 )
 
 func TestProductsEndpointsMatchSpec(t *testing.T) {
@@ -97,13 +97,13 @@ func TestProductDecodesCanonicalMetadata(t *testing.T) {
 	if err := json.Unmarshal(raw, &product); err != nil {
 		t.Fatal(err)
 	}
-	if product.Category == nil || product.Category.Name != "Design" {
+	if product.Category != "Design" {
 		t.Fatalf("category = %#v, want Design", product.Category)
 	}
-	if len(product.Media) != 2 || product.Media[0].Type != "web_page_url" {
-		t.Fatalf("media = %#v, want canonical media entries", product.Media)
+	if product.Media == nil || product.Media.WebPageURL != "https://demos.inttegro.dev/" || len(product.Media.Gallery) != 1 {
+		t.Fatalf("media = %#v, want canonical media object", product.Media)
 	}
-	if product.Attributes["term"] != "month" {
+	if len(product.Attributes) != 1 || product.Attributes[0].Name != "term" || product.Attributes[0].Value != "month" {
 		t.Fatalf("attributes = %#v, want term=month", product.Attributes)
 	}
 	if len(product.Prices) != 1 || !product.Prices[0].Active {

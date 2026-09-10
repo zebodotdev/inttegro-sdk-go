@@ -13,7 +13,7 @@ All official Inttegro SDKs expose the same API capabilities. This module adds Go
 ## Install
 
 ```bash
-go get github.com/zebodotdev/inttegro-sdk-go/v6
+go get github.com/zebodotdev/inttegro-sdk-go/v7
 ```
 
 Store your secret key in the server environment:
@@ -38,14 +38,14 @@ import (
 	"log"
 	"os"
 
-	inttegro "github.com/zebodotdev/inttegro-sdk-go/v6"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/checkout"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/order"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
+	inttegro "github.com/zebodotdev/inttegro-sdk-go/v7"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/checkout"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
 )
 
 func main() {
@@ -116,7 +116,7 @@ if intent.Status == purchaseintent.StatusExpired {
 
 The root `inttegro` package owns only the client, transport options, errors,
 telemetry, and pointer helpers. Resource packages own their services, request
-parameters, models, and lifecycle values as real named Go types. Version 6 does
+parameters, models, and lifecycle values as real named Go types. Version 7 does
 not expose deprecated root mirrors or compatibility aliases.
 
 ## Refund paid line items

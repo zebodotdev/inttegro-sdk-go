@@ -1,59 +1,60 @@
 package payment
 
-// PaymentNextAction describes the next step required to complete payment.
-//
-// When a payment requires customer action (OTP confirmation, redirect to
-// bank page, etc), this field describes what needs to happen.
-//
-// Check Type to determine the required action:
-//   - "confirm_payment": Customer must provide OTP
-//   - "redirect": Customer must visit a URL
-//   - "execute": Internal processing (no action needed)
+import "time"
+
 type NextAction struct {
-	// Type specifies the action category.
-	// Values: "confirm_payment", "redirect", "execute"
-	Type NextActionType `json:"type"`
+	Type                NextActionType       `json:"type"`
+	ConfirmPayment      *ConfirmPayment      `json:"confirm_payment,omitempty"`
+	Redirect            *Redirect            `json:"redirect,omitempty"`
+	Authorize           *Authorize           `json:"authorize,omitempty"`
+	RequestConfirmation *RequestConfirmation `json:"request_confirmation,omitempty"`
+}
 
-	// ConfirmPayment contains OTP confirmation details.
-	// Only present when Type is "confirm_payment".
-	ConfirmPayment *struct {
-		// ExpiresAt is when the OTP expires (ISO 8601).
-		// Customer must confirm before this time.
-		ExpiresAt string `json:"expires_at"`
+type ConfirmPayment struct {
+	ExpiresAt time.Time            `json:"expires_at"`
+	Scheme    string               `json:"scheme"`
+	Request   *ConfirmationRequest `json:"request,omitempty"`
+	Attempt   *ConfirmationAttempt `json:"attempt,omitempty"`
+	Confirmed bool                 `json:"confirmed"`
+	Status    string               `json:"status"`
+}
 
-		// Scheme describes the confirmation method.
-		// Example: "otp"
-		Scheme string `json:"scheme,omitempty"`
+type ConfirmationRequest struct {
+	ID        string              `json:"id"`
+	Recipient string              `json:"recipient"`
+	SentVia   ConfirmationChannel `json:"sent_via"`
+	TokenSize int                 `json:"token_size"`
+	SenderID  string              `json:"sender_id"`
+	Status    string              `json:"status,omitempty"`
+}
 
-		// Request contains OTP delivery details.
-		Request *struct {
-			// ID is the OTP request identifier.
-			ID string `json:"id"`
+type ConfirmationAttempt struct {
+	Status     string     `json:"status"`
+	Confirmed  bool       `json:"confirmed"`
+	Reason     string     `json:"reason"`
+	ExecutedAt *time.Time `json:"executed_at,omitempty"`
+	CreatedAt  time.Time  `json:"created_at"`
+}
 
-			// Recipient is where the OTP was sent.
-			// For SMS: the phone number.
-			Recipient string `json:"recipient"`
+type Redirect struct {
+	ValidUntil  time.Time      `json:"valid_until"`
+	LatestVisit *RedirectVisit `json:"latest_visit,omitempty"`
+	RedirectURL string         `json:"redirect_url"`
+}
 
-			// SentVia is the delivery channel.
-			// Values: "sms", "email"
-			SentVia ConfirmationChannel `json:"sent_via"`
+type RedirectVisit struct {
+	UserAgent string    `json:"user_agent"`
+	IPAddress string    `json:"ip_address"`
+	At        time.Time `json:"at"`
+}
 
-			// TokenSize is the number of OTP digits.
-			// Typically 4 or 6.
-			TokenSize int `json:"token_size"`
+type Authorize struct {
+	Beneficiary string    `json:"beneficiary"`
+	ExpiresAt   time.Time `json:"expires_at"`
+	Scheme      string    `json:"scheme"`
+}
 
-			// SenderID is the SMS sender name.
-			SenderID string `json:"sender_id"`
-		} `json:"request,omitempty"`
-	} `json:"confirm_payment,omitempty"`
-
-	// Execute is present when Type is "execute" (internal processing).
-	Execute any `json:"execute,omitempty"`
-
-	// Redirect contains redirect details when Type is "redirect".
-	Redirect *struct {
-		// URL is where the customer should be redirected.
-		// Open this URL in a browser for the customer to complete payment.
-		URL string `json:"url"`
-	} `json:"redirect,omitempty"`
+type RequestConfirmation struct {
+	LastRequest *ConfirmationRequest `json:"last_request,omitempty"`
+	After       *time.Time           `json:"after,omitempty"`
 }

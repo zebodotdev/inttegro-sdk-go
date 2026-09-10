@@ -1,5 +1,7 @@
 package financialaccount
 
+import "time"
+
 // PullPushConfig configures whether an account can send or receive funds.
 //
 // Pull configuration controls whether Inttegro can debit the account.
@@ -12,7 +14,7 @@ type PullPushConfig struct {
 	Enabled *bool `json:"enabled,omitempty"`
 
 	// EnabledAt indicates when this configuration was enabled (read-only).
-	EnabledAt string `json:"enabled_at,omitempty"`
+	EnabledAt *time.Time `json:"enabled_at,omitempty"`
 
 	// Mandate contains mandate details for pull authorization (optional).
 	Mandate map[string]any `json:"mandate,omitempty"`

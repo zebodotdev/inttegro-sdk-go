@@ -1,5 +1,7 @@
 package app
 
+import "time"
+
 // AppRelationshipPolicy describes who manages a child app relationship.
 type RelationshipPolicy struct {
 	// ChildStanding is the initial standing assigned to the child app.
@@ -26,5 +28,5 @@ type Relationship struct {
 	ChildStanding                  string             `json:"child_standing"`
 	RelationshipPolicy             RelationshipPolicy `json:"relationship_policy"`
 	RetainedCreatorAuthorityExists bool               `json:"retained_creator_authority_exists"`
-	CreatedAt                      string             `json:"created_at"`
+	CreatedAt                      time.Time          `json:"created_at"`
 }

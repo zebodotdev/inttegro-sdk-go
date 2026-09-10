@@ -1,5 +1,7 @@
 package chime
 
+import "time"
+
 type Page struct {
 	Number int     `json:"number,omitempty"`
 	Size   int     `json:"size,omitempty"`
@@ -16,7 +18,7 @@ type Chime struct {
 	ID string `json:"id,omitempty"`
 
 	// CreatedAt is when the chime was created (ISO 8601, read-only).
-	CreatedAt string `json:"created_at,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
 
 	// FullMessage is the message content that was sent.
 	FullMessage string `json:"full_message,omitempty"`

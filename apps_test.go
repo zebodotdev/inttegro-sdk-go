@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/app"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/request"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/secretkey"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/secretkey"
 )
 
 func TestAppsServiceUsesTypedContracts(t *testing.T) {
@@ -126,7 +126,7 @@ func TestAppsServiceUsesTypedContracts(t *testing.T) {
 		created.Relationship.RelationshipPolicy.Credentials != app.CredentialOwnerChild {
 		t.Fatalf("decoded relationship = %#v", created.Relationship)
 	}
-	if lookedUp.UpdatedAt == "" || lookedUp.ArchivedAt != "" {
+	if lookedUp.UpdatedAt == nil || lookedUp.ArchivedAt != nil {
 		t.Fatalf("decoded lookup app = %#v", lookedUp)
 	}
 	if updated.Alias != "acme-api" {

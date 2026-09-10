@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/messagetemplate"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/messagetemplate"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -310,7 +310,7 @@ func TestDoGeneratesRequestMetaIdempotencyKeyForMutations(t *testing.T) {
 	}
 	defer close()
 
-	err := client.do(context.Background(), "POST", "/orders/new", map[string]any{
+	err := client.do(context.Background(), "POST", "/orders/create", map[string]any{
 		"number":          "ORDER-1",
 		"idempotency_key": "legacy",
 	}, nil)

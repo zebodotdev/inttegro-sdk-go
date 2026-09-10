@@ -1,10 +1,12 @@
 package filelink
 
+import "time"
+
 type CreateParams struct {
 	Access     Access            `json:"access"`
 	CreatedBy  Actor             `json:"created_by"`
 	Delivery   Delivery          `json:"delivery"`
-	ExpiresAt  string            `json:"expires_at,omitempty"`
+	ExpiresAt  *time.Time        `json:"expires_at,omitempty"`
 	FileID     string            `json:"file_id"`
 	CustomData map[string]string `json:"custom_data,omitempty"`
 }

@@ -1,7 +1,9 @@
 package purchaseintent
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/price"
 )
 
 type OriginalPriceParams struct {
@@ -16,7 +18,7 @@ type CreateParams struct {
 	PriceID   string           `json:"price_id,omitempty"`
 	Quantity  Quantity         `json:"quantity"`
 	Usage     *Usage           `json:"usage,omitempty"`
-	ExpiresAt string           `json:"expires_at,omitempty"`
+	ExpiresAt *time.Time       `json:"expires_at,omitempty"`
 }
 
 type UpdateParams struct {

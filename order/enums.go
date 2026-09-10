@@ -6,6 +6,7 @@ const (
 	LineItemTypeProduct  LineItemType = "product"
 	LineItemTypeFee      LineItemType = "fee"
 	LineItemTypeShipping LineItemType = "shipping"
+	LineItemTypeDiscount LineItemType = "discount"
 )
 
 type Status string

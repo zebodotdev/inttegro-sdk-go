@@ -1,8 +1,10 @@
 package balancetransaction
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/payout"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/payout"
 )
 
 // BalanceTransaction represents a merchant balance entry caused by a payment or
@@ -30,25 +32,19 @@ type BalanceTransaction struct {
 	// Amount is the transaction amount in the public money shape.
 	Amount money.Amount `json:"amount"`
 
-	// Deprecated: the reviewed API does not return amount_expected. Use Amount.
-	AmountExpected *money.Amount `json:"amount_expected,omitempty"`
-
-	// Deprecated: the reviewed API does not return amount_available. Use Amount.
-	AmountAvailable *money.Amount `json:"amount_available,omitempty"`
-
 	// AvailableAt is when funds become eligible for payout (ISO 8601, read-only).
-	AvailableAt *string `json:"available_at,omitempty"`
+	AvailableAt *time.Time `json:"available_at,omitempty"`
 
 	// ClaimedAt is when the transaction was claimed for payout.
-	ClaimedAt *string `json:"claimed_at,omitempty"`
+	ClaimedAt *time.Time `json:"claimed_at,omitempty"`
 
 	// PaidAt is when the transaction was paid out or otherwise settled.
-	PaidAt *string `json:"paid_at,omitempty"`
+	PaidAt *time.Time `json:"paid_at,omitempty"`
 
 	// CreatedAt is when the balance transaction was created (ISO 8601).
-	CreatedAt string `json:"created_at"`
+	CreatedAt time.Time `json:"created_at"`
 
-	// Deprecated: the reviewed API does not return payout_configuration on balance transactions.
+	// PayoutConfiguration is the routing used when this transaction is paid out.
 	PayoutConfiguration *payout.Configuration `json:"payout_configuration,omitempty"`
 }
 

@@ -1,7 +1,9 @@
 package payout
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
 )
 
 // Payout represents a settlement transfer to your bank or mobile money account.
@@ -40,19 +42,19 @@ type Payout struct {
 	LatestError any `json:"latest_error,omitempty"`
 
 	// InitiatedAt is when the payout was created (ISO 8601, read-only).
-	InitiatedAt string `json:"initiated_at,omitempty"`
+	InitiatedAt *time.Time `json:"initiated_at,omitempty"`
 
 	// ExecuteAfter is the scheduled execution timestamp for queued payouts (ISO 8601, read-only).
 	// Nil for immediate/manual payouts that are not scheduled.
-	ExecuteAfter *string `json:"execute_after,omitempty"`
+	ExecuteAfter *time.Time `json:"execute_after,omitempty"`
 
 	// ScheduledAt is when the payout was queued for execution (ISO 8601, read-only).
 	// Nil when not scheduled.
-	ScheduledAt *string `json:"scheduled_at,omitempty"`
+	ScheduledAt *time.Time `json:"scheduled_at,omitempty"`
 
 	// CanceledAt is when a scheduled payout was canceled (ISO 8601, read-only).
 	// Nil unless the payout has status "canceled".
-	CanceledAt *string `json:"canceled_at,omitempty"`
+	CanceledAt *time.Time `json:"canceled_at,omitempty"`
 
 	// MaxAmount is the maximum amount authorized for scheduled payouts (read-only).
 	// This may differ from Amount when payout execution has not started.
@@ -60,15 +62,15 @@ type Payout struct {
 
 	// ExecutedAt is when the payout was submitted to the network (ISO 8601, read-only).
 	// Nil if not yet executed.
-	ExecutedAt *string `json:"executed_at,omitempty"`
+	ExecutedAt *time.Time `json:"executed_at,omitempty"`
 
 	// ExpectedAt is when the payout should arrive (ISO 8601, read-only).
 	// Estimate based on network speed. Actual arrival may vary.
-	ExpectedAt *string `json:"expected_at,omitempty"`
+	ExpectedAt *time.Time `json:"expected_at,omitempty"`
 
 	// SucceededAt is when the payout was confirmed (ISO 8601, read-only).
 	// Nil if not yet succeeded.
-	SucceededAt *string `json:"succeeded_at,omitempty"`
+	SucceededAt *time.Time `json:"succeeded_at,omitempty"`
 
 	// BalanceTransactionIDs lists the included balance transactions (read-only).
 	// These are the source funds being paid out.

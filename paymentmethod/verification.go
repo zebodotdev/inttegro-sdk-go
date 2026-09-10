@@ -1,11 +1,13 @@
 package paymentmethod
 
+import "time"
+
 // PaymentMethodVerificationSession contains verification state and delivery details.
 type VerificationSession struct {
 	PaymentMethodID string                `json:"payment_method_id,omitempty"`
 	Status          string                `json:"status,omitempty"`
-	TokenSentAt     *string               `json:"token_sent_at,omitempty"`
-	ExpiresAt       *string               `json:"expires_at,omitempty"`
+	TokenSentAt     *time.Time            `json:"token_sent_at,omitempty"`
+	ExpiresAt       *time.Time            `json:"expires_at,omitempty"`
 	Delivery        *VerificationDelivery `json:"delivery,omitempty"`
 }
 

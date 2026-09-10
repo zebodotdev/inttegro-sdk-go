@@ -1,7 +1,9 @@
 package refund
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
 )
 
 // RefundLineItem is one immutable order-line allocation in a refund.
@@ -25,11 +27,11 @@ type Refund struct {
 	ReasonDetails string            `json:"reason_details,omitempty"`
 	Reference     string            `json:"reference,omitempty"`
 	CustomData    map[string]string `json:"custom_data,omitempty"`
-	CreatedAt     string            `json:"created_at"`
-	ProcessingAt  *string           `json:"processing_at,omitempty"`
-	SucceededAt   *string           `json:"succeeded_at,omitempty"`
-	FailedAt      *string           `json:"failed_at,omitempty"`
-	CanceledAt    *string           `json:"canceled_at,omitempty"`
+	CreatedAt     time.Time         `json:"created_at"`
+	ProcessingAt  *time.Time        `json:"processing_at,omitempty"`
+	SucceededAt   *time.Time        `json:"succeeded_at,omitempty"`
+	FailedAt      *time.Time        `json:"failed_at,omitempty"`
+	CanceledAt    *time.Time        `json:"canceled_at,omitempty"`
 }
 
 // RefundPage contains one page of refunds.

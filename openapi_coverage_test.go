@@ -13,31 +13,31 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/app"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/balancetransaction"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/broadcast"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/chime"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/customer"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/file"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/filelink"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/filereference"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/financialaccount"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/messagetemplate"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/order"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/paymentmethod"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/payout"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/price"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/purchaseintent"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/refund"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/secretkey"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/uploadrequest"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/app"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/balancetransaction"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/broadcast"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/chime"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/customer"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/file"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/filelink"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/filereference"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/financialaccount"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/messagetemplate"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/order"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/otp"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/paymentmethod"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/payout"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/price"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/product"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/purchaseintent"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/secretkey"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/uploadrequest"
 )
 
 var openAPICapabilityURLPaths = map[string]bool{
 	"/file_links/open":        true,
-	"/orders/refund":          true, // superseded by the canonical /refunds/create resource operation
 	"/upload_requests/upload": true,
 }
 
@@ -153,13 +153,13 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 		check(download.Close())
 	}
 
-	_, err := client.Otp.Initiate(ctx, map[string]any{"recipient": "+233"})
+	_, err := client.Otp.Initiate(ctx, otp.InitiateParams{Recipient: "+233", ServiceName: "Inttegro", TokenSize: 6})
 	check(err)
-	_, err = client.Otp.Verify(ctx, map[string]any{"transaction_id": "otp_1", "token": "123456"})
+	_, err = client.Otp.Verify(ctx, otp.VerifyParams{Recipient: "+233", TransactionID: "ot_1", Token: "123456"})
 	check(err)
-	_, err = client.Otp.Lookup(ctx, map[string]any{"transaction_id": "otp_1"})
+	_, err = client.Otp.Lookup(ctx, otp.LookupParams{TransactionID: "ot_1"})
 	check(err)
-	_, err = client.Otp.Cancel(ctx, map[string]any{"transaction_id": "otp_1"})
+	_, err = client.Otp.Cancel(ctx, otp.CancelParams{TransactionID: "ot_1"})
 	check(err)
 
 	_, err = client.Chimes.Send(ctx, chime.SendParams{FullMessage: "hello"})
@@ -216,7 +216,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Orders.Lookup(ctx, "or_1")
 	check(err)
-	_, err = client.Orders.Update(ctx, map[string]any{"order_id": "or_1", "number": "ORDER-1A"})
+	_, err = client.Orders.Update(ctx, order.UpdateParams{OrderID: "or_1", Number: "ORDER-1A"})
 	check(err)
 	_, err = client.Orders.Pay(ctx, order.PayParams{OrderID: "or_1"})
 	check(err)
@@ -485,7 +485,7 @@ func openAPICoverageResponse() map[string]any {
 		"app":             map[string]any{"id": "app_1"},
 		"key":             map[string]any{"id": "sk_1", "token_type": "bearer", "issued_at": "2026-01-01T00:00:00Z", "token": "sk_test_1", "status": "active", "active": true},
 		"usage":           map[string]any{"number": 1, "size": 0, "count": 0, "total": 0, "has_more": false, "rows": []any{}},
-		"purchase_intent": map[string]any{"id": "sale_1", "product_id": "prod_1", "price_id": "pr_1", "quantity": map[string]any{"min": 1, "max": 5}, "adjustable_quantity": true, "allow_variants": false, "status": "active", "created_at": "2026-01-01T00:00:00Z"},
+		"purchase_intent": map[string]any{"id": "sale_1", "quantity": map[string]any{"min": 1, "max": 5}, "allow_variants": false, "usage": map[string]any{"multi_use": true}, "status": "active", "created_at": "2026-01-01T00:00:00Z"},
 		"file":            map[string]any{"id": "file_1", "purpose": "identity", "status": "available"},
 		"file_link":       map[string]any{"id": "fl_1", "file_id": "file_1", "status": "active"},
 		"url":             "https://files.inttegro.com/open/fl_1",

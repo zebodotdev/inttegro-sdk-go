@@ -1,7 +1,9 @@
 package app
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/secretkey"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/secretkey"
 )
 
 // AppSecretKey is the initial secret key returned when an app is created.
@@ -9,7 +11,7 @@ import (
 type SecretKey struct {
 	ID        string              `json:"id,omitempty"`
 	TokenType secretkey.TokenType `json:"token_type,omitempty"`
-	IssuedAt  string              `json:"issued_at,omitempty"`
+	IssuedAt  *time.Time          `json:"issued_at,omitempty"`
 	Token     string              `json:"token,omitempty"`
 }
 
@@ -19,9 +21,9 @@ type App struct {
 	Name         string        `json:"name"`
 	Alias        string        `json:"alias,omitempty"`
 	Description  string        `json:"description,omitempty"`
-	CreatedAt    string        `json:"created_at"`
-	UpdatedAt    string        `json:"updated_at,omitempty"`
-	ArchivedAt   string        `json:"archived_at,omitempty"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    *time.Time    `json:"updated_at,omitempty"`
+	ArchivedAt   *time.Time    `json:"archived_at,omitempty"`
 	SecretKey    *SecretKey    `json:"secret_key,omitempty"`
 	Relationship *Relationship `json:"relationship,omitempty"`
 }

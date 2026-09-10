@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/zebodotdev/inttegro-sdk-go/v6/balancetransaction"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/payment"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/balancetransaction"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/payment"
 )
 
 func TestBalanceTransactionDeserializesSemanticSources(t *testing.T) {
@@ -41,7 +41,7 @@ func TestBalanceTransactionDeserializesSemanticSources(t *testing.T) {
 			if sourceID, ok := txn.SourceID(); !ok || sourceID != tt.wantSource {
 				t.Fatalf("SourceID() = (%q, %t), want (%q, true)", sourceID, ok, tt.wantSource)
 			}
-			if txn.ID == "" || txn.OrderID == "" || txn.Amount.Currency == "" || txn.CreatedAt == "" {
+			if txn.ID == "" || txn.OrderID == "" || txn.Amount.Currency == "" || txn.CreatedAt.IsZero() {
 				t.Fatalf("required fields were not decoded: %#v", txn)
 			}
 		})

@@ -43,7 +43,7 @@ func FuzzRequestMetaIdempotency(f *testing.F) {
 
 func FuzzMutationPathClassification(f *testing.F) {
 	for _, seed := range []string{
-		"/orders/new",
+		"/orders/create",
 		"/orders/lookup",
 		"/financial_accounts/balances",
 		"/files/contents",

@@ -1,8 +1,10 @@
 package price
 
 import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
-	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
+	"time"
+
+	"github.com/zebodotdev/inttegro-sdk-go/v7/money"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/product"
 )
 
 type Page struct {
@@ -25,7 +27,7 @@ type Price struct {
 	Nominal    *money.Amount    `json:"nominal,omitempty"`
 	ProductID  string           `json:"product_id,omitempty"`
 	Product    *product.Product `json:"product,omitempty"`
-	CreatedAt  string           `json:"created_at,omitempty"`
-	UpdatedAt  string           `json:"updated_at,omitempty"`
-	ArchivedAt string           `json:"archived_at,omitempty"`
+	CreatedAt  *time.Time       `json:"created_at,omitempty"`
+	UpdatedAt  *time.Time       `json:"updated_at,omitempty"`
+	ArchivedAt *time.Time       `json:"archived_at,omitempty"`
 }
