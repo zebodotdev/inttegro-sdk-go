@@ -1,5 +1,7 @@
 package chime
 
+import "time"
+
 type PageParams struct {
 	CustomerID string `json:"customer_id,omitempty"`
 	PageNumber int    `json:"page_number,omitempty"`
@@ -68,10 +70,11 @@ type SendParams struct {
 //
 // Example:
 //
+//	sendAfter := time.Date(2024, time.January, 15, 9, 0, 0, 0, time.UTC)
 //	params := chime.ScheduleParams{
 //	    Recipients:  []string{"+233244123456", "user@example.com"},
 //	    FullMessage: "Your subscription renews tomorrow.",
-//	    SendAfter:   "2024-01-15T09:00:00Z",
+//	    SendAfter:   &sendAfter,
 //	    SenderID:    "YourBrand",
 //	}
 type ScheduleParams struct {
@@ -84,9 +87,8 @@ type ScheduleParams struct {
 	FullMessage string `json:"full_message"`
 
 	// SendAfter is when to send the chime (required).
-	// ISO 8601 timestamp. Must be in the future.
-	// Example: "2024-01-15T09:00:00Z"
-	SendAfter string `json:"send_after,omitempty"`
+	// It is encoded as an RFC 3339 timestamp and must be in the future.
+	SendAfter *time.Time `json:"send_after,omitempty"`
 
 	// SenderID is the sender identifier displayed to recipients (optional).
 	SenderID string `json:"sender_id,omitempty"`

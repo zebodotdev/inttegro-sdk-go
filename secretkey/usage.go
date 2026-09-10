@@ -1,8 +1,10 @@
 package secretkey
 
+import "time"
+
 type UsageRow struct {
 	SecretKeyID string     `json:"secret_key_id"`
-	OccurredAt  string     `json:"occurred_at"`
+	OccurredAt  time.Time  `json:"occurred_at"`
 	AuthResult  AuthResult `json:"auth_result"`
 }
 

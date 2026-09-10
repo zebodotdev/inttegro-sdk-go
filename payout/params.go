@@ -1,10 +1,12 @@
 package payout
 
+import "time"
+
 type ScheduleParams struct {
-	DestinationID string `json:"destination_id"`
-	ExecuteAfter  string `json:"execute_after,omitempty"`
-	MaxAmount     int64  `json:"max_amount"`
-	Reference     string `json:"reference"`
+	DestinationID string     `json:"destination_id"`
+	ExecuteAfter  *time.Time `json:"execute_after,omitempty"`
+	MaxAmount     int64      `json:"max_amount"`
+	Reference     string     `json:"reference"`
 }
 
 // PayoutPageParams specifies pagination for listing payouts.

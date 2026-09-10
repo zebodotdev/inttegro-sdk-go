@@ -390,7 +390,7 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 // - Context cancellation and timeouts
 //
 // The method parameter specifies the HTTP method (GET, POST, etc).
-// The path parameter is relative to BaseURL (e.g., "/orders/new").
+// The path parameter is relative to BaseURL (e.g., "/orders/create").
 // The body parameter is JSON-encoded if not nil.
 // The out parameter receives the decoded response if not nil.
 //

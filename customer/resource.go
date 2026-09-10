@@ -1,5 +1,7 @@
 package customer
 
+import "time"
+
 // CustomerData captures inline customer information for order creation.
 //
 // Use this when creating orders for new customers who don't have a customer ID yet.
@@ -50,7 +52,7 @@ type Customer struct {
 	Email       string            `json:"email_address,omitempty"`
 	PhoneNumber string            `json:"phone_number,omitempty"`
 	CustomData  map[string]string `json:"custom_data,omitempty"`
-	CreatedAt   string            `json:"created_at,omitempty"`
+	CreatedAt   *time.Time        `json:"created_at,omitempty"`
 }
 
 // CustomersPage holds a page of customers.

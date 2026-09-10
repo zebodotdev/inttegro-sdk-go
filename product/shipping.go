@@ -1,23 +1,24 @@
 package product
 
-// ProductShipmentDimensions describes physical dimensions.
-type ShipmentDimensions struct {
-	Length float64 `json:"length,omitempty"`
-	Width  float64 `json:"width,omitempty"`
-	Height float64 `json:"height,omitempty"`
-	Weight float64 `json:"weight,omitempty"`
-}
-
-// ProductShipment describes fulfillment details.
+// Shipment describes the product's fulfillment mechanism.
 type Shipment struct {
-	Type       ShipmentType        `json:"type,omitempty"`
-	Carrier    string              `json:"carrier,omitempty"`
-	Dimensions *ShipmentDimensions `json:"dimensions,omitempty"`
+	Type     ShipmentType    `json:"type"`
+	Delivery *Delivery       `json:"delivery,omitempty"`
+	Download *Download       `json:"download,omitempty"`
+	Render   *Render         `json:"render,omitempty"`
+	Service  *ServiceDetails `json:"service,omitempty"`
+	Stream   *Stream         `json:"stream,omitempty"`
 }
 
-// ProductShipmentInput describes fulfillment accepted by create and update requests.
+// The fulfillment variants are explicit marker objects. The API currently
+// returns no fields inside them.
+type Delivery struct{}
+type Download struct{}
+type Render struct{}
+type ServiceDetails struct{}
+type Stream struct{}
+
+// ShipmentInput describes fulfillment accepted by create and update requests.
 type ShipmentInput struct {
-	Type       ShipmentInputType   `json:"type,omitempty"`
-	Carrier    string              `json:"carrier,omitempty"`
-	Dimensions *ShipmentDimensions `json:"dimensions,omitempty"`
+	Type ShipmentInputType `json:"type"`
 }

@@ -1,6 +1,8 @@
 package purchaseintent
 
 import (
+	"time"
+
 	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
 )
 
@@ -20,6 +22,7 @@ type ActivityVisitor struct {
 	SessionID string `json:"session_id,omitempty"`
 	VisitorID string `json:"visitor_id,omitempty"`
 	UserAgent string `json:"user_agent,omitempty"`
+	IPAddress string `json:"ip_address,omitempty"`
 	Device    string `json:"device,omitempty"`
 	Browser   string `json:"browser,omitempty"`
 	OS        string `json:"os,omitempty"`
@@ -30,9 +33,9 @@ type ActivityVisitor struct {
 }
 
 type Activity struct {
-	ID               string               `json:"id,omitempty"`
-	PurchaseIntentID string               `json:"purchase_intent_id,omitempty"`
-	Type             ActivityType         `json:"type,omitempty"`
+	ID               string               `json:"id"`
+	PurchaseIntentID string               `json:"purchase_intent_id"`
+	Type             ActivityType         `json:"type"`
 	Source           string               `json:"source,omitempty"`
 	Attribution      *ActivityAttribution `json:"attribution,omitempty"`
 	Visitor          *ActivityVisitor     `json:"visitor,omitempty"`
@@ -43,7 +46,7 @@ type Activity struct {
 	OrderID          string               `json:"order_id,omitempty"`
 	PaymentID        string               `json:"payment_id,omitempty"`
 	ErrorCode        string               `json:"error_code,omitempty"`
-	CreatedAt        string               `json:"created_at,omitempty"`
+	CreatedAt        time.Time            `json:"created_at"`
 }
 
 type ActivityLog struct {

@@ -2,17 +2,20 @@ package product
 
 // CreateProductParams creates a catalog product.
 type CreateParams struct {
-	Type        Type              `json:"type"`
-	Reference   string            `json:"reference,omitempty"`
-	Name        string            `json:"name"`
-	Description string            `json:"description,omitempty"`
-	About       string            `json:"about,omitempty"`
-	TaxCode     string            `json:"tax_code,omitempty"`
-	Category    *Category         `json:"category,omitempty"`
-	Shipment    *ShipmentInput    `json:"shipment,omitempty"`
-	Media       []MediaItem       `json:"media,omitempty"`
-	Attributes  map[string]string `json:"attributes,omitempty"`
-	CustomData  map[string]string `json:"custom_data,omitempty"`
+	Type          Type              `json:"type"`
+	Reference     string            `json:"reference,omitempty"`
+	Name          string            `json:"name"`
+	Description   string            `json:"description,omitempty"`
+	About         string            `json:"about,omitempty"`
+	TaxCode       string            `json:"tax_code,omitempty"`
+	Category      string            `json:"category,omitempty"`
+	Shipment      *ShipmentInput    `json:"shipment,omitempty"`
+	Dimensions    *Dimensions       `json:"dimensions,omitempty"`
+	UnitDimension string            `json:"unit_dimension,omitempty"`
+	Media         *Media            `json:"media,omitempty"`
+	Attributes    []Attribute       `json:"attributes,omitempty"`
+	Publish       bool              `json:"publish,omitempty"`
+	CustomData    map[string]string `json:"custom_data,omitempty"`
 }
 
 // LookupProductParams looks up a product by ID.
@@ -22,17 +25,20 @@ type LookupParams struct {
 
 // UpdateProductParams updates a product.
 type UpdateParams struct {
-	ProductID   string            `json:"product_id"`
-	Reference   string            `json:"reference,omitempty"`
-	Name        string            `json:"name,omitempty"`
-	Description string            `json:"description,omitempty"`
-	About       string            `json:"about,omitempty"`
-	TaxCode     string            `json:"tax_code,omitempty"`
-	Category    *Category         `json:"category,omitempty"`
-	Shipment    *ShipmentInput    `json:"shipment,omitempty"`
-	Media       []MediaItem       `json:"media,omitempty"`
-	Attributes  map[string]string `json:"attributes,omitempty"`
-	CustomData  map[string]string `json:"custom_data,omitempty"`
+	ProductID     string            `json:"product_id"`
+	Type          Type              `json:"type,omitempty"`
+	Reference     string            `json:"reference,omitempty"`
+	Name          string            `json:"name,omitempty"`
+	Description   string            `json:"description,omitempty"`
+	About         string            `json:"about,omitempty"`
+	TaxCode       string            `json:"tax_code,omitempty"`
+	Category      string            `json:"category,omitempty"`
+	Shipment      *ShipmentInput    `json:"shipment,omitempty"`
+	Dimensions    *Dimensions       `json:"dimensions,omitempty"`
+	UnitDimension string            `json:"unit_dimension,omitempty"`
+	Media         *Media            `json:"media,omitempty"`
+	Attributes    []Attribute       `json:"attributes,omitempty"`
+	CustomData    map[string]string `json:"custom_data,omitempty"`
 }
 
 // ProductActionParams performs an action on a product.

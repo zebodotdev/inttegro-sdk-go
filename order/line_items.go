@@ -66,14 +66,17 @@ type ProductLineItemParams struct {
 // ProductLineItem is a product returned in an order.
 type ProductLineItem struct {
 	ID         string            `json:"id"`
-	Type       product.Type      `json:"type"`
-	Name       string            `json:"name"`
-	About      string            `json:"about,omitempty"`
-	Quantity   int64             `json:"quantity"`
-	Price      price.Inline      `json:"price"`
+	ProductID  string            `json:"product_id,omitempty"`
+	PriceID    string            `json:"price_id,omitempty"`
 	Reference  string            `json:"reference,omitempty"`
-	TaxCode    string            `json:"tax_code,omitempty"`
+	About      string            `json:"about,omitempty"`
 	CustomData map[string]string `json:"custom_data,omitempty"`
+	TaxCode    string            `json:"tax_code,omitempty"`
+	Name       string            `json:"name"`
+	Category   string            `json:"category,omitempty"`
+	Type       product.Type      `json:"type,omitempty"`
+	Price      price.Inline      `json:"price"`
+	Quantity   int64             `json:"quantity"`
 }
 
 // FeeLineItemParams represents an additional charge supplied in a request.
@@ -115,12 +118,11 @@ type FeeLineItemParams struct {
 
 // FeeLineItem is an additional charge returned in an order.
 type FeeLineItem struct {
-	ID          string            `json:"id"`
-	Label       string            `json:"label"`
-	Description string            `json:"description,omitempty"`
-	TaxCode     string            `json:"tax_code,omitempty"`
-	CustomData  map[string]string `json:"custom_data,omitempty"`
-	Amount      money.Amount      `json:"amount"`
+	ID          string       `json:"id"`
+	Description string       `json:"description,omitempty"`
+	TaxCode     string       `json:"tax_code,omitempty"`
+	Amount      money.Amount `json:"amount"`
+	Label       string       `json:"label"`
 }
 
 // ShippingLineItemParams represents a delivery charge supplied in a request.
@@ -150,10 +152,10 @@ type ShippingLineItemParams struct {
 
 // ShippingLineItem is a delivery charge returned in an order.
 type ShippingLineItem struct {
-	ID         string            `json:"id"`
-	Fee        money.Amount      `json:"fee"`
-	TaxCode    string            `json:"tax_code,omitempty"`
-	CustomData map[string]string `json:"custom_data,omitempty"`
+	ID      string       `json:"id"`
+	TaxCode string       `json:"tax_code,omitempty"`
+	Label   string       `json:"label,omitempty"`
+	Fee     money.Amount `json:"fee"`
 }
 
 // OrderLineItemParams is a discriminated union supplied in an order request.
@@ -203,10 +205,13 @@ type LineItemParams struct {
 // OrderLineItem is a discriminated union returned by the API.
 type LineItem struct {
 	Type     LineItemType      `json:"type"`
+	Discount *DiscountLineItem `json:"discount,omitempty"`
 	Product  *ProductLineItem  `json:"product,omitempty"`
 	Fee      *FeeLineItem      `json:"fee,omitempty"`
 	Shipping *ShippingLineItem `json:"shipping,omitempty"`
 }
+
+type DiscountLineItem struct{}
 
 // LineItemGroup contains line items grouped by type with totals.
 //

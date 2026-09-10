@@ -3,11 +3,11 @@ package payment
 type NextActionType string
 
 const (
-	NextActionTypeConfirmPayment NextActionType = "confirm_payment"
-	NextActionTypeExecute        NextActionType = "execute"
-	NextActionTypeRedirect       NextActionType = "redirect"
-	NextActionTypeAuthorize      NextActionType = "authorize"
-	NextActionTypeNone           NextActionType = "none"
+	NextActionTypeConfirmPayment      NextActionType = "confirm_payment"
+	NextActionTypeExecute             NextActionType = "execute"
+	NextActionTypeRedirect            NextActionType = "redirect"
+	NextActionTypeAuthorizePayment    NextActionType = "authorize_payment"
+	NextActionTypeRequestConfirmation NextActionType = "request_confirmation"
 )
 
 type ConfirmationChannel string

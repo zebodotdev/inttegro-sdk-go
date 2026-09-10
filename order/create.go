@@ -157,7 +157,6 @@ func (p CreateParams) Validate() error {
 //	}
 type CreateParams struct {
 	// RequestMeta carries per-request controls such as idempotency.
-	// Prefer RequestMeta.IdempotencyKey over the legacy top-level IdempotencyKey.
 	RequestMeta *request.Meta `json:"request_meta,omitempty"`
 
 	// CustomerData provides inline customer information for new customers (optional).

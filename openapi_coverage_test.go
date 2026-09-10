@@ -38,7 +38,6 @@ import (
 
 var openAPICapabilityURLPaths = map[string]bool{
 	"/file_links/open":        true,
-	"/orders/refund":          true, // superseded by the canonical /refunds/create resource operation
 	"/upload_requests/upload": true,
 }
 
@@ -217,7 +216,7 @@ func recordSDKPaths(t *testing.T) map[string]bool {
 	check(err)
 	_, err = client.Orders.Lookup(ctx, "or_1")
 	check(err)
-	_, err = client.Orders.Update(ctx, map[string]any{"order_id": "or_1", "number": "ORDER-1A"})
+	_, err = client.Orders.Update(ctx, order.UpdateParams{OrderID: "or_1", Number: "ORDER-1A"})
 	check(err)
 	_, err = client.Orders.Pay(ctx, order.PayParams{OrderID: "or_1"})
 	check(err)
@@ -486,7 +485,7 @@ func openAPICoverageResponse() map[string]any {
 		"app":             map[string]any{"id": "app_1"},
 		"key":             map[string]any{"id": "sk_1", "token_type": "bearer", "issued_at": "2026-01-01T00:00:00Z", "token": "sk_test_1", "status": "active", "active": true},
 		"usage":           map[string]any{"number": 1, "size": 0, "count": 0, "total": 0, "has_more": false, "rows": []any{}},
-		"purchase_intent": map[string]any{"id": "sale_1", "product_id": "prod_1", "price_id": "pr_1", "quantity": map[string]any{"min": 1, "max": 5}, "adjustable_quantity": true, "allow_variants": false, "status": "active", "created_at": "2026-01-01T00:00:00Z"},
+		"purchase_intent": map[string]any{"id": "sale_1", "quantity": map[string]any{"min": 1, "max": 5}, "allow_variants": false, "usage": map[string]any{"multi_use": true}, "status": "active", "created_at": "2026-01-01T00:00:00Z"},
 		"file":            map[string]any{"id": "file_1", "purpose": "identity", "status": "available"},
 		"file_link":       map[string]any{"id": "fl_1", "file_id": "file_1", "status": "active"},
 		"url":             "https://files.inttegro.com/open/fl_1",

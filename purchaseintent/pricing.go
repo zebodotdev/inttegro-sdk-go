@@ -5,21 +5,16 @@ import (
 )
 
 type OriginalPrice struct {
-	Active  bool          `json:"active"`
-	ID      string        `json:"id,omitempty"`
-	Label   string        `json:"label,omitempty"`
-	Nominal *money.Amount `json:"nominal,omitempty"`
+	Active  bool         `json:"active"`
+	ID      string       `json:"id,omitempty"`
+	Label   string       `json:"label,omitempty"`
+	Nominal money.Amount `json:"nominal"`
 }
 
 type Price struct {
 	Active   bool           `json:"active"`
 	ID       string         `json:"id,omitempty"`
 	Label    string         `json:"label,omitempty"`
-	Nominal  *money.Amount  `json:"nominal,omitempty"`
+	Nominal  money.Amount   `json:"nominal"`
 	Original *OriginalPrice `json:"original,omitempty"`
-}
-
-type Usage struct {
-	SingleUse *bool `json:"single_use,omitempty"`
-	MultiUse  *bool `json:"multi_use,omitempty"`
 }

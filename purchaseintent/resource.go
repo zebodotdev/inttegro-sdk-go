@@ -1,27 +1,27 @@
 package purchaseintent
 
-import (
-	"github.com/zebodotdev/inttegro-sdk-go/v6/product"
-)
+import "time"
 
 // PurchaseIntent represents a customer's intent to purchase a product.
 type PurchaseIntent struct {
-	ID                 string           `json:"id"`
-	ProductID          string           `json:"product_id"`
-	PriceID            string           `json:"price_id"`
-	Quantity           Quantity         `json:"quantity"`
-	AdjustableQuantity bool             `json:"adjustable_quantity"`
-	AllowVariants      bool             `json:"allow_variants"`
-	Status             Status           `json:"status"`
-	CreatedAt          string           `json:"created_at"`
-	UpdatedAt          string           `json:"updated_at,omitempty"`
-	Activity           *ActivityLog     `json:"activity,omitempty"`
-	Product            *product.Product `json:"product,omitempty"`
-	Price              *Price           `json:"price,omitempty"`
+	Activity      *ActivityLog `json:"activity,omitempty"`
+	AllowVariants bool         `json:"allow_variants"`
+	CreatedAt     time.Time    `json:"created_at"`
+	ExpiresAt     *time.Time   `json:"expires_at,omitempty"`
+	ID            string       `json:"id"`
+	InactiveAt    *time.Time   `json:"inactive_at,omitempty"`
+	Merchant      *Merchant    `json:"merchant,omitempty"`
+	Price         *Price       `json:"price,omitempty"`
+	Product       *Product     `json:"product,omitempty"`
+	Quantity      Quantity     `json:"quantity"`
+	Status        Status       `json:"status"`
+	UpdatedAt     *time.Time   `json:"updated_at,omitempty"`
+	Usage         Usage        `json:"usage"`
+	VariantSet    *VariantSet  `json:"variant_set,omitempty"`
 }
 
 type Page struct {
-	Number          int              `json:"number,omitempty"`
-	Size            int              `json:"size,omitempty"`
-	PurchaseIntents []PurchaseIntent `json:"purchase_intents,omitempty"`
+	Number          int              `json:"number"`
+	Size            int              `json:"size"`
+	PurchaseIntents []PurchaseIntent `json:"purchase_intents"`
 }

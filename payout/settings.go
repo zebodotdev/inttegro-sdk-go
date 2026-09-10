@@ -26,14 +26,14 @@ type Settings struct {
 // PayoutConfiguration describes payout routing and FX settings for a payment or balance transaction.
 type Configuration struct {
 	// EnableFX indicates whether FX conversion is enabled for this payout.
-	EnableFX *bool `json:"enable_fx,omitempty"`
+	EnableFX bool `json:"enable_fx"`
 
 	// Destination specifies the financial account receiving the payout.
-	Destination *Destination `json:"destination,omitempty"`
+	Destination Destination `json:"destination"`
 }
 
 // PayoutDestination identifies the payout financial account.
 type Destination struct {
 	// FinancialAccountID is the ID of the destination financial account.
-	FinancialAccountID string `json:"financial_account_id,omitempty"`
+	FinancialAccountID string `json:"financial_account_id"`
 }

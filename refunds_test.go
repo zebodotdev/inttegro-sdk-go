@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/zebodotdev/inttegro-sdk-go/v6/money"
 	"github.com/zebodotdev/inttegro-sdk-go/v6/refund"
@@ -139,7 +140,7 @@ func TestRefundOmitsOptionalResponseFields(t *testing.T) {
 		Total:     money.Amount{Currency: money.GHS, Value: 100},
 		LineItems: []refund.LineItem{},
 		Reason:    refund.ReasonItemReturned,
-		CreatedAt: "2026-09-02T10:00:00Z",
+		CreatedAt: time.Date(2026, time.September, 2, 10, 0, 0, 0, time.UTC),
 	})
 	if err != nil {
 		t.Fatalf("Marshal() error = %v", err)
@@ -160,6 +161,9 @@ func TestRefundOmitsOptionalResponseFields(t *testing.T) {
 		if _, exists := body[key]; !exists {
 			t.Fatalf("required refund property %q was omitted: %#v", key, body)
 		}
+	}
+	if body["created_at"] != "2026-09-02T10:00:00Z" {
+		t.Fatalf("created_at = %#v", body["created_at"])
 	}
 }
 
@@ -263,7 +267,7 @@ func assertDecodedRefund(t *testing.T, got refund.Refund) {
 		got.Reference != "RETURN-123" || got.CustomData["warehouse"] != "accra" {
 		t.Fatalf("decoded refund = %#v", got)
 	}
-	if got.ProcessingAt == nil || *got.ProcessingAt != "2026-09-02T10:01:00Z" ||
+	if got.ProcessingAt == nil || !got.ProcessingAt.Equal(time.Date(2026, time.September, 2, 10, 1, 0, 0, time.UTC)) ||
 		got.SucceededAt != nil || got.FailedAt != nil || got.CanceledAt != nil {
 		t.Fatalf("decoded lifecycle timestamps = %#v", got)
 	}

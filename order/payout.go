@@ -35,6 +35,9 @@ type PayoutFinancialAccount struct {
 	// BankAccount contains bank account details when Type is "bank_account".
 	BankAccount *bankaccount.Config `json:"bank_account,omitempty"`
 
-	// DoshAccount contains Dosh wallet details when Type is "dosh_account".
-	DoshAccount map[string]any `json:"dosh_account,omitempty"`
+	// DoshAccount is present when Type is "dosh_account".
+	DoshAccount *DoshAccount `json:"dosh_account,omitempty"`
 }
+
+// DoshAccount is an explicit marker. The API accepts no nested Dosh fields.
+type DoshAccount struct{}

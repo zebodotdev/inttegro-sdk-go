@@ -126,7 +126,7 @@ func TestAppsServiceUsesTypedContracts(t *testing.T) {
 		created.Relationship.RelationshipPolicy.Credentials != app.CredentialOwnerChild {
 		t.Fatalf("decoded relationship = %#v", created.Relationship)
 	}
-	if lookedUp.UpdatedAt == "" || lookedUp.ArchivedAt != "" {
+	if lookedUp.UpdatedAt == nil || lookedUp.ArchivedAt != nil {
 		t.Fatalf("decoded lookup app = %#v", lookedUp)
 	}
 	if updated.Alias != "acme-api" {

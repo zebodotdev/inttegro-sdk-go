@@ -1,13 +1,15 @@
 package uploadrequest
 
 import (
+	"time"
+
 	"github.com/zebodotdev/inttegro-sdk-go/v6/filelink"
 )
 
 type CreateParams struct {
 	Constraints Constraints       `json:"constraints"`
 	Display     Display           `json:"display"`
-	ExpiresAt   string            `json:"expires_at,omitempty"`
+	ExpiresAt   *time.Time        `json:"expires_at,omitempty"`
 	CustomData  map[string]string `json:"custom_data,omitempty"`
 	Purpose     string            `json:"purpose"`
 	Recipient   Party             `json:"recipient"`
