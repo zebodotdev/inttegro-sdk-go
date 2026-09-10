@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 7.0.1 - 2026-09-10
+
+- Fixed release verification and provenance metadata for the v7 module path.
+
 ## 7.0.0 - 2026-09-10
 
 - Breaking: replaced generic maps with named resource types for balances,
