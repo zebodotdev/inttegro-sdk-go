@@ -1,14 +1,14 @@
 package spec
 
-// Spec describes supported Inttegro features for a country.
+// CountrySpecification describes supported Inttegro features for a country.
 //
 // Use this to discover supported currencies, payment methods, payout schedules,
 // and other country-specific capabilities before integrating.
 //
-// Query with Spec.Countries() to get all country specifications.
-type Spec struct {
+// Query with Client.Spec.Countries() to get all country specifications.
+type CountrySpecification struct {
 	// CountryCode is the two-letter ISO 3166-1 alpha-2 code (read-only).
-	// Example: "GH", "KE", "UG", "US"
+	// Example: "gh", "ke", "ug", "us"
 	CountryCode string `json:"country_code,omitempty"`
 
 	// CountryName is the full country name (read-only).
@@ -32,18 +32,26 @@ type Spec struct {
 	BTAgingSpecs []string `json:"bt_aging_specs,omitempty"`
 
 	// LegalEntityTypes lists supported business types (read-only).
-	// Structure varies by country requirements.
-	LegalEntityTypes []map[string]any `json:"legal_entity_types,omitempty"`
+	// Example: ["individual", "company"]
+	LegalEntityTypes []string `json:"legal_entity_types,omitempty"`
 
 	// FinancialAccountTypes lists supported payout destination types (read-only).
-	// Details wallet, bank_account, and dosh_account configurations.
-	FinancialAccountTypes []map[string]any `json:"financial_account_types,omitempty"`
+	// Example: ["bank_account", "mobile_money"]
+	FinancialAccountTypes []string `json:"financial_account_types,omitempty"`
 
 	// IDDocumentTypes lists accepted identification documents (read-only).
-	// Used for KYC/verification requirements.
-	IDDocumentTypes []map[string]any `json:"id_document_types,omitempty"`
+	// Example: ["passport", "national_id"]
+	IDDocumentTypes []string `json:"id_document_types,omitempty"`
 
 	// Banks lists country-specific bank reference data, when available.
 	// Ghana uses bank_account_type "ghana_bank_account" and sort code branches.
 	Banks *BankDirectory `json:"banks,omitempty"`
 }
+
+// CountrySpecifications contains country specifications keyed by lowercase
+// ISO 3166-1 alpha-2 country code.
+type CountrySpecifications map[string]CountrySpecification
+
+// Spec is retained as a compatibility alias for CountrySpecification.
+// Deprecated: use CountrySpecification.
+type Spec = CountrySpecification

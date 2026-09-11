@@ -6,12 +6,20 @@ import (
 	"net/http"
 
 	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/response"
 )
 
 // Do executes a JSON API request. It is exported for use by resource packages;
 // applications should call the typed resource services on Client instead.
 func (c *Client) Do(ctx context.Context, method, path string, body, out any) error {
 	return c.do(ctx, method, path, body, out)
+}
+
+// DoWithResponse executes a JSON API request and returns response-only metadata.
+// It is exported for use by resource packages; applications should prefer typed
+// resource methods such as Orders.CreateWithResponse when available.
+func (c *Client) DoWithResponse(ctx context.Context, method, path string, body, out any) (*response.Response[any], error) {
+	return c.doWithResponse(ctx, method, path, body, out)
 }
 
 // DoJSON executes a JSON mutation with explicit request options.

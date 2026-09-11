@@ -60,6 +60,44 @@ func TestDoSuccess(t *testing.T) {
 	}
 }
 
+func TestDoWithResponseSuccessMetadata(t *testing.T) {
+	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-Request-Id", "req_123")
+		w.Header().Set("Retry-After", "15")
+		io.WriteString(w, `{"order":{"id":"or_123"},"response_meta":{"request_id":"req_123","debug":{"provider_attempts":1}}}`)
+	}))
+	if client == nil {
+		return
+	}
+	defer close()
+
+	var resp struct {
+		Order struct {
+			ID string `json:"id"`
+		} `json:"order"`
+	}
+	meta, err := client.doWithResponse(context.Background(), "POST", "/orders/create", map[string]string{}, &resp)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp.Order.ID != "or_123" {
+		t.Fatalf("order id = %q, want or_123", resp.Order.ID)
+	}
+	if meta.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200", meta.StatusCode)
+	}
+	if got := meta.RequestID(); got != "req_123" {
+		t.Fatalf("request id = %q, want req_123", got)
+	}
+	if got := meta.RetryAfter(); got != "15" {
+		t.Fatalf("retry after = %q, want 15", got)
+	}
+	if got := meta.Meta["request_id"]; got != "req_123" {
+		t.Fatalf("response meta request_id = %#v, want req_123", got)
+	}
+}
+
 func TestDoAPIError(t *testing.T) {
 	client, close := newTestClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
