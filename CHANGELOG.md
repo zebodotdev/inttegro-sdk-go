@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 7.1.0 - 2026-09-12
+
+- Added opt-in response envelopes that expose status, headers, request IDs,
+  retry hints, and response metadata without changing existing resource return
+  values.
+- Added fluent domain helpers for common resource state and actionability checks.
+
 ## 7.0.1 - 2026-09-10
 
 - Fixed release verification and provenance metadata for the v7 module path.
