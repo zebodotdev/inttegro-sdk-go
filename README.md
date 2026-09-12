@@ -1,6 +1,6 @@
 # Inttegro Go SDK
 
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/zebodotdev/inttegro-sdk-go/badge)](https://scorecard.dev/viewer/?uri=github.com/zebodotdev/inttegro-sdk-go)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/inttegro/inttegro-sdk-go/badge)](https://scorecard.dev/viewer/?uri=github.com/inttegro/inttegro-sdk-go)
 
 The official Go client for building server-side Inttegro integrations.
 
@@ -199,7 +199,7 @@ Go installs the module from the tagged Git repository, directly or through a mod
 ```bash
 sha256sum --check SHA256SUMS
 gh attestation verify inttegro-sdk-go-5.0.0.tar.gz \
-  --repo zebodotdev/inttegro-sdk-go
+  --repo inttegro/inttegro-sdk-go
 ```
 
 ## Develop
