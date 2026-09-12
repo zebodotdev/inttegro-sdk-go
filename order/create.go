@@ -8,6 +8,7 @@ import (
 	"github.com/zebodotdev/inttegro-sdk-go/v7/customer"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/paymentmethod"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/request"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/response"
 )
 
 // Create creates a new order.
@@ -67,6 +68,19 @@ import (
 // Learn more: https://studio.inttegro.com/create-order
 func (s *Service) Create(ctx context.Context, params CreateParams) (*Order, error) {
 	return s.createWithPath(ctx, "/orders/create", params)
+}
+
+// CreateWithResponse creates a new order and keeps HTTP response metadata.
+func (s *Service) CreateWithResponse(ctx context.Context, params CreateParams) (*response.Response[*Order], error) {
+	var resp struct {
+		Order       Order   `json:"order"`
+		RedirectURL *string `json:"redirect_url,omitempty"`
+	}
+	base, err := s.client.DoWithResponse(ctx, "POST", "/orders/create", params, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return response.WithData(base, &resp.Order), nil
 }
 
 func (s *Service) createWithPath(ctx context.Context, path string, params CreateParams) (*Order, error) {

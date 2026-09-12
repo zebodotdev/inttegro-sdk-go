@@ -20,7 +20,7 @@ import (
 //	if err != nil {
 //	    return err
 //	}
-//	ghana := countries["GH"]
+//	ghana := countries["gh"]
 //	fmt.Printf("Ghana currencies: %v\n", ghana.Currencies)
 //	fmt.Printf("Ghana payment methods: %v\n", ghana.PaymentMethods)
 type Service struct {
@@ -29,12 +29,12 @@ type Service struct {
 
 // Countries retrieves Inttegro capabilities for all supported countries.
 //
-// Returns a map of country code to specification. Use this to discover
-// supported currencies, payment methods, and payout options before building
-// your integration.
-func (s *Service) Countries(ctx context.Context) (map[string]Spec, error) {
+// Returns country specifications keyed by lowercase country code. Use this to
+// discover supported currencies, payment methods, and payout options before
+// building your integration.
+func (s *Service) Countries(ctx context.Context) (CountrySpecifications, error) {
 	var resp struct {
-		Countries map[string]Spec `json:"countries"`
+		Countries CountrySpecifications `json:"countries"`
 	}
 	if err := s.client.Do(ctx, "POST", "/spec/countries", map[string]any{}, &resp); err != nil {
 		return nil, err

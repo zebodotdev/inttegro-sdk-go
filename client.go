@@ -110,6 +110,7 @@ import (
 	"github.com/zebodotdev/inttegro-sdk-go/v7/product"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/purchaseintent"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/refund"
+	"github.com/zebodotdev/inttegro-sdk-go/v7/response"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/schedule"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/secretkey"
 	"github.com/zebodotdev/inttegro-sdk-go/v7/spec"
@@ -396,8 +397,13 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 //
 // Returns an *APIError for HTTP errors (status >= 400).
 func (c *Client) do(ctx context.Context, method, path string, body any, out any) error {
+	_, err := c.doWithResponse(ctx, method, path, body, out)
+	return err
+}
+
+func (c *Client) doWithResponse(ctx context.Context, method, path string, body any, out any) (*response.Response[any], error) {
 	if c.APIKey == "" {
-		return errors.New("api key is required")
+		return nil, errors.New("api key is required")
 	}
 
 	ctx, telemetry := c.startRequestTelemetry(ctx, method, path, "")
@@ -409,7 +415,7 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 		if err != nil {
 			wrapped := fmt.Errorf("encode request body: %w", err)
 			telemetry.failAndReport(ctx, wrapped, "encode_error")
-			return wrapped
+			return nil, wrapped
 		}
 		reqBody = bytes.NewReader(raw)
 	}
@@ -419,7 +425,7 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	if err != nil {
 		wrapped := fmt.Errorf("create request: %w", err)
 		telemetry.failAndReport(ctx, wrapped, "request_error")
-		return wrapped
+		return nil, wrapped
 	}
 
 	req.Header.Set("Authorization", "Bearer "+c.APIKey)
@@ -435,7 +441,7 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	if err != nil {
 		wrapped := fmt.Errorf("execute request: %w", err)
 		telemetry.failAndReport(ctx, wrapped, "transport_error")
-		return wrapped
+		return nil, wrapped
 	}
 	defer resp.Body.Close()
 	telemetry.response(resp)
@@ -444,7 +450,7 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 	if err != nil {
 		wrapped := fmt.Errorf("read response: %w", err)
 		telemetry.failAndReport(ctx, wrapped, "read_error")
-		return wrapped
+		return nil, wrapped
 	}
 
 	if resp.StatusCode >= 400 {
@@ -465,19 +471,36 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 		}
 		apiErr.RequestID = resp.Header.Get("x-request-id")
 		telemetry.failAndReport(ctx, apiErr, fmt.Sprintf("http_%d", resp.StatusCode))
-		return apiErr
+		return nil, apiErr
 	}
 
 	if out != nil && len(respBytes) > 0 {
 		if err := json.Unmarshal(respBytes, out); err != nil {
 			wrapped := fmt.Errorf("decode response: %w", err)
 			telemetry.failAndReport(ctx, wrapped, "decode_error")
-			return wrapped
+			return nil, wrapped
 		}
 		telemetry.decoded()
 	}
 
-	return nil
+	return &response.Response[any]{
+		StatusCode: resp.StatusCode,
+		Headers:    resp.Header.Clone(),
+		Meta:       responseMeta(respBytes),
+	}, nil
+}
+
+func responseMeta(raw []byte) response.Meta {
+	if len(raw) == 0 {
+		return nil
+	}
+	var envelope struct {
+		ResponseMeta map[string]any `json:"response_meta"`
+	}
+	if err := json.Unmarshal(raw, &envelope); err != nil || len(envelope.ResponseMeta) == 0 {
+		return nil
+	}
+	return response.Meta(envelope.ResponseMeta)
 }
 
 func (c *Client) jsonRequestBody(method, path string, body any, explicitIdempotencyKey string) ([]byte, error) {
